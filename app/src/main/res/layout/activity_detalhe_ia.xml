@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Favorito (Fase 7.1) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <ImageButton
+                android:id="@+id/btnFavorito"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/detalhe_favorito_desc"
+                android:src="@drawable/ic_star_outline" />
+
+        </LinearLayout>
+
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/surface"
+            android:contentDescription="@string/detalhe_logo_desc"
+            android:padding="12dp"
+            android:src="@drawable/ic_image_placeholder" />
+
+        <!-- Nome -->
+        <TextView
+            android:id="@+id/txtNome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/on_background"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            tools:text="ChatGPT" />
+
+        <!-- Tipo de acesso -->
+        <TextView
+            android:id="@+id/txtTipoAcesso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/secondary"
+            android:textSize="14sp"
+            tools:text="Gratuita" />
+
+        <!-- Descrição -->
+        <TextView
+            android:id="@+id/txtDescricao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/on_background"
+            android:textSize="15sp"
+            tools:text="Assistente de IA conversacional. Ótimo para conversas, código e escrita." />
+
+        <!-- Categorias -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/detalhe_categorias_titulo"
+            android:textColor="@color/on_background"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtCategorias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background"
+            tools:text="💬 Conversa · 💻 Código · ✍️ Escrita" />
+
+        <!-- Idiomas -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/detalhe_idiomas_titulo"
+            android:textColor="@color/on_background"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtIdiomas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background"
+            tools:text="Português · Inglês · Espanhol" />
+
+        <!-- Notas -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/detalhe_notas_titulo"
+            android:textColor="@color/on_background"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/containerNotas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical" />
+
+        <!-- Botão Abrir IA (ação vem na Fase 5.2) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAbrirIA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:backgroundTint="@color/secondary"
+            android:text="@string/detalhe_botao_abrir"
+            android:textColor="@color/on_primary" />
+
+    </LinearLayout>
+
+</ScrollView>

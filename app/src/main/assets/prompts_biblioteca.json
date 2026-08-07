@@ -1,0 +1,2501 @@
+{
+  "versao": 1,
+  "prompts": [
+    {
+      "id": "prog_refatoracao_codigo",
+      "titulo": "Refatorar código legado",
+      "categoria": "programacao",
+      "subcaso": "Refatoração de código",
+      "descricao_curta": "Reestrutura um trecho de código mantendo o comportamento, melhorando legibilidade e manutenção.",
+      "objetivo": "Obter uma versão refatorada, limpa e comentada do código informado.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "GitHub Copilot"
+      ],
+      "template": "Atue como engenheiro de software sênior especializado em {LINGUAGEM}. Refatore o código abaixo aplicando boas práticas ({PADRAO}), sem alterar seu comportamento externo. Explique brevemente cada mudança relevante.\n\nCódigo:\n{CODIGO}",
+      "variaveis": [
+        {
+          "nome": "LINGUAGEM",
+          "padrao": "a linguagem detectada no código"
+        },
+        {
+          "nome": "PADRAO",
+          "padrao": "Clean Code e princípios SOLID"
+        },
+        {
+          "nome": "CODIGO"
+        }
+      ],
+      "tags": [
+        "código",
+        "refatoração",
+        "boas práticas"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "prog_geracao_funcao",
+      "titulo": "Criar função a partir de especificação",
+      "categoria": "programacao",
+      "subcaso": "Geração de função",
+      "descricao_curta": "Gera uma função/método completo a partir de uma descrição do que ela deve fazer.",
+      "objetivo": "Obter código funcional, testado mentalmente e com tratamento de erros básico.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "GitHub Copilot"
+      ],
+      "template": "Escreva uma função em {LINGUAGEM} chamada {NOME_FUNCAO} que {DESCRICAO_FUNCAO}. Inclua tipagem, tratamento de erros e um exemplo de uso comentado.",
+      "variaveis": [
+        {
+          "nome": "LINGUAGEM",
+          "padrao": "Python"
+        },
+        {
+          "nome": "NOME_FUNCAO"
+        },
+        {
+          "nome": "DESCRICAO_FUNCAO"
+        }
+      ],
+      "tags": [
+        "código",
+        "função",
+        "geração"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "prog_code_review",
+      "titulo": "Revisar Pull Request",
+      "categoria": "programacao",
+      "subcaso": "Code review",
+      "descricao_curta": "Analisa um trecho de código como em um code review, apontando bugs, riscos e sugestões.",
+      "objetivo": "Obter uma revisão estruturada por severidade (crítico/importante/sugestão).",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Faça um code review do código {LINGUAGEM} abaixo como um revisor experiente faria em um Pull Request. Organize os comentários em Crítico, Importante e Sugestão, indicando a linha ou trecho afetado.\n\nContexto da mudança: {CONTEXTO}\n\nCódigo:\n{CODIGO}",
+      "variaveis": [
+        {
+          "nome": "LINGUAGEM",
+          "padrao": "a linguagem detectada no código"
+        },
+        {
+          "nome": "CONTEXTO",
+          "padrao": "não informado"
+        },
+        {
+          "nome": "CODIGO"
+        }
+      ],
+      "tags": [
+        "código",
+        "review",
+        "qualidade"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "prog_debug_erro",
+      "titulo": "Diagnosticar erro/exceção",
+      "categoria": "programacao",
+      "subcaso": "Debug de erro",
+      "descricao_curta": "Ajuda a identificar a causa raiz de um erro a partir da mensagem e do código relacionado.",
+      "objetivo": "Obter diagnóstico da causa raiz e uma correção sugerida.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Analise o erro abaixo ocorrido em um projeto {LINGUAGEM}. Explique a causa raiz mais provável e proponha uma correção com o trecho de código ajustado.\n\nMensagem de erro:\n{MENSAGEM_ERRO}\n\nCódigo relacionado:\n{CODIGO}",
+      "variaveis": [
+        {
+          "nome": "LINGUAGEM",
+          "padrao": "a linguagem detectada"
+        },
+        {
+          "nome": "MENSAGEM_ERRO"
+        },
+        {
+          "nome": "CODIGO"
+        }
+      ],
+      "tags": [
+        "código",
+        "debug",
+        "erro"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "prog_api_rest",
+      "titulo": "Projetar endpoint de API REST",
+      "categoria": "programacao",
+      "subcaso": "Criação de API REST",
+      "descricao_curta": "Gera a definição e implementação de um endpoint REST a partir de uma necessidade de negócio.",
+      "objetivo": "Obter rota, contrato de request/response e implementação básica do endpoint.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "GitHub Copilot"
+      ],
+      "template": "Projete um endpoint REST em {FRAMEWORK} para {FUNCIONALIDADE}. Defina método HTTP, rota, payload de entrada, resposta (com códigos de status) e implemente o handler com validação básica.",
+      "variaveis": [
+        {
+          "nome": "FRAMEWORK",
+          "padrao": "Node.js com Express"
+        },
+        {
+          "nome": "FUNCIONALIDADE"
+        }
+      ],
+      "tags": [
+        "código",
+        "api",
+        "backend"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "video_roteiro_curto",
+      "titulo": "Roteiro para vídeo curto (Reels/Shorts)",
+      "categoria": "video",
+      "subcaso": "Roteiro de vídeo curto",
+      "descricao_curta": "Cria um roteiro de vídeo vertical curto, com gancho, desenvolvimento e call to action.",
+      "objetivo": "Obter um roteiro pronto para gravação em até 60 segundos.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Gemini"
+      ],
+      "template": "Escreva um roteiro de vídeo curto ({DURACAO}) sobre {TEMA} para {PLATAFORMA}, no tom {TOM}. Estruture em Gancho (3s), Desenvolvimento e Call to Action final.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "30 segundos"
+        },
+        {
+          "nome": "TEMA"
+        },
+        {
+          "nome": "PLATAFORMA",
+          "padrao": "Instagram Reels"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "descontraído"
+        }
+      ],
+      "tags": [
+        "vídeo",
+        "roteiro",
+        "reels"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "video_script_tutorial",
+      "titulo": "Script de vídeo tutorial passo a passo",
+      "categoria": "video",
+      "subcaso": "Script de tutorial",
+      "descricao_curta": "Estrutura um roteiro didático de tutorial em etapas numeradas.",
+      "objetivo": "Obter um script claro, dividido em introdução, passos e conclusão.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um script de vídeo tutorial ensinando {ASSUNTO} para {PUBLICO}. Divida em: introdução (o que será aprendido), passos numerados com fala sugerida, e conclusão com resumo e próximo passo.",
+      "variaveis": [
+        {
+          "nome": "ASSUNTO"
+        },
+        {
+          "nome": "PUBLICO",
+          "padrao": "iniciantes"
+        }
+      ],
+      "tags": [
+        "vídeo",
+        "tutorial",
+        "educação"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "video_storyboard",
+      "titulo": "Storyboard descritivo de cena",
+      "categoria": "video",
+      "subcaso": "Storyboard",
+      "descricao_curta": "Descreve cena a cena um storyboard textual para pré-produção de vídeo.",
+      "objetivo": "Obter uma lista de cenas com descrição visual, áudio e duração estimada.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um storyboard textual para um vídeo sobre {TEMA}, com {NUM_CENAS} cenas. Para cada cena, descreva: imagem/enquadramento, áudio/narração e duração estimada.",
+      "variaveis": [
+        {
+          "nome": "TEMA"
+        },
+        {
+          "nome": "NUM_CENAS",
+          "padrao": "6"
+        }
+      ],
+      "tags": [
+        "vídeo",
+        "storyboard",
+        "pré-produção"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "video_sugestao_corte",
+      "titulo": "Sugestão de edição e ritmo de corte",
+      "categoria": "video",
+      "subcaso": "Sugestão de edição/corte",
+      "descricao_curta": "Sugere pontos de corte, transições e ritmo para edição de um vídeo já roteirizado.",
+      "objetivo": "Obter recomendações de edição alinhadas ao objetivo do vídeo.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Com base no roteiro abaixo, sugira pontos de corte, transições e ritmo de edição adequados para {PLATAFORMA}, priorizando retenção de audiência.\n\nRoteiro:\n{ROTEIRO}",
+      "variaveis": [
+        {
+          "nome": "PLATAFORMA",
+          "padrao": "YouTube"
+        },
+        {
+          "nome": "ROTEIRO"
+        }
+      ],
+      "tags": [
+        "vídeo",
+        "edição",
+        "ritmo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "video_institucional",
+      "titulo": "Roteiro de vídeo institucional",
+      "categoria": "video",
+      "subcaso": "Vídeo institucional",
+      "descricao_curta": "Cria um roteiro para vídeo institucional apresentando uma empresa ou produto.",
+      "objetivo": "Obter um roteiro formal que comunique missão, diferenciais e chamada final.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva um roteiro de vídeo institucional ({DURACAO}) para {EMPRESA}, do segmento {SEGMENTO}. Apresente missão/diferenciais e finalize com uma chamada para ação clara.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "90 segundos"
+        },
+        {
+          "nome": "EMPRESA"
+        },
+        {
+          "nome": "SEGMENTO"
+        }
+      ],
+      "tags": [
+        "vídeo",
+        "institucional",
+        "empresa"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "imagem_retrato_realista",
+      "titulo": "Retrato fotográfico realista",
+      "categoria": "imagem",
+      "subcaso": "Retrato realista",
+      "descricao_curta": "Gera um prompt detalhado para retrato humano fotorrealista em geradores de imagem.",
+      "objetivo": "Obter uma imagem de retrato com iluminação e enquadramento profissionais.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "Midjourney",
+        "DALL-E",
+        "Leonardo"
+      ],
+      "template": "Retrato fotorrealista {ESTILO} de {PERSONAGEM}, expressão {EXPRESSAO}, iluminação {LUZ}, fundo {FUNDO}, lente {LENTE}, alta definição de detalhes de pele e olhos.",
+      "variaveis": [
+        {
+          "nome": "ESTILO",
+          "padrao": "fotografia profissional"
+        },
+        {
+          "nome": "PERSONAGEM"
+        },
+        {
+          "nome": "EXPRESSAO",
+          "padrao": "serena"
+        },
+        {
+          "nome": "LUZ",
+          "padrao": "suave de estúdio"
+        },
+        {
+          "nome": "FUNDO",
+          "padrao": "neutro desfocado"
+        },
+        {
+          "nome": "LENTE",
+          "padrao": "85mm f/1.4"
+        }
+      ],
+      "tags": [
+        "imagem",
+        "retrato",
+        "fotorrealista"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "imagem_still_life_produto",
+      "titulo": "Foto de produto still life",
+      "categoria": "imagem",
+      "subcaso": "Still life de produto",
+      "descricao_curta": "Gera um prompt para fotografia de produto em estilo still life comercial.",
+      "objetivo": "Obter uma imagem de produto pronta para uso em e-commerce ou anúncio.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "Midjourney",
+        "DALL-E",
+        "Leonardo"
+      ],
+      "template": "Still life comercial de {PRODUTO}, sobre {SUPERFICIE}, iluminação {LUZ}, composição {COMPOSICAO}, estilo {QUALIDADE}, fundo {FUNDO}.",
+      "variaveis": [
+        {
+          "nome": "PRODUTO"
+        },
+        {
+          "nome": "SUPERFICIE",
+          "padrao": "mármore branco"
+        },
+        {
+          "nome": "LUZ",
+          "padrao": "suave difusa de estúdio"
+        },
+        {
+          "nome": "COMPOSICAO",
+          "padrao": "minimalista centralizada"
+        },
+        {
+          "nome": "QUALIDADE",
+          "padrao": "fotografia publicitária de alta qualidade"
+        },
+        {
+          "nome": "FUNDO",
+          "padrao": "cor sólida neutra"
+        }
+      ],
+      "tags": [
+        "imagem",
+        "produto",
+        "still life"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "imagem_paisagem_cinematografica",
+      "titulo": "Paisagem em estilo cinematográfico",
+      "categoria": "imagem",
+      "subcaso": "Paisagem cinematográfica",
+      "descricao_curta": "Gera um prompt para paisagem com atmosfera e composição cinematográficas.",
+      "objetivo": "Obter uma imagem de paisagem com forte senso de escala e atmosfera.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "Midjourney",
+        "DALL-E",
+        "Leonardo"
+      ],
+      "template": "Paisagem cinematográfica de {LOCAL} durante {MOMENTO_DIA}, atmosfera {ATMOSFERA}, iluminação {LUZ}, composição em plano aberto, estilo {QUALIDADE}.",
+      "variaveis": [
+        {
+          "nome": "LOCAL"
+        },
+        {
+          "nome": "MOMENTO_DIA",
+          "padrao": "pôr do sol"
+        },
+        {
+          "nome": "ATMOSFERA",
+          "padrao": "épica e serena"
+        },
+        {
+          "nome": "LUZ",
+          "padrao": "dourada cinematográfica"
+        },
+        {
+          "nome": "QUALIDADE",
+          "padrao": "render fotorrealista 8k"
+        }
+      ],
+      "tags": [
+        "imagem",
+        "paisagem",
+        "cinematográfico"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "imagem_personagem_3d",
+      "titulo": "Personagem estilizado em 3D",
+      "categoria": "imagem",
+      "subcaso": "Personagem 3D",
+      "descricao_curta": "Gera um prompt para arte conceitual de personagem em estilo 3D estilizado.",
+      "objetivo": "Obter uma imagem de personagem pronta para referência de concept art.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "Midjourney",
+        "Leonardo",
+        "DALL-E"
+      ],
+      "template": "Personagem 3D estilizado, {DESCRICAO_PERSONAGEM}, estilo {ESTILO_ARTE} (ex: Pixar/game render), pose {POSE}, iluminação {LUZ}, fundo {FUNDO}.",
+      "variaveis": [
+        {
+          "nome": "DESCRICAO_PERSONAGEM"
+        },
+        {
+          "nome": "ESTILO_ARTE",
+          "padrao": "render 3D estilo animação"
+        },
+        {
+          "nome": "POSE",
+          "padrao": "dinâmica de corpo inteiro"
+        },
+        {
+          "nome": "LUZ",
+          "padrao": "estúdio com realce de contorno"
+        },
+        {
+          "nome": "FUNDO",
+          "padrao": "estúdio neutro"
+        }
+      ],
+      "tags": [
+        "imagem",
+        "personagem",
+        "3d"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "imagem_foto_esportiva",
+      "titulo": "Foto esportiva de ação",
+      "categoria": "imagem",
+      "subcaso": "Foto esportiva profissional",
+      "descricao_curta": "Gera um prompt para imagem de ação esportiva com iluminação profissional.",
+      "objetivo": "Obter uma imagem dinâmica de um atleta em ação.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "Midjourney",
+        "DALL-E",
+        "Leonardo"
+      ],
+      "template": "Crie uma imagem {ESTILO} de {PERSONAGEM} realizando {ACAO} em {CENARIO}, com iluminação {LUZ}, estilo {QUALIDADE}.",
+      "variaveis": [
+        {
+          "nome": "ESTILO",
+          "padrao": "realista"
+        },
+        {
+          "nome": "PERSONAGEM"
+        },
+        {
+          "nome": "ACAO"
+        },
+        {
+          "nome": "CENARIO",
+          "padrao": "estádio lotado"
+        },
+        {
+          "nome": "LUZ",
+          "padrao": "cinematográfica"
+        },
+        {
+          "nome": "QUALIDADE",
+          "padrao": "fotografia esportiva profissional"
+        }
+      ],
+      "tags": [
+        "imagem",
+        "esporte",
+        "ação"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "design_identidade_visual",
+      "titulo": "Conceito de identidade visual",
+      "categoria": "design",
+      "subcaso": "Identidade visual/logo",
+      "descricao_curta": "Gera diretrizes de conceito para logotipo e identidade visual de uma marca.",
+      "objetivo": "Obter direção criativa (conceito, cores, tipografia) para um designer aplicar.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Midjourney"
+      ],
+      "template": "Crie um conceito de identidade visual para a marca {MARCA}, do segmento {SEGMENTO}, com personalidade {PERSONALIDADE}. Sugira conceito de logotipo, paleta de cores (com códigos hex) e estilo tipográfico.",
+      "variaveis": [
+        {
+          "nome": "MARCA"
+        },
+        {
+          "nome": "SEGMENTO"
+        },
+        {
+          "nome": "PERSONALIDADE",
+          "padrao": "moderna e confiável"
+        }
+      ],
+      "tags": [
+        "design",
+        "logo",
+        "marca"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "design_paleta_cores",
+      "titulo": "Paleta de cores para projeto",
+      "categoria": "design",
+      "subcaso": "Paleta de cores",
+      "descricao_curta": "Sugere uma paleta de cores harmônica com códigos hexadecimais e uso recomendado.",
+      "objetivo": "Obter uma paleta pronta para aplicar em UI, marca ou material gráfico.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Sugira uma paleta de {NUM_CORES} cores para {PROJETO}, transmitindo a sensação de {SENSACAO}. Inclua código hex e função de cada cor (primária, secundária, destaque, neutra).",
+      "variaveis": [
+        {
+          "nome": "NUM_CORES",
+          "padrao": "5"
+        },
+        {
+          "nome": "PROJETO"
+        },
+        {
+          "nome": "SENSACAO",
+          "padrao": "confiança e modernidade"
+        }
+      ],
+      "tags": [
+        "design",
+        "cores",
+        "paleta"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "design_ui_app",
+      "titulo": "Tela de interface de app",
+      "categoria": "design",
+      "subcaso": "UI de app",
+      "descricao_curta": "Gera um prompt/descrição para uma tela de interface de aplicativo.",
+      "objetivo": "Obter a estrutura de layout e elementos visuais de uma tela.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Midjourney"
+      ],
+      "template": "Descreva o layout de uma tela de {TELA} para um app de {SEGMENTO}, estilo visual {ESTILO}. Liste os elementos de UI necessários, hierarquia visual e sugestão de paleta.",
+      "variaveis": [
+        {
+          "nome": "TELA"
+        },
+        {
+          "nome": "SEGMENTO"
+        },
+        {
+          "nome": "ESTILO",
+          "padrao": "minimalista e moderno"
+        }
+      ],
+      "tags": [
+        "design",
+        "ui",
+        "app"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "design_cartao_visita",
+      "titulo": "Conceito de cartão de visita",
+      "categoria": "design",
+      "subcaso": "Cartão de visita",
+      "descricao_curta": "Gera um conceito de layout e conteúdo para cartão de visita.",
+      "objetivo": "Obter direção de design e textos para um cartão de visita.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um conceito de cartão de visita para {NOME}, cargo {CARGO}, empresa {EMPRESA}. Sugira estilo visual, elementos gráficos e a disposição das informações (frente e verso).",
+      "variaveis": [
+        {
+          "nome": "NOME"
+        },
+        {
+          "nome": "CARGO"
+        },
+        {
+          "nome": "EMPRESA"
+        }
+      ],
+      "tags": [
+        "design",
+        "cartão de visita",
+        "impresso"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "design_banner_promocional",
+      "titulo": "Banner promocional de campanha",
+      "categoria": "design",
+      "subcaso": "Banner promocional",
+      "descricao_curta": "Gera o conceito visual e textual de um banner promocional.",
+      "objetivo": "Obter direção de design e copy para um banner de campanha.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Midjourney"
+      ],
+      "template": "Crie o conceito de um banner promocional para {CAMPANHA}, destacando {OFERTA}, no formato {FORMATO}. Sugira composição visual, cores e o texto principal (headline + CTA).",
+      "variaveis": [
+        {
+          "nome": "CAMPANHA"
+        },
+        {
+          "nome": "OFERTA"
+        },
+        {
+          "nome": "FORMATO",
+          "padrao": "1080x1080px para redes sociais"
+        }
+      ],
+      "tags": [
+        "design",
+        "banner",
+        "campanha"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "escrita_artigo_blog",
+      "titulo": "Artigo de blog otimizado",
+      "categoria": "escrita",
+      "subcaso": "Artigo de blog",
+      "descricao_curta": "Gera um artigo de blog estruturado com introdução, desenvolvimento e conclusão.",
+      "objetivo": "Obter um artigo pronto para publicação, no tom e tamanho definidos.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Gemini"
+      ],
+      "template": "Escreva um artigo de blog sobre {TEMA} para {PUBLICO}, com aproximadamente {TAMANHO} palavras, tom {TOM}. Estruture com título, introdução, subtítulos e conclusão com chamada para ação.",
+      "variaveis": [
+        {
+          "nome": "TEMA"
+        },
+        {
+          "nome": "PUBLICO",
+          "padrao": "leitores iniciantes no assunto"
+        },
+        {
+          "nome": "TAMANHO",
+          "padrao": "800"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "informativo e acessível"
+        }
+      ],
+      "tags": [
+        "escrita",
+        "blog",
+        "conteúdo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "escrita_capitulo_ebook",
+      "titulo": "Capítulo de e-book/livro",
+      "categoria": "escrita",
+      "subcaso": "Capítulo de e-book",
+      "descricao_curta": "Gera um capítulo estruturado de e-book a partir de um tema e objetivo.",
+      "objetivo": "Obter um capítulo completo e coeso pronto para revisão.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva o capítulo \"{TITULO_CAPITULO}\" de um e-book sobre {TEMA_GERAL}, voltado para {PUBLICO}. O capítulo deve cobrir: {PONTOS_PRINCIPAIS}. Tom {TOM}.",
+      "variaveis": [
+        {
+          "nome": "TITULO_CAPITULO"
+        },
+        {
+          "nome": "TEMA_GERAL"
+        },
+        {
+          "nome": "PUBLICO"
+        },
+        {
+          "nome": "PONTOS_PRINCIPAIS"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "didático e envolvente"
+        }
+      ],
+      "tags": [
+        "escrita",
+        "ebook",
+        "livro"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "escrita_conto_criativo",
+      "titulo": "Conto curto criativo",
+      "categoria": "escrita",
+      "subcaso": "Redação criativa/conto",
+      "descricao_curta": "Gera um conto curto de ficção a partir de premissa, gênero e tom.",
+      "objetivo": "Obter uma narrativa curta e coesa com início, meio e fim.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva um conto curto de gênero {GENERO}, com a premissa: {PREMISSA}. Tom {TOM}, protagonista {PROTAGONISTA}, com aproximadamente {TAMANHO} palavras.",
+      "variaveis": [
+        {
+          "nome": "GENERO",
+          "padrao": "ficção contemporânea"
+        },
+        {
+          "nome": "PREMISSA"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "envolvente"
+        },
+        {
+          "nome": "PROTAGONISTA"
+        },
+        {
+          "nome": "TAMANHO",
+          "padrao": "500"
+        }
+      ],
+      "tags": [
+        "escrita",
+        "conto",
+        "criativo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "escrita_copywriting_vendas",
+      "titulo": "Texto de vendas persuasivo",
+      "categoria": "escrita",
+      "subcaso": "Copywriting de vendas",
+      "descricao_curta": "Gera um texto de vendas persuasivo (copy) para uma página ou anúncio.",
+      "objetivo": "Obter um copy estruturado com gancho, benefícios e chamada para ação.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva um copy de vendas para {PRODUTO}, destacando o benefício principal: {BENEFICIO_PRINCIPAL}. Público: {PUBLICO}. Estruture com gancho, dores, solução, prova social e CTA.",
+      "variaveis": [
+        {
+          "nome": "PRODUTO"
+        },
+        {
+          "nome": "BENEFICIO_PRINCIPAL"
+        },
+        {
+          "nome": "PUBLICO"
+        }
+      ],
+      "tags": [
+        "escrita",
+        "copywriting",
+        "vendas"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "escrita_revisao_texto",
+      "titulo": "Revisão gramatical e de estilo",
+      "categoria": "escrita",
+      "subcaso": "Revisão de texto",
+      "descricao_curta": "Revisa um texto quanto à gramática, clareza e estilo, mantendo a voz original.",
+      "objetivo": "Obter uma versão revisada do texto com lista de mudanças relevantes.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Revise o texto abaixo quanto à gramática, clareza e estilo, mantendo o tom {TOM} e o sentido original. Devolva o texto revisado e uma lista breve das principais mudanças.\n\nTexto:\n{TEXTO}",
+      "variaveis": [
+        {
+          "nome": "TOM",
+          "padrao": "o mesmo do texto original"
+        },
+        {
+          "nome": "TEXTO"
+        }
+      ],
+      "tags": [
+        "escrita",
+        "revisão",
+        "gramática"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "estudos_resumo_conteudo",
+      "titulo": "Resumo de material de estudo",
+      "categoria": "estudos",
+      "subcaso": "Resumo de conteúdo",
+      "descricao_curta": "Resume um conteúdo extenso em pontos-chave organizados para estudo.",
+      "objetivo": "Obter um resumo claro e organizado por tópicos.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Gemini"
+      ],
+      "template": "Resuma o conteúdo abaixo sobre {ASSUNTO} em tópicos organizados por importância, adequado para revisão antes de {FINALIDADE}.\n\nConteúdo:\n{CONTEUDO}",
+      "variaveis": [
+        {
+          "nome": "ASSUNTO"
+        },
+        {
+          "nome": "FINALIDADE",
+          "padrao": "uma prova"
+        },
+        {
+          "nome": "CONTEUDO"
+        }
+      ],
+      "tags": [
+        "estudos",
+        "resumo",
+        "revisão"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "estudos_plano_estudos",
+      "titulo": "Plano de estudos personalizado",
+      "categoria": "estudos",
+      "subcaso": "Plano de estudos",
+      "descricao_curta": "Gera um cronograma de estudos distribuído por período e nível de dificuldade.",
+      "objetivo": "Obter um plano de estudos semanal com metas claras.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um plano de estudos de {DURACAO} para {OBJETIVO}, partindo do nível {NIVEL_ATUAL}, com {HORAS_POR_SEMANA} horas semanais disponíveis. Organize por semana com temas e metas.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "4 semanas"
+        },
+        {
+          "nome": "OBJETIVO"
+        },
+        {
+          "nome": "NIVEL_ATUAL",
+          "padrao": "iniciante"
+        },
+        {
+          "nome": "HORAS_POR_SEMANA",
+          "padrao": "5"
+        }
+      ],
+      "tags": [
+        "estudos",
+        "plano",
+        "cronograma"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "estudos_explicacao_conceito",
+      "titulo": "Explicar conceito de forma simples",
+      "categoria": "estudos",
+      "subcaso": "Explicação de conceito",
+      "descricao_curta": "Explica um conceito complexo de forma simples, com analogias e exemplos.",
+      "objetivo": "Obter uma explicação didática adaptada ao nível do aluno.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Gemini"
+      ],
+      "template": "Explique o conceito de {CONCEITO} de forma simples para {PUBLICO}, usando uma analogia do dia a dia e um exemplo prático.",
+      "variaveis": [
+        {
+          "nome": "CONCEITO"
+        },
+        {
+          "nome": "PUBLICO",
+          "padrao": "um estudante iniciante"
+        }
+      ],
+      "tags": [
+        "estudos",
+        "explicação",
+        "didático"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "estudos_questoes_prova",
+      "titulo": "Gerar questões de estudo",
+      "categoria": "estudos",
+      "subcaso": "Questões de prova",
+      "descricao_curta": "Gera questões de múltipla escolha ou dissertativas sobre um tema, com gabarito.",
+      "objetivo": "Obter um conjunto de questões para praticar antes de uma avaliação.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie {NUM_QUESTOES} questões de {TIPO} sobre {ASSUNTO}, nível {NIVEL}, com gabarito comentado ao final.",
+      "variaveis": [
+        {
+          "nome": "NUM_QUESTOES",
+          "padrao": "5"
+        },
+        {
+          "nome": "TIPO",
+          "padrao": "múltipla escolha"
+        },
+        {
+          "nome": "ASSUNTO"
+        },
+        {
+          "nome": "NIVEL",
+          "padrao": "intermediário"
+        }
+      ],
+      "tags": [
+        "estudos",
+        "questões",
+        "avaliação"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "estudos_mapa_mental",
+      "titulo": "Estrutura de mapa mental",
+      "categoria": "estudos",
+      "subcaso": "Mapa mental",
+      "descricao_curta": "Gera a estrutura textual (hierárquica) de um mapa mental sobre um tema.",
+      "objetivo": "Obter uma estrutura de tópicos e subtópicos pronta para desenhar um mapa mental.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie a estrutura de um mapa mental sobre {TEMA}, com o tema central e ramificações em tópicos e subtópicos, no formato de lista hierárquica.",
+      "variaveis": [
+        {
+          "nome": "TEMA"
+        }
+      ],
+      "tags": [
+        "estudos",
+        "mapa mental",
+        "organização"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "marketing_plano_campanha",
+      "titulo": "Plano de campanha de marketing",
+      "categoria": "marketing",
+      "subcaso": "Plano de campanha",
+      "descricao_curta": "Gera um plano estruturado de campanha de marketing com objetivos e canais.",
+      "objetivo": "Obter um plano de campanha pronto para apresentar ou executar.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um plano de campanha de marketing para {PRODUTO_OU_SERVICO}, com objetivo de {OBJETIVO}, público {PUBLICO} e orçamento {ORCAMENTO}. Inclua canais recomendados, mensagem principal e KPIs.",
+      "variaveis": [
+        {
+          "nome": "PRODUTO_OU_SERVICO"
+        },
+        {
+          "nome": "OBJETIVO",
+          "padrao": "gerar leads"
+        },
+        {
+          "nome": "PUBLICO"
+        },
+        {
+          "nome": "ORCAMENTO",
+          "padrao": "não informado"
+        }
+      ],
+      "tags": [
+        "marketing",
+        "campanha",
+        "plano"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "marketing_anuncio_pago",
+      "titulo": "Texto de anúncio pago (ads)",
+      "categoria": "marketing",
+      "subcaso": "Anúncio pago",
+      "descricao_curta": "Gera variações de texto para anúncio pago em redes sociais ou busca.",
+      "objetivo": "Obter títulos e textos de anúncio prontos para teste A/B.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie 3 variações de anúncio para {PLATAFORMA} promovendo {PRODUTO_OU_SERVICO}, destacando {DIFERENCIAL}. Cada variação com título curto, texto principal e CTA.",
+      "variaveis": [
+        {
+          "nome": "PLATAFORMA",
+          "padrao": "Meta Ads"
+        },
+        {
+          "nome": "PRODUTO_OU_SERVICO"
+        },
+        {
+          "nome": "DIFERENCIAL"
+        }
+      ],
+      "tags": [
+        "marketing",
+        "anúncio",
+        "ads"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "marketing_email_marketing",
+      "titulo": "E-mail de campanha de marketing",
+      "categoria": "marketing",
+      "subcaso": "E-mail marketing",
+      "descricao_curta": "Gera um e-mail de marketing completo com assunto e corpo.",
+      "objetivo": "Obter um e-mail pronto para envio a uma lista de contatos.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva um e-mail marketing sobre {ASSUNTO_CAMPANHA} para {SEGMENTO_LISTA}, com o objetivo de {OBJETIVO}. Inclua linha de assunto, corpo do e-mail e CTA.",
+      "variaveis": [
+        {
+          "nome": "ASSUNTO_CAMPANHA"
+        },
+        {
+          "nome": "SEGMENTO_LISTA",
+          "padrao": "toda a base de clientes"
+        },
+        {
+          "nome": "OBJETIVO",
+          "padrao": "gerar cliques"
+        }
+      ],
+      "tags": [
+        "marketing",
+        "e-mail",
+        "campanha"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "marketing_analise_concorrencia",
+      "titulo": "Análise comparativa de concorrentes",
+      "categoria": "marketing",
+      "subcaso": "Análise de concorrência",
+      "descricao_curta": "Gera uma análise estruturada comparando a marca com concorrentes diretos.",
+      "objetivo": "Obter pontos fortes, fracos e oportunidades em relação à concorrência.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Analise a concorrência de {MARCA} no segmento {SEGMENTO}, considerando os concorrentes {CONCORRENTES}. Estruture em pontos fortes, pontos fracos, oportunidades e recomendações.",
+      "variaveis": [
+        {
+          "nome": "MARCA"
+        },
+        {
+          "nome": "SEGMENTO"
+        },
+        {
+          "nome": "CONCORRENTES"
+        }
+      ],
+      "tags": [
+        "marketing",
+        "concorrência",
+        "análise"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "marketing_calendario_editorial",
+      "titulo": "Calendário editorial de conteúdo",
+      "categoria": "marketing",
+      "subcaso": "Calendário editorial",
+      "descricao_curta": "Gera um calendário editorial com temas e formatos distribuídos ao longo do período.",
+      "objetivo": "Obter um calendário de conteúdo pronto para planejamento mensal.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um calendário editorial de {DURACAO} para {MARCA}, com {FREQUENCIA} publicações por semana, focado em {OBJETIVO}. Liste data sugerida, tema e formato de cada conteúdo.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "1 mês"
+        },
+        {
+          "nome": "MARCA"
+        },
+        {
+          "nome": "FREQUENCIA",
+          "padrao": "3"
+        },
+        {
+          "nome": "OBJETIVO",
+          "padrao": "engajamento"
+        }
+      ],
+      "tags": [
+        "marketing",
+        "calendário",
+        "conteúdo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "redes_legenda_post",
+      "titulo": "Legenda para post de rede social",
+      "categoria": "redes_sociais",
+      "subcaso": "Legenda de post",
+      "descricao_curta": "Gera uma legenda envolvente para um post de rede social.",
+      "objetivo": "Obter uma legenda pronta com hashtags relevantes.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva uma legenda para um post no {PLATAFORMA} sobre {TEMA}, tom {TOM}, terminando com uma pergunta para gerar engajamento. Inclua até 5 hashtags relevantes.",
+      "variaveis": [
+        {
+          "nome": "PLATAFORMA",
+          "padrao": "Instagram"
+        },
+        {
+          "nome": "TEMA"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "descontraído"
+        }
+      ],
+      "tags": [
+        "redes sociais",
+        "legenda",
+        "post"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "redes_roteiro_reels",
+      "titulo": "Roteiro para Reels/TikTok",
+      "categoria": "redes_sociais",
+      "subcaso": "Roteiro de reels",
+      "descricao_curta": "Gera um roteiro curto e dinâmico para vídeo de Reels ou TikTok.",
+      "objetivo": "Obter um roteiro com gancho forte nos primeiros segundos.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um roteiro de Reels/TikTok ({DURACAO}) sobre {TEMA}, com gancho nos primeiros 3 segundos, tom {TOM} e CTA final.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "15 segundos"
+        },
+        {
+          "nome": "TEMA"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "energético"
+        }
+      ],
+      "tags": [
+        "redes sociais",
+        "reels",
+        "roteiro"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "redes_bio_perfil",
+      "titulo": "Bio de perfil profissional",
+      "categoria": "redes_sociais",
+      "subcaso": "Bio de perfil",
+      "descricao_curta": "Gera uma bio curta e otimizada para perfil de rede social.",
+      "objetivo": "Obter uma bio concisa que comunique proposta de valor.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva uma bio para o perfil de {NOME_OU_MARCA} no {PLATAFORMA}, destacando {PROPOSTA_VALOR}, dentro do limite de caracteres da plataforma.",
+      "variaveis": [
+        {
+          "nome": "NOME_OU_MARCA"
+        },
+        {
+          "nome": "PLATAFORMA",
+          "padrao": "Instagram"
+        },
+        {
+          "nome": "PROPOSTA_VALOR"
+        }
+      ],
+      "tags": [
+        "redes sociais",
+        "bio",
+        "perfil"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "redes_plano_semanal",
+      "titulo": "Plano semanal de posts",
+      "categoria": "redes_sociais",
+      "subcaso": "Plano de conteúdo semanal",
+      "descricao_curta": "Gera uma sugestão de posts distribuídos ao longo da semana.",
+      "objetivo": "Obter um plano semanal com tema e formato por dia.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um plano de conteúdo semanal para {MARCA} no {PLATAFORMA}, com foco em {OBJETIVO}. Para cada dia útil, sugira tema e formato (foto, carrossel, vídeo, etc).",
+      "variaveis": [
+        {
+          "nome": "MARCA"
+        },
+        {
+          "nome": "PLATAFORMA",
+          "padrao": "Instagram"
+        },
+        {
+          "nome": "OBJETIVO",
+          "padrao": "engajamento"
+        }
+      ],
+      "tags": [
+        "redes sociais",
+        "planejamento",
+        "conteúdo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "redes_resposta_comentarios",
+      "titulo": "Modelo de resposta a comentários",
+      "categoria": "redes_sociais",
+      "subcaso": "Resposta a comentários",
+      "descricao_curta": "Gera respostas adequadas a comentários de seguidores, incluindo críticas.",
+      "objetivo": "Obter respostas no tom da marca para diferentes tipos de comentário.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva uma resposta para o comentário abaixo recebido no {PLATAFORMA} da marca {MARCA}, mantendo tom {TOM} e resolvendo a questão do cliente quando aplicável.\n\nComentário: {COMENTARIO}",
+      "variaveis": [
+        {
+          "nome": "PLATAFORMA",
+          "padrao": "Instagram"
+        },
+        {
+          "nome": "MARCA"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "cordial e profissional"
+        },
+        {
+          "nome": "COMENTARIO"
+        }
+      ],
+      "tags": [
+        "redes sociais",
+        "atendimento",
+        "comentários"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "negocios_plano_negocios",
+      "titulo": "Resumo de plano de negócios",
+      "categoria": "negocios",
+      "subcaso": "Plano de negócios",
+      "descricao_curta": "Gera a estrutura de um plano de negócios enxuto (lean canvas simplificado).",
+      "objetivo": "Obter uma visão estruturada do modelo de negócio.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um resumo de plano de negócios para {NEGOCIO}, no segmento {SEGMENTO}. Cubra: proposta de valor, público-alvo, modelo de receita, canais e principais custos.",
+      "variaveis": [
+        {
+          "nome": "NEGOCIO"
+        },
+        {
+          "nome": "SEGMENTO"
+        }
+      ],
+      "tags": [
+        "negócios",
+        "plano",
+        "modelo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "negocios_pitch_investidores",
+      "titulo": "Roteiro de pitch para investidores",
+      "categoria": "negocios",
+      "subcaso": "Pitch de investidores",
+      "descricao_curta": "Gera um roteiro de pitch curto para apresentação a investidores.",
+      "objetivo": "Obter um roteiro estruturado de pitch de poucos minutos.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um roteiro de pitch de {DURACAO} para investidores sobre {NEGOCIO}, destacando problema, solução, mercado, modelo de receita e diferencial competitivo.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "3 minutos"
+        },
+        {
+          "nome": "NEGOCIO"
+        }
+      ],
+      "tags": [
+        "negócios",
+        "pitch",
+        "investidores"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "negocios_analise_swot",
+      "titulo": "Análise SWOT de negócio",
+      "categoria": "negocios",
+      "subcaso": "Análise SWOT",
+      "descricao_curta": "Gera uma análise SWOT (forças, fraquezas, oportunidades, ameaças).",
+      "objetivo": "Obter uma matriz SWOT estruturada para apoiar decisão estratégica.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Faça uma análise SWOT para {NEGOCIO}, considerando o contexto: {CONTEXTO}. Organize em Forças, Fraquezas, Oportunidades e Ameaças, com 3 a 5 pontos em cada.",
+      "variaveis": [
+        {
+          "nome": "NEGOCIO"
+        },
+        {
+          "nome": "CONTEXTO"
+        }
+      ],
+      "tags": [
+        "negócios",
+        "swot",
+        "estratégia"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "negocios_proposta_comercial",
+      "titulo": "Proposta comercial para cliente",
+      "categoria": "negocios",
+      "subcaso": "Proposta comercial",
+      "descricao_curta": "Gera uma proposta comercial formal para envio a um cliente.",
+      "objetivo": "Obter um documento de proposta pronto para personalização final.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva uma proposta comercial para {CLIENTE}, oferecendo {SERVICO_OU_PRODUTO}, com valor de {VALOR} e prazo de {PRAZO}. Inclua escopo, benefícios e condições.",
+      "variaveis": [
+        {
+          "nome": "CLIENTE"
+        },
+        {
+          "nome": "SERVICO_OU_PRODUTO"
+        },
+        {
+          "nome": "VALOR"
+        },
+        {
+          "nome": "PRAZO"
+        }
+      ],
+      "tags": [
+        "negócios",
+        "proposta",
+        "comercial"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "negocios_relatorio_executivo",
+      "titulo": "Relatório executivo resumido",
+      "categoria": "negocios",
+      "subcaso": "Relatório executivo",
+      "descricao_curta": "Gera um relatório executivo curto (resumo para tomada de decisão).",
+      "objetivo": "Obter um relatório objetivo com principais achados e recomendações.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva um relatório executivo resumido sobre {ASSUNTO}, com base nos dados: {DADOS}. Estruture em: contexto, principais achados e recomendações.",
+      "variaveis": [
+        {
+          "nome": "ASSUNTO"
+        },
+        {
+          "nome": "DADOS"
+        }
+      ],
+      "tags": [
+        "negócios",
+        "relatório",
+        "executivo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "doc_contrato_simples",
+      "titulo": "Modelo de contrato simples",
+      "categoria": "documentos",
+      "subcaso": "Contrato simples",
+      "descricao_curta": "Gera a estrutura de um contrato simples entre duas partes.",
+      "objetivo": "Obter uma minuta básica de contrato para revisão jurídica posterior.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie a estrutura de um contrato simples de {TIPO_CONTRATO} entre {PARTE_1} e {PARTE_2}, cobrindo objeto, prazo, valor e condições de rescisão. Este é um modelo inicial e não substitui revisão jurídica.",
+      "variaveis": [
+        {
+          "nome": "TIPO_CONTRATO",
+          "padrao": "prestação de serviços"
+        },
+        {
+          "nome": "PARTE_1"
+        },
+        {
+          "nome": "PARTE_2"
+        }
+      ],
+      "tags": [
+        "documentos",
+        "contrato",
+        "modelo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "doc_curriculo",
+      "titulo": "Currículo profissional",
+      "categoria": "documentos",
+      "subcaso": "Currículo",
+      "descricao_curta": "Gera um currículo estruturado a partir das experiências informadas.",
+      "objetivo": "Obter um currículo organizado e objetivo para candidaturas.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um currículo profissional para {NOME}, buscando a vaga de {CARGO_DESEJADO}. Experiências: {EXPERIENCIAS}. Formação: {FORMACAO}. Estruture em resumo, experiências, formação e competências.",
+      "variaveis": [
+        {
+          "nome": "NOME"
+        },
+        {
+          "nome": "CARGO_DESEJADO"
+        },
+        {
+          "nome": "EXPERIENCIAS"
+        },
+        {
+          "nome": "FORMACAO"
+        }
+      ],
+      "tags": [
+        "documentos",
+        "currículo",
+        "carreira"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "doc_carta_apresentacao",
+      "titulo": "Carta de apresentação para vaga",
+      "categoria": "documentos",
+      "subcaso": "Carta de apresentação",
+      "descricao_curta": "Gera uma carta de apresentação personalizada para uma candidatura.",
+      "objetivo": "Obter uma carta objetiva conectando o perfil à vaga desejada.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva uma carta de apresentação para {NOME} candidato(a) à vaga de {CARGO} na empresa {EMPRESA}, destacando {PONTO_FORTE_PRINCIPAL}.",
+      "variaveis": [
+        {
+          "nome": "NOME"
+        },
+        {
+          "nome": "CARGO"
+        },
+        {
+          "nome": "EMPRESA"
+        },
+        {
+          "nome": "PONTO_FORTE_PRINCIPAL"
+        }
+      ],
+      "tags": [
+        "documentos",
+        "carta",
+        "carreira"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "doc_ata_reuniao",
+      "titulo": "Ata de reunião estruturada",
+      "categoria": "documentos",
+      "subcaso": "Ata de reunião",
+      "descricao_curta": "Organiza anotações de reunião em uma ata formal com decisões e próximos passos.",
+      "objetivo": "Obter uma ata clara pronta para compartilhar com os participantes.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Organize as anotações abaixo da reunião sobre {ASSUNTO} (data: {DATA}) em uma ata formal, com pauta, decisões tomadas e próximos passos com responsáveis.\n\nAnotações:\n{ANOTACOES}",
+      "variaveis": [
+        {
+          "nome": "ASSUNTO"
+        },
+        {
+          "nome": "DATA",
+          "padrao": "não informada"
+        },
+        {
+          "nome": "ANOTACOES"
+        }
+      ],
+      "tags": [
+        "documentos",
+        "ata",
+        "reunião"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "doc_procedimento_padrao",
+      "titulo": "POP (procedimento operacional padrão)",
+      "categoria": "documentos",
+      "subcaso": "Procedimento operacional padrão",
+      "descricao_curta": "Gera um documento de procedimento operacional padrão (POP) passo a passo.",
+      "objetivo": "Obter um POP claro para padronizar um processo interno.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um Procedimento Operacional Padrão (POP) para o processo de {PROCESSO}, executado por {RESPONSAVEL}. Estruture em objetivo, materiais/ferramentas necessários e passos numerados.",
+      "variaveis": [
+        {
+          "nome": "PROCESSO"
+        },
+        {
+          "nome": "RESPONSAVEL",
+          "padrao": "a equipe responsável"
+        }
+      ],
+      "tags": [
+        "documentos",
+        "pop",
+        "processo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "traducao_tecnica",
+      "titulo": "Tradução de texto técnico",
+      "categoria": "traducao",
+      "subcaso": "Tradução técnica",
+      "descricao_curta": "Traduz um texto técnico preservando terminologia e precisão.",
+      "objetivo": "Obter uma tradução precisa mantendo termos técnicos corretos.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "Gemini"
+      ],
+      "template": "Traduza o texto técnico abaixo de {IDIOMA_ORIGEM} para {IDIOMA_DESTINO}, preservando a terminologia da área de {AREA} e mantendo a formatação original.\n\nTexto:\n{TEXTO}",
+      "variaveis": [
+        {
+          "nome": "IDIOMA_ORIGEM",
+          "padrao": "inglês"
+        },
+        {
+          "nome": "IDIOMA_DESTINO",
+          "padrao": "português"
+        },
+        {
+          "nome": "AREA",
+          "padrao": "tecnologia"
+        },
+        {
+          "nome": "TEXTO"
+        }
+      ],
+      "tags": [
+        "tradução",
+        "técnica",
+        "terminologia"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "traducao_literaria",
+      "titulo": "Tradução literária preservando estilo",
+      "categoria": "traducao",
+      "subcaso": "Tradução literária/criativa",
+      "descricao_curta": "Traduz um texto criativo/literário preservando tom, ritmo e estilo do autor.",
+      "objetivo": "Obter uma tradução que preserve a intenção artística do texto original.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Traduza o texto literário abaixo de {IDIOMA_ORIGEM} para {IDIOMA_DESTINO}, preservando ao máximo o tom, o ritmo e as escolhas estilísticas do autor, sem tradução literal quando prejudicar o efeito.\n\nTexto:\n{TEXTO}",
+      "variaveis": [
+        {
+          "nome": "IDIOMA_ORIGEM"
+        },
+        {
+          "nome": "IDIOMA_DESTINO",
+          "padrao": "português"
+        },
+        {
+          "nome": "TEXTO"
+        }
+      ],
+      "tags": [
+        "tradução",
+        "literária",
+        "estilo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "traducao_localizacao_app",
+      "titulo": "Localização de textos de interface",
+      "categoria": "traducao",
+      "subcaso": "Localização de app",
+      "descricao_curta": "Traduz e adapta textos curtos de interface de app/site para outro idioma e cultura.",
+      "objetivo": "Obter strings localizadas prontas para uso na interface.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Localize as strings de interface abaixo de {IDIOMA_ORIGEM} para {IDIOMA_DESTINO}, adaptando expressões culturais quando necessário e mantendo o limite de caracteres quando indicado.\n\nStrings:\n{STRINGS}",
+      "variaveis": [
+        {
+          "nome": "IDIOMA_ORIGEM",
+          "padrao": "inglês"
+        },
+        {
+          "nome": "IDIOMA_DESTINO",
+          "padrao": "português do Brasil"
+        },
+        {
+          "nome": "STRINGS"
+        }
+      ],
+      "tags": [
+        "tradução",
+        "localização",
+        "app"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "traducao_legendas",
+      "titulo": "Tradução de legendas de vídeo",
+      "categoria": "traducao",
+      "subcaso": "Legendas",
+      "descricao_curta": "Traduz legendas de vídeo mantendo sincronismo aproximado e naturalidade da fala.",
+      "objetivo": "Obter legendas traduzidas naturais, respeitando limite de linha.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Traduza as legendas abaixo de {IDIOMA_ORIGEM} para {IDIOMA_DESTINO}, mantendo cada linha com no máximo {LIMITE_CARACTERES} caracteres e preservando os tempos originais.\n\nLegendas:\n{LEGENDAS}",
+      "variaveis": [
+        {
+          "nome": "IDIOMA_ORIGEM",
+          "padrao": "inglês"
+        },
+        {
+          "nome": "IDIOMA_DESTINO",
+          "padrao": "português"
+        },
+        {
+          "nome": "LIMITE_CARACTERES",
+          "padrao": "42"
+        },
+        {
+          "nome": "LEGENDAS"
+        }
+      ],
+      "tags": [
+        "tradução",
+        "legendas",
+        "vídeo"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "traducao_email_formal",
+      "titulo": "Tradução de e-mail comercial",
+      "categoria": "traducao",
+      "subcaso": "Tradução de e-mail formal",
+      "descricao_curta": "Traduz um e-mail formal/comercial mantendo o registro adequado.",
+      "objetivo": "Obter um e-mail traduzido pronto para envio.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Traduza o e-mail comercial abaixo de {IDIOMA_ORIGEM} para {IDIOMA_DESTINO}, mantendo tom formal e adequado ao contexto de negócios.\n\nE-mail:\n{EMAIL}",
+      "variaveis": [
+        {
+          "nome": "IDIOMA_ORIGEM",
+          "padrao": "português"
+        },
+        {
+          "nome": "IDIOMA_DESTINO",
+          "padrao": "inglês"
+        },
+        {
+          "nome": "EMAIL"
+        }
+      ],
+      "tags": [
+        "tradução",
+        "e-mail",
+        "formal"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "voz_roteiro_locucao",
+      "titulo": "Roteiro de locução comercial",
+      "categoria": "voz",
+      "subcaso": "Roteiro para locução",
+      "descricao_curta": "Gera um roteiro para locução de áudio comercial ou institucional.",
+      "objetivo": "Obter um texto pronto para narração, com marcação de pausas.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva um roteiro de locução de {DURACAO} para {FINALIDADE}, tom {TOM}, indicando pausas com (...) onde apropriado.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "30 segundos"
+        },
+        {
+          "nome": "FINALIDADE"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "confiante e caloroso"
+        }
+      ],
+      "tags": [
+        "voz",
+        "locução",
+        "áudio"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "voz_script_podcast",
+      "titulo": "Roteiro de episódio de podcast",
+      "categoria": "voz",
+      "subcaso": "Script de podcast",
+      "descricao_curta": "Gera a estrutura de um episódio de podcast com blocos de conteúdo.",
+      "objetivo": "Obter um roteiro de episódio pronto para gravação.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie o roteiro de um episódio de podcast sobre {TEMA}, com {NUM_APRESENTADORES} apresentador(es), duração aproximada de {DURACAO}. Estruture em abertura, blocos de conteúdo e encerramento.",
+      "variaveis": [
+        {
+          "nome": "TEMA"
+        },
+        {
+          "nome": "NUM_APRESENTADORES",
+          "padrao": "1"
+        },
+        {
+          "nome": "DURACAO",
+          "padrao": "20 minutos"
+        }
+      ],
+      "tags": [
+        "voz",
+        "podcast",
+        "roteiro"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "voz_narracao_audiobook",
+      "titulo": "Trecho adaptado para narração de audiobook",
+      "categoria": "voz",
+      "subcaso": "Narração de audiobook",
+      "descricao_curta": "Adapta um texto para leitura em voz alta, com marcações de ritmo e ênfase.",
+      "objetivo": "Obter um texto adaptado para narração fluida em áudio.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Adapte o texto abaixo para narração em audiobook, ajustando frases longas para leitura em voz alta e indicando ênfases importantes.\n\nTexto:\n{TEXTO}",
+      "variaveis": [
+        {
+          "nome": "TEXTO"
+        }
+      ],
+      "tags": [
+        "voz",
+        "audiobook",
+        "narração"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "voz_script_ivr",
+      "titulo": "Roteiro de atendimento eletrônico (URA/IVR)",
+      "categoria": "voz",
+      "subcaso": "Script de IVR",
+      "descricao_curta": "Gera o texto de um menu de atendimento eletrônico (URA/IVR).",
+      "objetivo": "Obter as mensagens de um menu de atendimento pronto para gravação.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie o roteiro de um menu de atendimento eletrônico (URA) para {EMPRESA}, com as opções: {OPCOES}. Inclua saudação inicial, opções numeradas e mensagem de encerramento.",
+      "variaveis": [
+        {
+          "nome": "EMPRESA"
+        },
+        {
+          "nome": "OPCOES"
+        }
+      ],
+      "tags": [
+        "voz",
+        "ura",
+        "atendimento"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "voz_propaganda",
+      "titulo": "Roteiro de locução publicitária",
+      "categoria": "voz",
+      "subcaso": "Voz para propaganda",
+      "descricao_curta": "Gera um roteiro curto e persuasivo para locução de propaganda.",
+      "objetivo": "Obter um texto de locução publicitária pronto para gravação.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva um roteiro de locução publicitária de {DURACAO} para {PRODUTO_OU_SERVICO}, destacando {DIFERENCIAL}, tom {TOM}, finalizando com uma chamada para ação.",
+      "variaveis": [
+        {
+          "nome": "DURACAO",
+          "padrao": "15 segundos"
+        },
+        {
+          "nome": "PRODUTO_OU_SERVICO"
+        },
+        {
+          "nome": "DIFERENCIAL"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "enérgico"
+        }
+      ],
+      "tags": [
+        "voz",
+        "propaganda",
+        "publicidade"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "musica_letra",
+      "titulo": "Letra de música original",
+      "categoria": "musica",
+      "subcaso": "Letra de música",
+      "descricao_curta": "Gera a letra de uma música original a partir de tema e gênero.",
+      "objetivo": "Obter uma letra estruturada em versos e refrão.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Escreva a letra de uma música de gênero {GENERO} sobre {TEMA}, com tom emocional {TOM}. Estruture em versos e refrão, sem indicar melodia.",
+      "variaveis": [
+        {
+          "nome": "GENERO",
+          "padrao": "pop"
+        },
+        {
+          "nome": "TEMA"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "nostálgico"
+        }
+      ],
+      "tags": [
+        "música",
+        "letra",
+        "composição"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "musica_briefing_composicao",
+      "titulo": "Briefing para compositor",
+      "categoria": "musica",
+      "subcaso": "Briefing de composição",
+      "descricao_curta": "Gera um briefing descritivo para orientar um compositor humano ou IA musical.",
+      "objetivo": "Obter um briefing claro com referências e intenção da música.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um briefing de composição musical para {FINALIDADE}, gênero {GENERO}, com referências de artistas/estilo: {REFERENCIAS}. Descreva instrumentação sugerida e clima desejado.",
+      "variaveis": [
+        {
+          "nome": "FINALIDADE"
+        },
+        {
+          "nome": "GENERO"
+        },
+        {
+          "nome": "REFERENCIAS"
+        }
+      ],
+      "tags": [
+        "música",
+        "briefing",
+        "composição"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "musica_prompt_trilha_instrumental",
+      "titulo": "Prompt para trilha instrumental (IA musical)",
+      "categoria": "musica",
+      "subcaso": "Prompt de trilha instrumental",
+      "descricao_curta": "Gera um prompt descritivo para geradores de música por IA criarem uma trilha instrumental.",
+      "objetivo": "Obter uma descrição pronta para uso em ferramentas de geração musical.",
+      "nivel": "iniciante",
+      "melhor_para": [
+        "Suno",
+        "Udio"
+      ],
+      "template": "Trilha instrumental de {GENERO}, clima {CLIMA}, instrumentação principal: {INSTRUMENTOS}, andamento {ANDAMENTO}, ideal para {FINALIDADE}.",
+      "variaveis": [
+        {
+          "nome": "GENERO",
+          "padrao": "cinematográfico"
+        },
+        {
+          "nome": "CLIMA",
+          "padrao": "inspirador"
+        },
+        {
+          "nome": "INSTRUMENTOS",
+          "padrao": "piano e cordas"
+        },
+        {
+          "nome": "ANDAMENTO",
+          "padrao": "moderado"
+        },
+        {
+          "nome": "FINALIDADE",
+          "padrao": "vídeo institucional"
+        }
+      ],
+      "tags": [
+        "música",
+        "instrumental",
+        "trilha"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "musica_briefing_jingle",
+      "titulo": "Briefing de jingle publicitário",
+      "categoria": "musica",
+      "subcaso": "Briefing de jingle",
+      "descricao_curta": "Gera um briefing para criação de jingle publicitário curto.",
+      "objetivo": "Obter um briefing com mensagem-chave e estilo sonoro do jingle.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um briefing de jingle publicitário para {MARCA}, com duração de {DURACAO}, mensagem-chave \"{MENSAGEM_CHAVE}\" e estilo sonoro {ESTILO}.",
+      "variaveis": [
+        {
+          "nome": "MARCA"
+        },
+        {
+          "nome": "DURACAO",
+          "padrao": "10 segundos"
+        },
+        {
+          "nome": "MENSAGEM_CHAVE"
+        },
+        {
+          "nome": "ESTILO",
+          "padrao": "alegre e memorável"
+        }
+      ],
+      "tags": [
+        "música",
+        "jingle",
+        "publicidade"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "musica_arranjo_estilo",
+      "titulo": "Descrição de arranjo musical",
+      "categoria": "musica",
+      "subcaso": "Arranjo/descrição de estilo",
+      "descricao_curta": "Descreve um arranjo musical detalhado para uma música já composta.",
+      "objetivo": "Obter uma descrição técnica do arranjo por seção da música.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Descreva um arranjo musical para uma música de {GENERO} com tema \"{TEMA}\", detalhando a instrumentação e dinâmica de cada seção (introdução, verso, refrão, ponte, final).",
+      "variaveis": [
+        {
+          "nome": "GENERO"
+        },
+        {
+          "nome": "TEMA"
+        }
+      ],
+      "tags": [
+        "música",
+        "arranjo",
+        "produção"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "automacao_fluxo_zapier",
+      "titulo": "Fluxo de automação entre apps",
+      "categoria": "automacao",
+      "subcaso": "Fluxo de automação (Zapier/Make)",
+      "descricao_curta": "Descreve um fluxo de automação passo a passo entre duas ou mais ferramentas.",
+      "objetivo": "Obter a estrutura de gatilho e ações prontas para montar no Zapier/Make.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Descreva um fluxo de automação no {FERRAMENTA} que, quando {GATILHO} ocorrer em {APP_ORIGEM}, execute {ACAO} em {APP_DESTINO}. Detalhe os campos mapeados entre os apps.",
+      "variaveis": [
+        {
+          "nome": "FERRAMENTA",
+          "padrao": "Zapier"
+        },
+        {
+          "nome": "GATILHO"
+        },
+        {
+          "nome": "APP_ORIGEM"
+        },
+        {
+          "nome": "ACAO"
+        },
+        {
+          "nome": "APP_DESTINO"
+        }
+      ],
+      "tags": [
+        "automação",
+        "zapier",
+        "integração"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "automacao_script_scraping",
+      "titulo": "Script de coleta de dados (web scraping)",
+      "categoria": "automacao",
+      "subcaso": "Script de scraping",
+      "descricao_curta": "Gera um script para extrair dados estruturados de uma página web.",
+      "objetivo": "Obter um script funcional de coleta de dados, respeitando boas práticas.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude",
+        "GitHub Copilot"
+      ],
+      "template": "Escreva um script em {LINGUAGEM} para extrair {DADOS_DESEJADOS} da página {URL_OU_ESTRUTURA}, salvando o resultado em {FORMATO_SAIDA}. Respeite robots.txt e inclua tratamento de erros.",
+      "variaveis": [
+        {
+          "nome": "LINGUAGEM",
+          "padrao": "Python com BeautifulSoup"
+        },
+        {
+          "nome": "DADOS_DESEJADOS"
+        },
+        {
+          "nome": "URL_OU_ESTRUTURA"
+        },
+        {
+          "nome": "FORMATO_SAIDA",
+          "padrao": "CSV"
+        }
+      ],
+      "tags": [
+        "automação",
+        "scraping",
+        "dados"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "automacao_planilha",
+      "titulo": "Fórmula/macro de automação em planilha",
+      "categoria": "automacao",
+      "subcaso": "Automação de planilha",
+      "descricao_curta": "Gera uma fórmula ou macro para automatizar uma tarefa repetitiva em planilha.",
+      "objetivo": "Obter uma fórmula ou script pronto para colar na planilha.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie uma {TIPO_SOLUCAO} para {FERRAMENTA} que realize: {TAREFA}. Considere que os dados estão organizados como: {ESTRUTURA_DADOS}. Explique como aplicar.",
+      "variaveis": [
+        {
+          "nome": "TIPO_SOLUCAO",
+          "padrao": "fórmula"
+        },
+        {
+          "nome": "FERRAMENTA",
+          "padrao": "Google Sheets"
+        },
+        {
+          "nome": "TAREFA"
+        },
+        {
+          "nome": "ESTRUTURA_DADOS"
+        }
+      ],
+      "tags": [
+        "automação",
+        "planilha",
+        "produtividade"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "automacao_chatbot_atendimento",
+      "titulo": "Fluxo de chatbot de atendimento",
+      "categoria": "automacao",
+      "subcaso": "Chatbot de atendimento",
+      "descricao_curta": "Gera o fluxo de conversa de um chatbot simples de atendimento ao cliente.",
+      "objetivo": "Obter as perguntas, respostas e desvios de um fluxo de chatbot.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie o fluxo de conversa de um chatbot de atendimento para {EMPRESA}, cobrindo as intenções: {INTENCOES}. Para cada intenção, defina a resposta do bot e possíveis desvios para atendimento humano.",
+      "variaveis": [
+        {
+          "nome": "EMPRESA"
+        },
+        {
+          "nome": "INTENCOES"
+        }
+      ],
+      "tags": [
+        "automação",
+        "chatbot",
+        "atendimento"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "automacao_integracao_apps",
+      "titulo": "Especificação de integração entre sistemas",
+      "categoria": "automacao",
+      "subcaso": "Integração entre apps",
+      "descricao_curta": "Descreve uma integração técnica entre dois sistemas via API.",
+      "objetivo": "Obter uma especificação inicial de integração para o time técnico.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Especifique uma integração entre {SISTEMA_A} e {SISTEMA_B} via API, com o objetivo de {OBJETIVO}. Descreva os endpoints envolvidos, direção do fluxo de dados e frequência de sincronização.",
+      "variaveis": [
+        {
+          "nome": "SISTEMA_A"
+        },
+        {
+          "nome": "SISTEMA_B"
+        },
+        {
+          "nome": "OBJETIVO"
+        }
+      ],
+      "tags": [
+        "automação",
+        "integração",
+        "api"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "eng_prompt_sistema",
+      "titulo": "System prompt para assistente de IA",
+      "categoria": "engenharia_de_prompt",
+      "subcaso": "Prompt de sistema para assistente",
+      "descricao_curta": "Gera um prompt de sistema definindo papel, tom e limites de um assistente de IA.",
+      "objetivo": "Obter um system prompt pronto para configurar um assistente.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um prompt de sistema para um assistente de IA especializado em {DOMINIO}, com tom {TOM}. Defina o papel, o que ele deve e não deve fazer, e o formato preferido de resposta.",
+      "variaveis": [
+        {
+          "nome": "DOMINIO"
+        },
+        {
+          "nome": "TOM",
+          "padrao": "profissional e objetivo"
+        }
+      ],
+      "tags": [
+        "engenharia de prompt",
+        "system prompt",
+        "assistente"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "eng_prompt_few_shot",
+      "titulo": "Prompt com exemplos (few-shot)",
+      "categoria": "engenharia_de_prompt",
+      "subcaso": "Prompt few-shot",
+      "descricao_curta": "Gera um prompt few-shot com exemplos de entrada e saída para guiar o modelo.",
+      "objetivo": "Obter um prompt estruturado com 2-3 exemplos antes da tarefa real.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um prompt few-shot para a tarefa de {TAREFA}, incluindo {NUM_EXEMPLOS} exemplos de entrada e saída no formato desejado, seguidos da instrução final para o novo caso: {NOVO_CASO}.",
+      "variaveis": [
+        {
+          "nome": "TAREFA"
+        },
+        {
+          "nome": "NUM_EXEMPLOS",
+          "padrao": "2"
+        },
+        {
+          "nome": "NOVO_CASO"
+        }
+      ],
+      "tags": [
+        "engenharia de prompt",
+        "few-shot",
+        "exemplos"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "eng_prompt_chain_of_thought",
+      "titulo": "Prompt chain-of-thought",
+      "categoria": "engenharia_de_prompt",
+      "subcaso": "Prompt de raciocínio em etapas",
+      "descricao_curta": "Gera um prompt que instrui o modelo a raciocinar passo a passo antes de responder.",
+      "objetivo": "Obter um prompt que reduz erros em tarefas complexas de raciocínio.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um prompt para a tarefa de {TAREFA} instruindo o modelo a pensar passo a passo antes de dar a resposta final, mostrando o raciocínio intermediário e depois a conclusão de forma destacada.",
+      "variaveis": [
+        {
+          "nome": "TAREFA"
+        }
+      ],
+      "tags": [
+        "engenharia de prompt",
+        "raciocínio",
+        "chain-of-thought"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "eng_prompt_extracao_estruturada",
+      "titulo": "Prompt para extração de dados estruturados",
+      "categoria": "engenharia_de_prompt",
+      "subcaso": "Prompt de extração estruturada",
+      "descricao_curta": "Gera um prompt que instrui o modelo a extrair informações em formato estruturado (JSON).",
+      "objetivo": "Obter um prompt que retorna dados prontos para uso em sistemas.",
+      "nivel": "avancado",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um prompt que extraia {CAMPOS_DESEJADOS} do texto fornecido e retorne apenas um JSON válido com essa estrutura, sem texto adicional. Campo de entrada do texto: {TEXTO_ORIGEM}.",
+      "variaveis": [
+        {
+          "nome": "CAMPOS_DESEJADOS"
+        },
+        {
+          "nome": "TEXTO_ORIGEM",
+          "padrao": "o texto informado pelo usuário"
+        }
+      ],
+      "tags": [
+        "engenharia de prompt",
+        "extração",
+        "json"
+      ],
+      "data_criacao": "2026-08-06"
+    },
+    {
+      "id": "eng_prompt_avaliacao_critica",
+      "titulo": "Prompt para avaliação crítica de conteúdo",
+      "categoria": "engenharia_de_prompt",
+      "subcaso": "Prompt de avaliação/crítica",
+      "descricao_curta": "Gera um prompt que instrui o modelo a avaliar um conteúdo segundo critérios definidos.",
+      "objetivo": "Obter um prompt de avaliação com nota e justificativa por critério.",
+      "nivel": "intermediario",
+      "melhor_para": [
+        "ChatGPT",
+        "Claude"
+      ],
+      "template": "Crie um prompt para avaliar {TIPO_CONTEUDO} segundo os critérios: {CRITERIOS}. O modelo deve dar uma nota de 0 a 10 por critério, com justificativa breve, e uma recomendação final de melhoria.",
+      "variaveis": [
+        {
+          "nome": "TIPO_CONTEUDO"
+        },
+        {
+          "nome": "CRITERIOS"
+        }
+      ],
+      "tags": [
+        "engenharia de prompt",
+        "avaliação",
+        "crítica"
+      ],
+      "data_criacao": "2026-08-06"
+    }
+  ]
+}

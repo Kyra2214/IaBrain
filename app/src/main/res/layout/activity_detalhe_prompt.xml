@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Favorito (Fase 16.15) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <ImageButton
+                android:id="@+id/btnFavoritoPrompt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/detalhe_favorito_desc"
+                android:src="@drawable/ic_star_outline" />
+
+        </LinearLayout>
+
+        <!-- Categoria · Subcaso -->
+        <TextView
+            android:id="@+id/txtCategoriaSubcaso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/secondary"
+            android:textSize="14sp"
+            tools:text="🖼️ Imagem · Foto esportiva profissional" />
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/txtTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            tools:text="Foto esportiva profissional" />
+
+        <!-- Nível -->
+        <TextView
+            android:id="@+id/txtNivel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background_muted"
+            android:textSize="13sp"
+            tools:text="Nível: iniciante" />
+
+        <!-- Descrição curta -->
+        <TextView
+            android:id="@+id/txtDescricaoCurta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/on_background"
+            android:textSize="15sp"
+            tools:text="Gera um prompt para imagem de ação esportiva com iluminação profissional." />
+
+        <!-- Objetivo -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/detalhe_prompt_objetivo_titulo"
+            android:textColor="@color/on_background"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtObjetivo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background"
+            tools:text="Obter uma imagem dinâmica de um atleta em ação." />
+
+        <!-- Compatibilidade -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/detalhe_prompt_compatibilidade_titulo"
+            android:textColor="@color/on_background"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtCompatibilidade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background"
+            tools:text="Midjourney · DALL-E · Leonardo" />
+
+        <!-- Texto completo do template -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/detalhe_prompt_template_titulo"
+            android:textColor="@color/on_background"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtTemplateAjuda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/detalhe_prompt_template_editavel_ajuda"
+            android:textColor="@color/on_background_muted"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/edtTemplate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:autofillHints=""
+            android:background="@drawable/bg_search_rounded"
+            android:fontFamily="monospace"
+            android:gravity="top|start"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:minLines="4"
+            android:padding="12dp"
+            android:textColor="@color/on_background"
+            android:textColorHint="@color/on_background_muted"
+            android:textSize="13sp"
+            tools:text="Crie uma imagem {ESTILO} de {PERSONAGEM} realizando {AÇÃO} em {CENÁRIO}." />
+
+        <!-- Tags -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/detalhe_prompt_tags_titulo"
+            android:textColor="@color/on_background"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background_muted"
+            tools:text="#imagem #esporte #ação" />
+
+        <!-- Data de criação -->
+        <TextView
+            android:id="@+id/txtDataCriacao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/on_background_muted"
+            android:textSize="12sp"
+            tools:text="Criado em 2026-08-06" />
+
+        <!-- Copiar / Compartilhar prompt (Fases 16.6 e 16.8) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopiarPrompt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/secondary"
+                android:text="@string/detalhe_prompt_botao_copiar"
+                android:textColor="@color/on_primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCompartilharPrompt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/surface_variant"
+                android:text="@string/detalhe_prompt_botao_compartilhar"
+                android:textColor="@color/on_background" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

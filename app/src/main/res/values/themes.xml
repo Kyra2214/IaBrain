@@ -1,0 +1,68 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Fontes suavizadas: sans-serif-medium nos títulos, sans-serif no corpo (sem depender de fontes externas). -->
+    <style name="TextAppearance.AIBrain.Titulo" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="TextAppearance.AIBrain.Corpo" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <!-- Cantos suavizados e consistentes para cards, botões e campos. -->
+    <style name="ShapeAppearance.AIBrain.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="ShapeAppearance.AIBrain.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.AIBrain.Large" parent="ShapeAppearance.Material3.Corner.Large">
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <style name="Widget.AIBrain.Button" parent="Widget.Material3.Button">
+        <item name="cornerRadius">28dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <style name="Theme.AIBrain" parent="Theme.Material3.DayNight">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorOnBackground">@color/on_background</item>
+        <item name="android:statusBarColor">@color/primary</item>
+
+        <!-- Tipografia suavizada aplicada ao app inteiro -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.AIBrain.Titulo</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.AIBrain.Corpo</item>
+
+        <!-- Cantos arredondados consistentes em cards, botões e campos -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AIBrain.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.AIBrain.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AIBrain.Large</item>
+
+        <item name="materialButtonStyle">@style/Widget.AIBrain.Button</item>
+
+        <!-- Transições suaves entre telas -->
+        <item name="android:windowAnimationStyle">@style/Animacao.AIBrain.Janela</item>
+    </style>
+
+    <style name="Animacao.AIBrain.Janela" parent="android:Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/fade_out</item>
+    </style>
+
+</resources>

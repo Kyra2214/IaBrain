@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <TextView
+        android:id="@+id/txtTituloApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/app_name"
+        android:textColor="@color/on_background"
+        android:textSize="22sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.01"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnAbrirAssistenteIA"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/assistente_ia_abrir_desc"
+        android:src="@drawable/ic_assistente_ia"
+        app:layout_constraintEnd_toStartOf="@id/btnAbrirCriadorPrompts"
+        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
+        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
+
+    <ImageButton
+        android:id="@+id/btnAbrirCriadorPrompts"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/criador_prompts_abrir_desc"
+        android:src="@drawable/ic_criador_prompts"
+        app:layout_constraintEnd_toStartOf="@id/btnAbrirBiblioteca"
+        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
+        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
+
+    <ImageButton
+        android:id="@+id/btnAbrirBiblioteca"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/biblioteca_abrir_desc"
+        android:src="@drawable/ic_biblioteca"
+        app:layout_constraintEnd_toStartOf="@id/btnAbrirAIBrain"
+        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
+        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
+
+    <ImageButton
+        android:id="@+id/btnAbrirAIBrain"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/brain_abrir_desc"
+        android:src="@drawable/ic_ai_brain"
+        app:layout_constraintEnd_toStartOf="@id/btnAbrirFavoritos"
+        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
+        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
+
+    <ImageButton
+        android:id="@+id/btnAbrirFavoritos"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/favoritos_abrir_desc"
+        android:src="@drawable/ic_star_outline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
+        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
+
+    <ProgressBar
+        android:id="@+id/progressSincronizandoCatalogo"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="4dp"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/secondary"
+        android:progressTint="@color/secondary"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/txtTituloApp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchIAs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_search_rounded"
+        android:iconifiedByDefault="false"
+        android:queryHint="@string/lista_pesquisar_hint"
+        app:layout_constraintTop_toBottomOf="@id/progressSincronizandoCatalogo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <HorizontalScrollView
+        android:id="@+id/scrollCategorias"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/searchIAs"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupCategorias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            app:singleSelection="true"
+            app:selectionRequired="false" />
+
+    </HorizontalScrollView>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleOrdenacao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/scrollCategorias"
+        app:layout_constraintStart_toStartOf="parent"
+        app:singleSelection="true"
+        app:selectionRequired="false">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOrdenarRanking"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ordenar_ranking"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOrdenarPopulares"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ordenar_populares"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOrdenarNovidades"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ordenar_novidades"
+            android:textSize="12sp" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLimparFiltros"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:text="@string/filtro_limpar"
+        android:textColor="@color/on_background_muted"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/toggleOrdenacao"
+        app:layout_constraintBottom_toBottomOf="@id/toggleOrdenacao" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerIAs"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/toggleOrdenacao"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_ia" />
+
+    <LinearLayout
+        android:id="@+id/containerVazioOuErro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Fase 13.7 — ilustração do estado vazio/erro, reaproveitando o vetor da Fase 11/12. -->
+        <ImageView
+            android:id="@+id/imgVazioOuErro"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="12dp"
+            android:alpha="0.6"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_image_placeholder"
+            app:tint="@color/on_background_muted" />
+
+        <TextView
+            android:id="@+id/txtVazioOuErro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lista_carregando"
+            android:textColor="@color/on_background" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

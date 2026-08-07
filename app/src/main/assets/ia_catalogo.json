@@ -1,0 +1,801 @@
+{
+  "versao": 4,
+  "ias": [
+    {
+      "id": "chatgpt",
+      "nome": "ChatGPT",
+      "logo": "https://logo.clearbit.com/chat.openai.com",
+      "site": "https://chat.openai.com",
+      "descricao": "Assistente de IA conversacional da OpenAI. Ótimo para conversas, código e escrita.",
+      "categorias": [
+        "conversa",
+        "codigo",
+        "escrita",
+        "estudos",
+        "traducao"
+      ],
+      "idiomas": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "conversa": 10,
+        "codigo": 9,
+        "escrita": 10,
+        "estudos": 9,
+        "traducao": 9
+      }
+    },
+    {
+      "id": "claude",
+      "nome": "Claude",
+      "logo": "https://logo.clearbit.com/claude.ai",
+      "site": "https://claude.ai",
+      "descricao": "Assistente de IA da Anthropic, focado em raciocínio, escrita longa e programação.",
+      "categorias": [
+        "conversa",
+        "codigo",
+        "escrita",
+        "estudos"
+      ],
+      "idiomas": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "conversa": 9,
+        "codigo": 9,
+        "escrita": 10,
+        "estudos": 9
+      }
+    },
+    {
+      "id": "gemini",
+      "nome": "Gemini",
+      "logo": "https://logo.clearbit.com/gemini.google.com",
+      "site": "https://gemini.google.com",
+      "descricao": "IA conversacional do Google, integrada ao ecossistema Google Workspace.",
+      "categorias": [
+        "conversa",
+        "codigo",
+        "escrita",
+        "estudos",
+        "pesquisa"
+      ],
+      "idiomas": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "conversa": 9,
+        "codigo": 8,
+        "escrita": 8,
+        "estudos": 8,
+        "pesquisa": 8
+      }
+    },
+    {
+      "id": "copilot_microsoft",
+      "nome": "Microsoft Copilot",
+      "logo": "https://logo.clearbit.com/copilot.microsoft.com",
+      "site": "https://copilot.microsoft.com",
+      "descricao": "Assistente de IA da Microsoft integrado ao Windows, Edge e Office.",
+      "categorias": [
+        "conversa",
+        "produtividade",
+        "escrita"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "conversa": 8,
+        "produtividade": 9,
+        "escrita": 8
+      }
+    },
+    {
+      "id": "perplexity",
+      "nome": "Perplexity",
+      "logo": "https://logo.clearbit.com/perplexity.ai",
+      "site": "https://www.perplexity.ai",
+      "descricao": "Motor de busca com IA que responde perguntas citando fontes em tempo real.",
+      "categorias": [
+        "pesquisa",
+        "conversa"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "pesquisa": 10,
+        "conversa": 8
+      }
+    },
+    {
+      "id": "github_copilot",
+      "nome": "GitHub Copilot",
+      "logo": "https://logo.clearbit.com/github.com",
+      "site": "https://github.com/features/copilot",
+      "descricao": "Autocompletar de código com IA integrado a editores como VS Code.",
+      "categorias": [
+        "codigo"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": false,
+      "acesso": "freemium",
+      "notas": {
+        "codigo": 9
+      }
+    },
+    {
+      "id": "cursor",
+      "nome": "Cursor",
+      "logo": "https://logo.clearbit.com/cursor.com",
+      "site": "https://cursor.com",
+      "descricao": "Editor de código com IA nativa, focado em produtividade para devs.",
+      "categorias": [
+        "codigo",
+        "produtividade"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "codigo": 9,
+        "produtividade": 8
+      }
+    },
+    {
+      "id": "replit_ai",
+      "nome": "Replit AI",
+      "logo": "https://logo.clearbit.com/replit.com",
+      "site": "https://replit.com",
+      "descricao": "IDE online com IA para criar e rodar código na nuvem.",
+      "categorias": [
+        "codigo"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "codigo": 8
+      }
+    },
+    {
+      "id": "midjourney",
+      "nome": "Midjourney",
+      "logo": "https://logo.clearbit.com/midjourney.com",
+      "site": "https://www.midjourney.com",
+      "descricao": "Geração de imagens artísticas com IA a partir de texto.",
+      "categorias": [
+        "imagem",
+        "design"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": false,
+      "acesso": "paga",
+      "notas": {
+        "imagem": 10,
+        "design": 9
+      }
+    },
+    {
+      "id": "dalle",
+      "nome": "DALL-E",
+      "logo": "https://logo.clearbit.com/openai.com",
+      "site": "https://openai.com/dall-e-3",
+      "descricao": "Geração de imagens da OpenAI, integrada ao ChatGPT.",
+      "categorias": [
+        "imagem"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "imagem": 9
+      }
+    },
+    {
+      "id": "stable_diffusion",
+      "nome": "Stable Diffusion",
+      "logo": "https://logo.clearbit.com/stability.ai",
+      "site": "https://stability.ai",
+      "descricao": "Modelo de geração de imagens open-source, altamente customizável.",
+      "categorias": [
+        "imagem"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "gratuita",
+      "notas": {
+        "imagem": 9
+      }
+    },
+    {
+      "id": "adobe_firefly",
+      "nome": "Adobe Firefly",
+      "logo": "https://logo.clearbit.com/firefly.adobe.com",
+      "site": "https://firefly.adobe.com",
+      "descricao": "IA generativa da Adobe integrada ao Photoshop e Creative Cloud.",
+      "categorias": [
+        "imagem",
+        "design"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "imagem": 8,
+        "design": 9
+      }
+    },
+    {
+      "id": "leonardo_ai",
+      "nome": "Leonardo AI",
+      "logo": "https://logo.clearbit.com/leonardo.ai",
+      "site": "https://leonardo.ai",
+      "descricao": "Geração de imagens e assets visuais com foco em jogos e design.",
+      "categorias": [
+        "imagem",
+        "design"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "imagem": 9,
+        "design": 8
+      }
+    },
+    {
+      "id": "canva_ai",
+      "nome": "Canva (Magic Studio)",
+      "logo": "https://logo.clearbit.com/canva.com",
+      "site": "https://www.canva.com",
+      "descricao": "Ferramentas de IA integradas ao editor gráfico Canva.",
+      "categorias": [
+        "design",
+        "imagem",
+        "produtividade"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "design": 9,
+        "imagem": 7,
+        "produtividade": 8
+      }
+    },
+    {
+      "id": "runway",
+      "nome": "Runway",
+      "logo": "https://logo.clearbit.com/runwayml.com",
+      "site": "https://runwayml.com",
+      "descricao": "Geração e edição de vídeo com IA, usada em produções profissionais.",
+      "categorias": [
+        "video"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "video": 9
+      }
+    },
+    {
+      "id": "pika",
+      "nome": "Pika",
+      "logo": "https://logo.clearbit.com/pika.art",
+      "site": "https://pika.art",
+      "descricao": "Geração de vídeos curtos a partir de texto ou imagem.",
+      "categorias": [
+        "video"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "video": 8
+      }
+    },
+    {
+      "id": "luma_ai",
+      "nome": "Luma AI",
+      "logo": "https://logo.clearbit.com/lumalabs.ai",
+      "site": "https://lumalabs.ai",
+      "descricao": "Geração de vídeo (Dream Machine) e captura 3D com IA.",
+      "categorias": [
+        "video",
+        "imagem",
+        "design"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "video": 10,
+        "imagem": 8,
+        "design": 8
+      }
+    },
+    {
+      "id": "heygen",
+      "nome": "HeyGen",
+      "logo": "https://logo.clearbit.com/heygen.com",
+      "site": "https://www.heygen.com",
+      "descricao": "Criação de vídeos com avatares falantes gerados por IA.",
+      "categorias": [
+        "video",
+        "voz"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "video": 9,
+        "voz": 8
+      }
+    },
+    {
+      "id": "synthesia",
+      "nome": "Synthesia",
+      "logo": "https://logo.clearbit.com/synthesia.io",
+      "site": "https://www.synthesia.io",
+      "descricao": "Plataforma de vídeos corporativos com apresentadores virtuais de IA.",
+      "categorias": [
+        "video",
+        "negocios"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": false,
+      "acesso": "freemium",
+      "notas": {
+        "video": 9,
+        "negocios": 8
+      }
+    },
+    {
+      "id": "suno",
+      "nome": "Suno",
+      "logo": "https://logo.clearbit.com/suno.com",
+      "site": "https://suno.com",
+      "descricao": "Geração de músicas completas (letra + melodia) a partir de texto.",
+      "categorias": [
+        "musica"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "musica": 10
+      }
+    },
+    {
+      "id": "udio",
+      "nome": "Udio",
+      "logo": "https://logo.clearbit.com/udio.com",
+      "site": "https://www.udio.com",
+      "descricao": "Geração de músicas com IA, com foco em qualidade e estilos variados.",
+      "categorias": [
+        "musica"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "musica": 9
+      }
+    },
+    {
+      "id": "elevenlabs",
+      "nome": "ElevenLabs",
+      "logo": "https://logo.clearbit.com/elevenlabs.io",
+      "site": "https://elevenlabs.io",
+      "descricao": "Síntese de voz realista e clonagem de voz com IA.",
+      "categorias": [
+        "voz"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "voz": 10
+      }
+    },
+    {
+      "id": "descript",
+      "nome": "Descript",
+      "logo": "https://logo.clearbit.com/descript.com",
+      "site": "https://www.descript.com",
+      "descricao": "Edição de áudio e vídeo por texto, com transcrição automática por IA.",
+      "categorias": [
+        "voz",
+        "video",
+        "produtividade"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "voz": 8,
+        "video": 8,
+        "produtividade": 8
+      }
+    },
+    {
+      "id": "otter_ai",
+      "nome": "Otter.ai",
+      "logo": "https://logo.clearbit.com/otter.ai",
+      "site": "https://otter.ai",
+      "descricao": "Transcrição e resumo automático de reuniões com IA.",
+      "categorias": [
+        "voz",
+        "produtividade",
+        "estudos"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "voz": 8,
+        "produtividade": 9,
+        "estudos": 7
+      }
+    },
+    {
+      "id": "grammarly",
+      "nome": "Grammarly",
+      "logo": "https://logo.clearbit.com/grammarly.com",
+      "site": "https://www.grammarly.com",
+      "descricao": "Correção gramatical e estilo de escrita com IA.",
+      "categorias": [
+        "escrita"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "escrita": 9
+      }
+    },
+    {
+      "id": "jasper",
+      "nome": "Jasper",
+      "logo": "https://logo.clearbit.com/jasper.ai",
+      "site": "https://www.jasper.ai",
+      "descricao": "Geração de conteúdo de marketing e copywriting com IA.",
+      "categorias": [
+        "escrita",
+        "negocios"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": false,
+      "acesso": "paga",
+      "notas": {
+        "escrita": 8,
+        "negocios": 8
+      }
+    },
+    {
+      "id": "copy_ai",
+      "nome": "Copy.ai",
+      "logo": "https://logo.clearbit.com/copy.ai",
+      "site": "https://www.copy.ai",
+      "descricao": "Geração de textos de marketing, vendas e copy com IA.",
+      "categorias": [
+        "escrita",
+        "negocios"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "escrita": 8,
+        "negocios": 8
+      }
+    },
+    {
+      "id": "notion_ai",
+      "nome": "Notion AI",
+      "logo": "https://logo.clearbit.com/notion.so",
+      "site": "https://www.notion.so/product/ai",
+      "descricao": "IA integrada ao Notion para escrita, resumo e organização.",
+      "categorias": [
+        "produtividade",
+        "escrita",
+        "estudos"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": false,
+      "acesso": "paga",
+      "notas": {
+        "produtividade": 9,
+        "escrita": 8,
+        "estudos": 8
+      }
+    },
+    {
+      "id": "deepl",
+      "nome": "DeepL",
+      "logo": "https://logo.clearbit.com/deepl.com",
+      "site": "https://www.deepl.com",
+      "descricao": "Tradução automática de alta precisão com IA.",
+      "categorias": [
+        "traducao"
+      ],
+      "idiomas": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "traducao": 10
+      }
+    },
+    {
+      "id": "google_translate",
+      "nome": "Google Tradutor",
+      "logo": "https://logo.clearbit.com/translate.google.com",
+      "site": "https://translate.google.com",
+      "descricao": "Tradução automática gratuita com suporte a dezenas de idiomas.",
+      "categorias": [
+        "traducao"
+      ],
+      "idiomas": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "gratuita": true,
+      "acesso": "gratuita",
+      "notas": {
+        "traducao": 8
+      }
+    },
+    {
+      "id": "zapier_ai",
+      "nome": "Zapier AI",
+      "logo": "https://logo.clearbit.com/zapier.com",
+      "site": "https://zapier.com",
+      "descricao": "Automação de tarefas entre apps com recursos de IA.",
+      "categorias": [
+        "automacao",
+        "produtividade"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "automacao": 9,
+        "produtividade": 8
+      }
+    },
+    {
+      "id": "make",
+      "nome": "Make",
+      "logo": "https://logo.clearbit.com/make.com",
+      "site": "https://www.make.com",
+      "descricao": "Plataforma visual de automação de fluxos de trabalho.",
+      "categorias": [
+        "automacao"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "automacao": 9
+      }
+    },
+    {
+      "id": "n8n",
+      "nome": "n8n",
+      "logo": "https://logo.clearbit.com/n8n.io",
+      "site": "https://n8n.io",
+      "descricao": "Automação de workflows open-source, com nós de IA integrados.",
+      "categorias": [
+        "automacao"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "automacao": 8
+      }
+    },
+    {
+      "id": "character_ai",
+      "nome": "Character.AI",
+      "logo": "https://logo.clearbit.com/character.ai",
+      "site": "https://character.ai",
+      "descricao": "Conversas com personagens de IA personalizados.",
+      "categorias": [
+        "conversa"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "conversa": 8
+      }
+    },
+    {
+      "id": "poe",
+      "nome": "Poe",
+      "logo": "https://logo.clearbit.com/poe.com",
+      "site": "https://poe.com",
+      "descricao": "Plataforma que reúne vários modelos de IA e bots em um só lugar.",
+      "categorias": [
+        "conversa",
+        "agentes_ia"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "conversa": 8,
+        "agentes_ia": 7
+      }
+    },
+    {
+      "id": "manus",
+      "nome": "Manus",
+      "logo": "https://logo.clearbit.com/manus.im",
+      "site": "https://manus.im",
+      "descricao": "Agente de IA autônomo capaz de executar tarefas complexas de ponta a ponta.",
+      "categorias": [
+        "agentes_ia",
+        "automacao"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": false,
+      "acesso": "paga",
+      "notas": {
+        "agentes_ia": 9,
+        "automacao": 8
+      }
+    },
+    {
+      "id": "khanmigo",
+      "nome": "Khanmigo",
+      "logo": "https://logo.clearbit.com/khanacademy.org",
+      "site": "https://www.khanacademy.org/khan-labs",
+      "descricao": "Tutor de IA da Khan Academy para apoio nos estudos.",
+      "categorias": [
+        "estudos"
+      ],
+      "idiomas": [
+        "pt",
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "estudos": 9
+      }
+    },
+    {
+      "id": "quillbot",
+      "nome": "QuillBot",
+      "logo": "https://logo.clearbit.com/quillbot.com",
+      "site": "https://quillbot.com",
+      "descricao": "Paráfrase, gramática e tradução de textos com IA.",
+      "categorias": [
+        "escrita",
+        "traducao"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "escrita": 8,
+        "traducao": 7
+      }
+    },
+    {
+      "id": "wolfram_alpha",
+      "nome": "Wolfram Alpha",
+      "logo": "https://logo.clearbit.com/wolframalpha.com",
+      "site": "https://www.wolframalpha.com",
+      "descricao": "Motor de conhecimento computacional para matemática, ciência e dados.",
+      "categorias": [
+        "estudos",
+        "pesquisa"
+      ],
+      "idiomas": [
+        "en"
+      ],
+      "gratuita": true,
+      "acesso": "freemium",
+      "notas": {
+        "estudos": 9,
+        "pesquisa": 8
+      }
+    }
+  ]
+}

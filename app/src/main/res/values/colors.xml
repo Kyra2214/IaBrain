@@ -1,0 +1,19 @@
+<resources>
+    <!-- Fase 12.8 — paleta modo claro. A paleta escura fica em values-night/colors.xml.
+         Cores de marca (primary/secondary) permanecem iguais nos dois temas para
+         manter a identidade visual; o que muda é fundo/superfície/texto. -->
+    <color name="primary">#0B0B19</color>
+    <color name="primary_variant">#1A1A2E</color>
+    <color name="secondary">#00C2A8</color>
+    <color name="secondary_soft">#3DD9C4</color>
+    <color name="background">#F5F6FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#ECEEF5</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_background">#14141F</color>
+    <!-- Fase 12.7 — contraste ajustado para AA sobre @color/surface. -->
+    <color name="on_background_muted">#5B5B72</color>
+    <color name="divider">#E1E3EC</color>
+    <!-- Fase 18.2 — cor de alerta/remoção, usada no botão "Remover API key". -->
+    <color name="error">#D64545</color>
+</resources>

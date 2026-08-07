@@ -1,0 +1,17 @@
+<resources>
+    <!-- Fase 12.8 — paleta modo escuro (era a única paleta do app antes desta fase). -->
+    <color name="primary">#0B0B19</color>
+    <color name="primary_variant">#1A1A2E</color>
+    <color name="secondary">#00C2A8</color>
+    <color name="secondary_soft">#3DD9C4</color>
+    <color name="background">#0B0B19</color>
+    <color name="surface">#16162A</color>
+    <color name="surface_variant">#1E1E36</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_background">#FFFFFF</color>
+    <!-- Fase 12.7 — clareado de #A8A8C0 para #B4B4CC (melhor contraste AA sobre @color/surface escuro). -->
+    <color name="on_background_muted">#B4B4CC</color>
+    <color name="divider">#2A2A45</color>
+    <!-- Fase 18.2 — cor de alerta/remoção, usada no botão "Remover API key". -->
+    <color name="error">#FF6B6B</color>
+</resources>
