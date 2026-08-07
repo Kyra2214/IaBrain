@@ -50,7 +50,9 @@ private val PALAVRAS_CHAVE_POR_CATEGORIA: Map<Categoria, List<String>> = mapOf(
     Categoria.AGENTES_IA to listOf("agente", "automatizar tarefa", "assistente autonomo"),
     Categoria.NEGOCIOS to listOf("negocios", "negocio", "empresa", "vendas", "marketing", "startup"),
     Categoria.PESQUISA to listOf("pesquisa", "pesquisar", "buscar", "fontes", "referencias"),
-    Categoria.AUTOMACAO to listOf("automacao", "automatizar", "fluxo", "integracao", "workflow")
+    Categoria.AUTOMACAO to listOf("automacao", "automatizar", "fluxo", "integracao", "workflow"),
+    Categoria.FERRAMENTAS to listOf("ferramenta", "notebooklm", "organizar reuniao", "gestao de projetos", "agenda inteligente", "workspace"),
+    Categoria.PREPARACAO to listOf("mapa mental", "brainstorm", "brainstorming", "planejar ideia", "estruturar ideia", "organizar ideias")
 )
 
 private fun String.semAcento(): String =

@@ -42,10 +42,20 @@ fun List<IA>.rankingGeral(): List<IA> =
 /**
  * Ranking por categoria: retorna apenas as IAs que atuam na categoria informada,
  * ordenadas pela nota naquela categoria (maior primeiro).
+ *
+ * Fase 19.3 — Bug 1: dentro do filtro, IAs para as quais a categoria informada é a
+ * `categoriaPrincipal` (Fase 19.1/19.2) ficam priorizadas acima das que só atuam nela
+ * como secundária, mesmo com notas brutas parecidas. A nota bruta deixa de ser o único
+ * critério: primeiro desempata por "é principal?" (true antes de false), só depois pela nota.
+ * IA sem `categoriaPrincipal` curada (null) é tratada como secundária, sem mudar o
+ * comportamento anterior para catálogos ainda não curados.
  */
 fun List<IA>.rankingPorCategoria(categoria: Categoria): List<IA> =
     mapNotNull { ia -> ia.notaPara(categoria)?.let { nota -> ia to nota } }
-        .sortedByDescending { it.second }
+        .sortedWith(
+            compareByDescending<Pair<IA, Int>> { (ia, _) -> ia.categoriaPrincipal == categoria.chave }
+                .thenByDescending { (_, nota) -> nota }
+        )
         .map { it.first }
 
 /**

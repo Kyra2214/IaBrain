@@ -3,6 +3,12 @@ package com.aibrain.app.model
 /**
  * Conjunto fixo de categorias do AI Brain.
  * Fase 3.1 — primeiro "conjunto" real do app (antes só existia 1 item isolado).
+ * Fase 20.2 — adicionada FERRAMENTAS (ferramentas de produtividade baseadas em
+ * IA que não são chat/código/imagem/vídeo/áudio, ex: NotebookLM), pesquisada na
+ * Fase 20.1.
+ * Fase 20.5 — adicionada PREPARACAO (mapas mentais/brainstorming/estruturação
+ * visual de ideias antes da execução, estilo idealmap.ai, ex: MindMeister),
+ * pesquisada na Fase 20.4.
  *
  * O campo [chave] é o valor usado no ia_catalogo.json (categorias/notas),
  * o [emoji] + [rotulo] são usados na exibição da interface.
@@ -22,7 +28,9 @@ enum class Categoria(val chave: String, val emoji: String, val rotulo: String) {
     AGENTES_IA("agentes_ia", "\uD83E\uDD16", "Agentes IA"),
     NEGOCIOS("negocios", "\uD83D\uDCC8", "Negócios"),
     PESQUISA("pesquisa", "\uD83D\uDD0E", "Pesquisa"),
-    AUTOMACAO("automacao", "\u2699\uFE0F", "Automação");
+    AUTOMACAO("automacao", "\u2699\uFE0F", "Automação"),
+    FERRAMENTAS("ferramentas", "\uD83E\uDDF0", "Ferramentas"),
+    PREPARACAO("preparacao", "\uD83D\uDDFA\uFE0F", "Preparação");
 
     companion object {
         /** Busca uma categoria pela chave usada no JSON (ex: "codigo"). */

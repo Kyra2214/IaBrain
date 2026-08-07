@@ -27,5 +27,10 @@ data class IA(
     // ou sincronizado, Fase 8) não trouxer o campo, deriva de `gratuita`
     // (mantendo o comportamento anterior: gratuita=true → GRATUITA, senão PAGA).
     val acesso: NivelAcesso = if (gratuita) NivelAcesso.GRATUITA else NivelAcesso.PAGA,
-    val notas: Map<String, @JvmSuppressWildcards Int> = emptyMap() // categoria -> nota (0-10)
+    val notas: Map<String, @JvmSuppressWildcards Int> = emptyMap(), // categoria -> nota (0-10)
+    // Fase 19.1 — chave (Categoria.chave) da categoria em que a IA é mais forte/
+    // reconhecida, distinta das demais categorias em que ela também atua (`categorias`).
+    // Curadoria manual (Fase 19.2); null enquanto não curada — ranking (Fase 19.3)
+    // trata null como "sem principal definida", sem alterar o comportamento atual.
+    val categoriaPrincipal: String? = null
 ) : Parcelable

@@ -1,5 +1,6 @@
 package com.aibrain.app
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -140,6 +141,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnAbrirAssistenteIA.setOnClickListener {
             startActivity(Intent(this, AssistenteIAActivity::class.java))
         }
+        binding.btnAbrirIA18.setOnClickListener {
+            startActivity(Intent(this, com.aibrain.app.view.IA18Activity::class.java))
+        }
     }
 
     /**
@@ -250,9 +254,28 @@ class MainActivity : AppCompatActivity() {
                 val ias = repositorio.carregarCatalogo()
                 viewModel.definirCatalogo(ias)
                 sincronizarCatalogoRemoto()
+                prefetchLogosSePrimeiraVez(ias)
             } catch (e: Exception) {
                 exibirErro()
             }
+        }
+    }
+
+    /**
+     * Fase 19.9 — no primeiro uso do app (ícones não embutidos no APK, Fase 19.8),
+     * baixa e cacheia em disco todos os logos do catálogo em segundo plano, sem
+     * bloquear a tela (a listagem já é exibida com o placeholder enquanto isso).
+     * Marca a flag só ao final: se a Activity for encerrada no meio do prefetch,
+     * a próxima abertura tenta de novo — URLs já cacheadas ou já marcadas como
+     * "miss" (Fase 14.4) não geram nova requisição de rede.
+     */
+    private fun prefetchLogosSePrimeiraVez(ias: List<IA>) {
+        val prefs = getSharedPreferences(PREFS_NOME, Context.MODE_PRIVATE)
+        if (prefs.getBoolean(CHAVE_LOGOS_PREFETCH_FEITO, false)) return
+
+        lifecycleScope.launch {
+            imagemCache.prefetchTodos(ias.map { it.logo })
+            prefs.edit().putBoolean(CHAVE_LOGOS_PREFETCH_FEITO, true).apply()
         }
     }
 
@@ -297,5 +320,10 @@ class MainActivity : AppCompatActivity() {
         binding.txtVazioOuErro.text = getString(R.string.lista_erro)
         binding.containerVazioOuErro.visibility = View.VISIBLE
         binding.recyclerIAs.visibility = View.GONE
+    }
+
+    companion object {
+        private const val PREFS_NOME = "ai_brain_prefs"
+        private const val CHAVE_LOGOS_PREFETCH_FEITO = "logos_prefetch_feito"
     }
 }

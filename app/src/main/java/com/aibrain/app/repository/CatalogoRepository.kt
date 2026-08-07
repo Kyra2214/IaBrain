@@ -125,6 +125,13 @@ class CatalogoRepository(private val context: Context) {
             // continuam válidos, caindo no fallback derivado de `gratuita`.
             val acesso = NivelAcesso.porChave(obj.optString("acesso", ""))
                 ?: if (gratuita) NivelAcesso.GRATUITA else NivelAcesso.PAGA
+            // Fase 19.1 — "categoriaPrincipal" é opcional: catálogo ainda não curado
+            // (Fase 19.2) e catálogos antigos em cache continuam válidos, caindo em null.
+            val categoriaPrincipal = if (obj.has("categoriaPrincipal") && !obj.isNull("categoriaPrincipal")) {
+                obj.getString("categoriaPrincipal")
+            } else {
+                null
+            }
 
             lista.add(
                 IA(
@@ -137,7 +144,8 @@ class CatalogoRepository(private val context: Context) {
                     idiomas = idiomas,
                     gratuita = gratuita,
                     acesso = acesso,
-                    notas = notas
+                    notas = notas,
+                    categoriaPrincipal = categoriaPrincipal
                 )
             )
         }

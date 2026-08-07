@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -50,6 +51,21 @@
         <activity
             android:name=".view.AssistenteIAActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".browser.BrowserActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name=".view.IA18Activity"
+            android:exported="false"
+            android:label="IA +18" />
+
+        <activity
+            android:name=".view.IA18VerificacaoActivity"
+            android:exported="false"
+            android:label="Verificação de Idade" />
 
     </application>
 

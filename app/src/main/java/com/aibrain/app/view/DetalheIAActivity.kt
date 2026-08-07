@@ -116,12 +116,15 @@ class DetalheIAActivity : AppCompatActivity() {
     }
 
     /**
-     * Fase 5.2 — Abre o site oficial da IA usando Android Custom Tabs.
-     * Fase 17.17 — lógica extraída para [com.aibrain.app.util.abrirUrlNoNavegador],
-     * reaproveitada aqui e pela IA recomendada do Prompt Builder.
+     * Fase 5.2 — Abre o site oficial da IA.
+     * Fase 21.8 — passa a abrir o navegador interno ([com.aibrain.app.browser.BrowserActivity])
+     * em vez de Custom Tabs: se já houver abas abertas, cria uma nova aba
+     * (launchMode singleTask) em vez de substituir a atual.
      */
     private fun abrirIANoNavegador(ia: IA) {
-        com.aibrain.app.util.abrirUrlNoNavegador(this, ia.site)
+        startActivity(
+            com.aibrain.app.browser.BrowserActivity.criarIntent(this, ia.nome, ia.site, ia.logo)
+        )
     }
 
     private fun preencherNotas(ia: IA) {

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardAbaItem"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="6dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardBackgroundColor="@color/primary_variant"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="6dp">
+
+        <ImageView
+            android:id="@+id/imgAbaItem"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_image_placeholder" />
+
+        <ImageView
+            android:id="@+id/imgAbaFixada"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="2dp"
+            android:contentDescription="@string/browser_aba_fixada_desc"
+            android:src="@drawable/ic_pin"
+            android:visibility="gone"
+            app:tint="@color/on_primary" />
+
+        <TextView
+            android:id="@+id/txtAbaItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:ellipsize="end"
+            android:maxWidth="96dp"
+            android:maxLines="1"
+            android:textColor="@color/on_primary"
+            android:textSize="13sp"
+            tools:text="ChatGPT" />
+
+        <ImageButton
+            android:id="@+id/btnFecharAbaItem"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_fechar_aba_desc"
+            android:src="@drawable/ic_close"
+            app:tint="@color/on_primary" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

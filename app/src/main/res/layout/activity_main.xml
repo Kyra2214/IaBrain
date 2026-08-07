@@ -64,9 +64,22 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/brain_abrir_desc"
         android:src="@drawable/ic_ai_brain"
-        app:layout_constraintEnd_toStartOf="@id/btnAbrirFavoritos"
+        app:layout_constraintEnd_toStartOf="@id/btnAbrirIA18"
         app:layout_constraintTop_toTopOf="@id/txtTituloApp"
         app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
+
+    <ImageButton
+        android:id="@+id/btnAbrirIA18"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/ia18_abrir_desc"
+        android:src="@drawable/ic_ai_brain"
+        app:layout_constraintEnd_toStartOf="@id/btnAbrirFavoritos"
+        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
+        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp"
+        app:tint="#FF4081" />
 
     <ImageButton
         android:id="@+id/btnAbrirFavoritos"
@@ -129,56 +142,66 @@
 
     </HorizontalScrollView>
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleOrdenacao"
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:id="@+id/scrollOrdenacao"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/scrollCategorias"
         app:layout_constraintStart_toStartOf="parent"
-        app:singleSelection="true"
-        app:selectionRequired="false">
+        app:layout_constraintEnd_toStartOf="@id/btnLimparFiltros">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnOrdenarRanking"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleOrdenacao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ordenar_ranking"
-            android:textSize="12sp" />
+            app:singleSelection="true"
+            app:selectionRequired="false">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnOrdenarPopulares"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ordenar_populares"
-            android:textSize="12sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOrdenarRanking"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ordenar_ranking"
+                android:textSize="12sp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnOrdenarNovidades"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ordenar_novidades"
-            android:textSize="12sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOrdenarPopulares"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ordenar_populares"
+                android:textSize="12sp" />
 
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOrdenarNovidades"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ordenar_novidades"
+                android:textSize="12sp" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    </HorizontalScrollView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLimparFiltros"
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:layout_marginEnd="12dp"
         android:text="@string/filtro_limpar"
         android:textColor="@color/on_background_muted"
         android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/toggleOrdenacao"
-        app:layout_constraintBottom_toBottomOf="@id/toggleOrdenacao" />
+        app:layout_constraintTop_toTopOf="@id/scrollOrdenacao"
+        app:layout_constraintBottom_toBottomOf="@id/scrollOrdenacao" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerIAs"
@@ -187,7 +210,7 @@
         android:layout_marginTop="4dp"
         android:clipToPadding="false"
         android:paddingBottom="16dp"
-        app:layout_constraintTop_toBottomOf="@id/toggleOrdenacao"
+        app:layout_constraintTop_toBottomOf="@id/scrollOrdenacao"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

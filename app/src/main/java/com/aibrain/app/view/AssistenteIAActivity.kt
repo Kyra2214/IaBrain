@@ -62,6 +62,7 @@ class AssistenteIAActivity : AppCompatActivity() {
         binding.recyclerSugestoesCuradoria.adapter = adapterSugestoes
 
         binding.btnVoltarAssistenteIA.setOnClickListener { voltar() }
+        binding.btnIrConsoleGroq.setOnClickListener { irConsoleGroq() }
         binding.btnSalvarApiKey.setOnClickListener { salvarApiKey() }
         binding.btnRemoverApiKey.setOnClickListener { removerApiKey() }
         binding.btnConsultarCuradoria.setOnClickListener { consultarCuradoria() }
@@ -198,6 +199,18 @@ class AssistenteIAActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
         }
         finish()
+    }
+
+    /** Fase 19.6/19.7 — abre a página de console da Groq dentro do próprio app, reaproveitando o navegador interno (Fase 21), em vez de um navegador externo. */
+    private fun irConsoleGroq() {
+        startActivity(
+            com.aibrain.app.browser.BrowserActivity.criarIntent(
+                this,
+                getString(R.string.assistente_ia_groq_console_nome),
+                "https://console.groq.com/keys",
+                ""
+            )
+        )
     }
 
     private fun mostrarSnackbar(resId: Int) {

@@ -6,6 +6,10 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.LruCache
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.HttpURLConnection
@@ -42,11 +46,21 @@ class ImagemCache(context: Context) {
         private const val TIMEOUT_MS = 8000
         private const val QUALIDADE_DISCO = 85
 
+        /** Fase 19.9 — nº de downloads simultâneos durante o prefetch em lote. */
+        private const val MAX_PARALELO_PREFETCH = 4
+
         /**
-         * Fase 14.4 — por quanto tempo um "miss" (404, domínio sem logo, timeout)
+         * Fase 14.4 — por quanto tempo um "miss" (404, domínio sem favicon, timeout)
          * fica marcado em disco antes de a URL ser tentada de novo. Evita repetir
          * a mesma requisição de rede fadada a falhar a cada tela aberta, mas ainda
          * permite que o logo apareça depois, caso o domínio passe a ter um.
+         *
+         * Fase 19.8 — a Clearbit Logo API (antiga fonte dos logos remotos, Fase 13.5)
+         * foi desativada definitivamente em 08/12/2025 (https://logo.clearbit.com
+         * deixou de resolver, derrubando os 39 logos do catálogo). O campo `logo`
+         * do `ia_catalogo.json` passou a apontar para o Google Favicon Service
+         * (`https://www.google.com/s2/favicons?domain=...&sz=128`), gratuito,
+         * sem chave de API — mesmo formato de URL http(s) já suportado aqui.
          */
         private const val TTL_FALHA_MS = 7L * 24 * 60 * 60 * 1000L // 7 dias
 
@@ -74,6 +88,36 @@ class ImagemCache(context: Context) {
 
         cacheMemoria.put(chaveMemoria, bitmap)
         bitmap
+    }
+
+    /**
+     * Fase 19.9 — download em lote dos logos remotos (usada no primeiro uso do app,
+     * já que os ícones não são embutidos no APK, Fase 19.8). Grava direto no cache
+     * de disco (Fase 10.1) reaproveitando [carregarPorUrl] — chamadas futuras a
+     * [carregar] para as mesmas URLs batem no disco, sem nova requisição de rede.
+     * Concorrência limitada ([MAX_PARALELO_PREFETCH]) para não sobrecarregar a
+     * conexão do usuário; falha em uma URL não interrompe as demais (cada uma já
+     * fica marcada como "miss" pelo mecanismo da Fase 14.4).
+     */
+    suspend fun prefetchTodos(urls: List<String>, tamanhoDp: Int = TAMANHO_ITEM_DP) = withContext(Dispatchers.IO) {
+        val tamanhoPx = (tamanhoDp * densidade).toInt().coerceAtLeast(1)
+        val semaforo = Semaphore(MAX_PARALELO_PREFETCH)
+        coroutineScope {
+            urls.filter { it.startsWith("http://") || it.startsWith("https://") }
+                .distinct()
+                .map { url ->
+                    async {
+                        semaforo.withPermit {
+                            try {
+                                carregarPorUrl(url, tamanhoPx)
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
+                    }
+                }
+                .forEach { it.await() }
+        }
     }
 
     // ---- Remoto (URL) — memória + disco ----

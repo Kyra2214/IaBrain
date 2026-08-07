@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!--
+        Fase 21.4 — barra superior com identidade visual do AI Brain (cores e
+        logo próprios, não do sistema), atuando sobre o WebView da aba ativa
+        (Fase 21.5/21.8, via BrowserTabManager).
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <ImageButton
+            android:id="@+id/btnBrowserVoltar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_voltar_desc"
+            android:src="@drawable/ic_back"
+            app:tint="@color/on_primary" />
+
+        <ImageButton
+            android:id="@+id/btnBrowserAvancar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_avancar_desc"
+            android:src="@drawable/ic_forward"
+            app:tint="@color/on_primary" />
+
+        <ImageButton
+            android:id="@+id/btnBrowserAtualizar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_atualizar_desc"
+            android:src="@drawable/ic_refresh"
+            app:tint="@color/on_primary" />
+
+        <TextView
+            android:id="@+id/txtBrowserTitulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textColor="@color/on_primary"
+            android:textSize="14sp"
+            tools:text="ChatGPT" />
+
+        <ImageButton
+            android:id="@+id/btnBrowserCompartilhar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_compartilhar_desc"
+            android:src="@drawable/ic_share"
+            app:tint="@color/on_primary" />
+
+        <ImageButton
+            android:id="@+id/btnBrowserAbrirExterno"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_abrir_externo_desc"
+            android:src="@drawable/ic_open_external"
+            app:tint="@color/on_primary" />
+
+    </LinearLayout>
+
+    <!--
+        Fase 21.8 — barra de abas (Fase 21.6 integrada à tela): cada aba
+        aberta troca o WebView exibido no container abaixo via
+        BrowserTabManager.ativarNaTela, sem recriar nem recarregar página.
+    -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAbasBrowser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_variant"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_aba_navegador" />
+
+    <FrameLayout
+        android:id="@+id/containerWebViewBrowser"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
+

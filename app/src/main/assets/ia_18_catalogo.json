@@ -1,0 +1,49 @@
+{
+  "versao": 1,
+  "categorias": [
+    {
+      "id": "cat_1",
+      "nome": "Categoria 1",
+      "emoji": "🔞",
+      "descricao": "Descrição detalhada da Categoria 1 voltada para conteúdo adulto."
+    },
+    {
+      "id": "cat_2",
+      "nome": "Categoria 2",
+      "emoji": "🎭",
+      "descricao": "Descrição detalhada da Categoria 2 voltada para jogos e RPG adulto."
+    },
+    {
+      "id": "cat_3",
+      "nome": "Categoria 3",
+      "emoji": "💬",
+      "descricao": "Descrição detalhada da Categoria 3 voltada para chat e companhia."
+    },
+    {
+      "id": "cat_4",
+      "nome": "Categoria 4",
+      "emoji": "🎨",
+      "descricao": "Descrição detalhada da Categoria 4 voltada para arte e geração de imagens."
+    }
+  ],
+  "ias": [
+    {
+      "id": "ia_18_1",
+      "nome": "IA Adulta 1",
+      "logo": "https://www.google.com/s2/favicons?domain=example.com&sz=128",
+      "site": "https://example.com/ia1",
+      "descricao": "Uma IA especializada em conteúdo adulto da Categoria 1.",
+      "categoria_id": "cat_1",
+      "status": "Disponível"
+    },
+    {
+      "id": "ia_18_2",
+      "nome": "IA Adulta 2",
+      "logo": "https://www.google.com/s2/favicons?domain=example.com&sz=128",
+      "site": "https://example.com/ia2",
+      "descricao": "Uma IA especializada em conteúdo adulto da Categoria 2.",
+      "categoria_id": "cat_2",
+      "status": "Disponível"
+    }
+  ]
+}

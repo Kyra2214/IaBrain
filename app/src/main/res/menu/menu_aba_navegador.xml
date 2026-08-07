@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuFixarAba"
+        android:title="@string/browser_fixar_aba" />
+    <item
+        android:id="@+id/menuAtualizarAba"
+        android:title="@string/browser_atualizar_aba" />
+    <item
+        android:id="@+id/menuPaginaInicialAba"
+        android:title="@string/browser_pagina_inicial_aba" />
+</menu>

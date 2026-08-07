@@ -8,7 +8,7 @@ import org.junit.Test
 /** Fase 12.9 — Testes unitários do cálculo de notas e ranking (Fase 4). */
 class NotaUtilsTest {
 
-    private fun criarIA(id: String, notas: Map<String, Int>) = IA(
+    private fun criarIA(id: String, notas: Map<String, Int>, categoriaPrincipal: String? = null) = IA(
         id = id,
         nome = id,
         logo = "",
@@ -17,7 +17,8 @@ class NotaUtilsTest {
         categorias = notas.keys.toList(),
         idiomas = listOf("pt"),
         gratuita = true,
-        notas = notas
+        notas = notas,
+        categoriaPrincipal = categoriaPrincipal
     )
 
     @Test
@@ -51,6 +52,38 @@ class NotaUtilsTest {
         val ranking = listOf(comCategoria, semCategoria).rankingPorCategoria(Categoria.VIDEO)
 
         assertEquals(listOf(comCategoria), ranking)
+    }
+
+    // ---- Fase 19.3 — priorização de categoriaPrincipal no ranking por categoria ----
+
+    @Test
+    fun `rankingPorCategoria prioriza categoriaPrincipal mesmo com nota bruta menor`() {
+        val secundariaNotaAlta = criarIA("chatgpt", mapOf("codigo" to 9), categoriaPrincipal = "conversa")
+        val principalNotaMenor = criarIA("claude", mapOf("codigo" to 8), categoriaPrincipal = "codigo")
+
+        val ranking = listOf(secundariaNotaAlta, principalNotaMenor).rankingPorCategoria(Categoria.CODIGO)
+
+        assertEquals(listOf(principalNotaMenor, secundariaNotaAlta), ranking)
+    }
+
+    @Test
+    fun `rankingPorCategoria desempata por nota quando nenhuma tem a categoria como principal`() {
+        val nenhumaPrincipal1 = criarIA("a", mapOf("codigo" to 9))
+        val nenhumaPrincipal2 = criarIA("b", mapOf("codigo" to 7))
+
+        val ranking = listOf(nenhumaPrincipal2, nenhumaPrincipal1).rankingPorCategoria(Categoria.CODIGO)
+
+        assertEquals(listOf(nenhumaPrincipal1, nenhumaPrincipal2), ranking)
+    }
+
+    @Test
+    fun `rankingPorCategoria desempata por nota entre duas IAs com a mesma categoriaPrincipal`() {
+        val principalNotaAlta = criarIA("a", mapOf("codigo" to 10), categoriaPrincipal = "codigo")
+        val principalNotaBaixa = criarIA("b", mapOf("codigo" to 6), categoriaPrincipal = "codigo")
+
+        val ranking = listOf(principalNotaBaixa, principalNotaAlta).rankingPorCategoria(Categoria.CODIGO)
+
+        assertEquals(listOf(principalNotaAlta, principalNotaBaixa), ranking)
     }
 
     // ---- Fase 15.3 — FaixaAvaliacao / atendeFaixa() ----
