@@ -20,6 +20,7 @@ import com.aibrain.app.groq.ResultadoComFallback
 import com.aibrain.app.groq.SnippetCatalogoIA
 import com.aibrain.app.groq.SugestaoIA
 import com.aibrain.app.groq.enviarComFallback
+import com.aibrain.app.repository.CatalogoCuradoRepository
 import com.aibrain.app.repository.CatalogoRepository
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,7 @@ class AssistenteIAActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAssistenteIaBinding
     private lateinit var repositorio: AssistenteIARepository
     private lateinit var adapterSugestoes: SugestaoIAAdapter
+    private val sugestoesAdicionadas = mutableSetOf<Int>()
     private var veioDoOnboarding = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +68,10 @@ class AssistenteIAActivity : AppCompatActivity() {
         binding.btnSalvarApiKey.setOnClickListener { salvarApiKey() }
         binding.btnRemoverApiKey.setOnClickListener { removerApiKey() }
         binding.btnConsultarCuradoria.setOnClickListener { consultarCuradoria() }
+        binding.btnFecharAvisoApiKey.setOnClickListener {
+            avisoFechadoManualmente = true
+            binding.containerAvisoJaConfigurada.visibility = View.GONE
+        }
 
         atualizarEstadoCampo()
     }
@@ -76,13 +82,15 @@ class AssistenteIAActivity : AppCompatActivity() {
     }
 
     /** Reflete se já existe chave salva: hint muda e o aviso de "já configurada" aparece. */
+    private var avisoFechadoManualmente = false
+
     private fun atualizarEstadoCampo() {
         val jaConfigurada = repositorio.temApiKey()
         binding.editApiKeyGroq.hint = getString(
             if (jaConfigurada) R.string.assistente_ia_campo_hint_configurada
             else R.string.assistente_ia_campo_hint_vazia
         )
-        binding.txtAvisoJaConfigurada.visibility = if (jaConfigurada) View.VISIBLE else View.GONE
+        binding.containerAvisoJaConfigurada.visibility = if (jaConfigurada && !avisoFechadoManualmente) View.VISIBLE else View.GONE
     }
 
     private fun salvarApiKey() {
@@ -107,6 +115,7 @@ class AssistenteIAActivity : AppCompatActivity() {
     private fun removerApiKey() {
         repositorio.removerApiKey()
         binding.editApiKeyGroq.text?.clear()
+        avisoFechadoManualmente = false
         atualizarEstadoCampo()
         mostrarSnackbar(R.string.assistente_ia_key_removida)
     }
@@ -183,15 +192,51 @@ class AssistenteIAActivity : AppCompatActivity() {
     /**
      * Fase 18.8 — "Adicionar ao catálogo": pré-preenche os campos da
      * sugestão em um snippet JSON ([SnippetCatalogoIA]) e copia pro
-     * clipboard (mesmo padrão de [ClipboardManager] da Fase 16.6). A
-     * inserção final em `ia_catalogo.json` continua manual/revisada pelo
-     * curador — não escreve no arquivo automaticamente.
+     * clipboard (mesmo padrão de [ClipboardManager] da Fase 16.6), como
+     * backup para revisão manual do `ia_catalogo.json`.
+     *
+     * Fase 26 — além da cópia, a IA agora entra DE VERDADE no catálogo:
+     * [SnippetCatalogoIA.paraIA] converte a sugestão em uma [IA] completa
+     * (id, favicon como logo, descrição, categoria mapeada) e o
+     * [CatalogoCuradoRepository] a persiste em disco. A nova IA aparece
+     * na listagem principal na hora e sobrevive a reinícios do app;
+     * categorias novas (ex.: "Saúde Mental") ganham aba/chip próprio
+     * automaticamente. Toques duplicados no mesmo item são ignorados
+     * (proteção contra duplicação por toque duplo).
      */
     private fun adicionarAoCatalogo(sugestao: SugestaoIA) {
+        val posicao = adapterSugestoes.currentList.indexOf(sugestao)
+        if (posicao >= 0 && sugestoesAdicionadas.contains(posicao)) return
+
         val snippet = SnippetCatalogoIA.gerar(sugestao)
         val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboardManager.setPrimaryClip(ClipData.newPlainText(sugestao.nome, snippet))
-        mostrarSnackbar(R.string.assistente_ia_curadoria_snippet_copiado)
+
+        lifecycleScope.launch {
+            val resultado = try {
+                withContext(Dispatchers.IO) {
+                    val ia = SnippetCatalogoIA.paraIA(sugestao)
+                    val adicionou = CatalogoCuradoRepository(applicationContext).adicionarUma(ia)
+                    val catalogo = CatalogoRepository(applicationContext).carregarCatalogo()
+                    adicionou to catalogo
+                }
+            } catch (e: Exception) {
+                exibirMensagem(
+                    getString(R.string.assistente_ia_curadoria_adicionar_falha, e.message ?: "erro inesperado")
+                )
+                return@launch
+            }
+
+            val (adicionou, catalogo) = resultado
+            if (adicionou) {
+                if (posicao >= 0) sugestoesAdicionadas += posicao
+                mostrarSnackbar(
+                    getString(R.string.assistente_ia_curadoria_adicionar_sucesso, sugestao.nome)
+                )
+            } else {
+                mostrarSnackbar(R.string.assistente_ia_curadoria_adicionar_ja_existe)
+            }
+        }
     }
 
     private fun voltar() {
@@ -213,8 +258,16 @@ class AssistenteIAActivity : AppCompatActivity() {
         )
     }
 
+    // Fase 25 — a raiz virou CoordinatorLayout (o conteúdo rola num
+    // NestedScrollView interno), então as Snackbars são ancoradas nele para
+    // não ficarem cortadas na parte de baixo da tela.
     private fun mostrarSnackbar(resId: Int) {
-        Snackbar.make(binding.root, resId, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.coordinatorAssistenteIA, resId, Snackbar.LENGTH_SHORT).show()
+    }
+
+    /** Fase 26 — overload para texto já formatado (ex.: sucesso com o nome da IA adicionada). */
+    private fun mostrarSnackbar(texto: CharSequence) {
+        Snackbar.make(binding.coordinatorAssistenteIA, texto, Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {

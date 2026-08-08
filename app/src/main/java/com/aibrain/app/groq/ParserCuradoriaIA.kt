@@ -8,7 +8,10 @@ package com.aibrain.app.groq
 data class SugestaoIA(
     val nome: String,
     val site: String,
-    val categoriaSugerida: String
+    val categoriaSugerida: String,
+    // Fase 26 — descrição curta opcional; o prompt de sistema continua pedindo
+    // só 3 campos, então ela entra quando a Groq responder no formato estendido
+    val descricao: String = ""
 )
 
 /**
@@ -23,7 +26,11 @@ data class SugestaoIA(
 object ParserCuradoriaIA {
 
     private const val SEPARADOR = "|"
+    // Fase 18.7 — formato base: `NOME | SITE | CATEGORIA_SUGERIDA`
     private const val CAMPOS_ESPERADOS = 3
+    // Fase 26 — formato estendido (com descrição), aceito quando presente:
+    // `NOME | SITE | CATEGORIA_SUGERIDA | DESCRICAO`
+    private const val CAMPOS_ESTENDIDOS = 4
 
     /** Retorna a lista de sugestões válidas; vazia se não houver nenhuma ou a resposta for malformada. */
     fun parsear(respostaGroq: String): List<SugestaoIA> {
@@ -38,11 +45,20 @@ object ParserCuradoriaIA {
         if (texto.isEmpty()) return null
 
         val campos = texto.split(SEPARADOR).map { it.trim() }
-        if (campos.size != CAMPOS_ESPERADOS) return null
+        if (campos.size != CAMPOS_ESPERADOS && campos.size != CAMPOS_ESTENDIDOS) return null
 
         val (nome, site, categoria) = campos
         if (nome.isEmpty() || site.isEmpty() || categoria.isEmpty()) return null
 
-        return SugestaoIA(nome = nome, site = site, categoriaSugerida = categoria)
+        return if (campos.size == CAMPOS_ESTENDIDOS) {
+            SugestaoIA(
+                nome = nome,
+                site = site,
+                categoriaSugerida = categoria,
+                descricao = campos[3]
+            )
+        } else {
+            SugestaoIA(nome = nome, site = site, categoriaSugerida = categoria)
+        }
     }
 }

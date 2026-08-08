@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!--
+        Fase 24 — ícone "18+" (selo de conteúdo adulto) para o botão da área
+        +18 na barra de navegação do app, substituindo o ícone genérico
+        `ic_ai_brain` que era reutilizado.
+    -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z M12,20c-4.41,0 -8,-3.59 -8,-8s3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M14.5,9.5h-2c-0.28,0 -0.5,0.22 -0.5,0.5v2.25h-2.5v2h2.5v2.75c0,0.28 0.22,0.5 0.5,0.5h2c0.28,0 0.5,-0.22 0.5,-0.5V9.5z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M10.5,9.5h-2c-0.28,0 -0.5,0.22 -0.5,0.5v7c0,0.28 0.22,0.5 0.5,0.5h2c0.28,0 0.5,-0.22 0.5,-0.5v-7C11,9.72 10.78,9.5 10.5,9.5z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M18.8,18.8l-1.4,-1.4l1.4,-1.4c0.2,-0.2 0.2,-0.5 0,-0.7c-0.2,-0.2 -0.5,-0.2 -0.7,0l-1.4,1.4l-1.4,-1.4c-0.2,-0.2 -0.5,-0.2 -0.7,0c-0.2,0.2 -0.2,0.5 0,0.7l1.4,1.4l-1.4,1.4c-0.2,0.2 -0.2,0.5 0,0.7c0.2,0.2 0.5,0.2 0.7,0l1.4,-1.4l1.4,1.4c0.2,0.2 0.5,0.2 0.7,0C19.0,19.3 19.0,19.0 18.8,18.8z" />
+</vector>

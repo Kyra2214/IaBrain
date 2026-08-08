@@ -12,6 +12,7 @@ import com.aibrain.app.R
 import com.aibrain.app.brain.recomendar
 import com.aibrain.app.cache.ImagemCache
 import com.aibrain.app.data.FavoritosRepository
+import androidx.core.widget.NestedScrollView
 import com.aibrain.app.databinding.ActivityAiBrainBinding
 import com.aibrain.app.model.Categoria
 import com.aibrain.app.model.IA
@@ -123,21 +124,10 @@ class AIBrainActivity : AppCompatActivity() {
 
         binding.editPergunta.addTextChangedListener { aplicarFiltrosRapidos() }
 
-        // Fase 15.6 — reseta os 4 grupos + republica o estado sem filtros.
-        binding.btnLimparFiltrosBrain.setOnClickListener {
-            listOf(binding.chipGroupAcesso, binding.chipGroupCategoriaBrain, binding.chipGroupIdioma, binding.chipGroupAvaliacao)
-                .forEach { it.clearCheck() }
-            nivelSelecionado = null
-            categoriaFiltroSelecionada = null
-            idiomaSelecionado = null
-            faixaSelecionada = null
-            aplicarFiltrosRapidos()
-        }
-
         // Fase 15.7 — lazy loading: amplia a janela publicada quando o scroll chega perto do fim.
-        binding.nestedScrollBrain.setOnScrollChangeListener { view, _, scrollY, _, _ ->
-            val alturaConteudo = view.getChildAt(0)?.height ?: 0
-            if (scrollY + view.height >= alturaConteudo - GATILHO_PAGINACAO_PX) {
+        binding.nestedScrollBrain.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            val alturaConteudo = binding.nestedScrollBrain.getChildAt(0)?.height ?: 0
+            if (scrollY + binding.nestedScrollBrain.height >= alturaConteudo - GATILHO_PAGINACAO_PX) {
                 carregarMaisFiltros()
             }
         }
@@ -215,7 +205,7 @@ class AIBrainActivity : AppCompatActivity() {
         adapterFiltros.atualizarFavoritos(favoritosRepositorio.obterFavoritos())
     }
 
-    /** Fase 15.6 — mostra "N filtro(s) ativo(s)" + botão Limpar filtros só quando há algum filtro ativo. */
+    /** Mostra a quantidade de filtros ativos quando houver filtros selecionados. */
     private fun atualizarIndicadorFiltros(quantidadeAtiva: Int) {
         binding.rowFiltrosStatus.visibility = if (quantidadeAtiva > 0) View.VISIBLE else View.GONE
         binding.txtFiltrosAtivos.text = getString(R.string.brain_filtros_contagem, quantidadeAtiva)

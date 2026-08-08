@@ -37,7 +37,12 @@ class BrowserAdapter(
     private val aoNovaAba: () -> Unit,
     private val aoFixarAba: (AbaNavegador) -> Unit = {},
     private val aoAtualizarAba: (AbaNavegador) -> Unit = {},
-    private val aoAbrirPaginaInicialAba: (AbaNavegador) -> Unit = {}
+    private val aoAbrirPaginaInicialAba: (AbaNavegador) -> Unit = {},
+    // Fase 24 — a barra superior foi removida do layout do navegador; as
+    // ações "Compartilhar" e "Abrir no navegador externo" agora ficam no
+    // menu de contexto de cada aba, repassadas para estes callbacks.
+    private val aoCompartilharAba: (AbaNavegador) -> Unit = {},
+    private val aoAbrirExternoAba: (AbaNavegador) -> Unit = {}
 ) : ListAdapter<BrowserAdapter.ItemBarra, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     /** Item da barra: cada aba aberta, ou o item fixo de criar uma nova aba. */
@@ -117,6 +122,8 @@ class BrowserAdapter(
                 com.aibrain.app.R.id.menuFixarAba -> aoFixarAba(aba)
                 com.aibrain.app.R.id.menuAtualizarAba -> aoAtualizarAba(aba)
                 com.aibrain.app.R.id.menuPaginaInicialAba -> aoAbrirPaginaInicialAba(aba)
+                com.aibrain.app.R.id.menuCompartilharAba -> aoCompartilharAba(aba)
+                com.aibrain.app.R.id.menuAbrirExternoAba -> aoAbrirExternoAba(aba)
             }
             true
         }

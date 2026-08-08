@@ -1,7 +1,6 @@
 package com.aibrain.app.view
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -55,12 +54,16 @@ class IA18Activity : AppCompatActivity() {
     }
 
     private fun configurarLista() {
+        // Fase 24 — a área +18 agora abre cada IA no navegador interno do app
+        // (BrowserActivity), exatamente como as demais IAs do catálogo
+        // (DetalheIAActivity), em vez de disparar o navegador externo.
         adapter = IA18Adapter(
             escopo = lifecycleScope,
             imagemCache = imagemCache,
             aoClicar = { ia ->
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(ia.site))
-                startActivity(intent)
+                startActivity(
+                    com.aibrain.app.browser.BrowserActivity.criarIntent(this, ia.nome, ia.site, ia.logo)
+                )
             }
         )
         binding.recyclerIAs18.layoutManager = LinearLayoutManager(this)

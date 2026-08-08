@@ -11,11 +11,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.content.Intent
 import com.aibrain.app.cache.ImagemCache
+import com.aibrain.app.data.AssistenteIARepository
 import com.aibrain.app.data.FavoritosRepository
 import com.aibrain.app.databinding.ActivityMainBinding
 import com.aibrain.app.model.Categoria
+import com.aibrain.app.model.CategoriaDinamica
 import com.aibrain.app.model.IA
+import com.aibrain.app.groq.GroqClient
+import com.aibrain.app.groq.ParserAtualizacaoCatalogoIA
+import com.aibrain.app.groq.PromptAtualizacaoCatalogoIA
+import com.aibrain.app.groq.ResultadoComFallback
+import com.aibrain.app.groq.enviarComBuscaNaWeb
 import com.aibrain.app.repository.AtualizacaoRepository
+import com.aibrain.app.repository.CatalogoCuradoRepository
 import com.aibrain.app.repository.CatalogoRepository
 import com.aibrain.app.view.AIBrainActivity
 import com.aibrain.app.view.AssistenteIAActivity
@@ -27,7 +35,9 @@ import com.aibrain.app.view.IAAdapter
 import com.aibrain.app.viewmodel.MainViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * MainActivity — Tela inicial (Fase 6.1).
@@ -49,6 +59,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var chipTodas: Chip
 
+    private sealed class ResultadoAtualizacaoInterna {
+        data class Sucesso(val quantidade: Int, val catalogo: List<IA>) : ResultadoAtualizacaoInterna()
+        data class Falha(val motivo: String) : ResultadoAtualizacaoInterna()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -66,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         configurarChipsCategorias()
         configurarOrdenacao()
         configurarBotaoFavoritos()
-        configurarBotaoLimparFiltros()
+        configurarBotaoAtualizarIAs()
         observarResultado()
         carregarCatalogoSeNecessario()
     }
@@ -166,7 +181,14 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Fase 6.3 — Filtro por categoria.
-     * Gera um Chip "Todas" + um Chip por categoria do enum [Categoria].
+     * Gera um Chip "Todas" + um Chip por categoria presente no catálogo.
+     *
+     * Fase 26 — além das categorias fixas do enum [Categoria], IAs adicionadas
+     * pela curadoria podem trazer categorias novas (ex.: "Saúde Mental"), que
+     * ganham automaticamente um chip/aba próprio aqui. As categorias dinâmicas
+     * são extraídas do catálogo e armazenadas como chaves textuais (tags
+     * `Categoria? = null` com chave no `tag`), e o filtro aplica direto pela
+     * chave — sem precisar registrar nada no enum fixo.
      */
     private fun configurarChipsCategorias() {
         val grupo = binding.chipGroupCategorias
@@ -175,18 +197,64 @@ class MainActivity : AppCompatActivity() {
         chipTodas.isChecked = true
         grupo.addView(chipTodas)
 
+        grupo.setOnCheckedStateChangeListener { group, checkedIds ->
+            val chipId = checkedIds.firstOrNull()
+            val chipTag = if (chipId != null) {
+                group.findViewById<Chip>(chipId)?.tag
+            } else {
+                null
+            }
+            val chave = if (chipTag is Categoria) chipTag.chave else chipTag as? String
+            viewModel.definirCategoriaPorChave(chave)
+        }
+    }
+
+    /**
+     * Fase 26 — reconstrói os chips de categoria a partir do catálogo atual:
+     * todas as categorias fixas do enum que têm ao menos uma IA no catálogo
+     * + as categorias novas vindas da curadoria (Fase 26). "Todas" continua
+     * fixa. Chamado também após uma adição via curadoria, para a nova
+     * categoria aparecer na hora.
+     */
+    private fun reconstruirChipsCategorias(ias: List<IA>) {
+        val grupo = binding.chipGroupCategorias
+        // Captura a categoria/chave atualmente selecionada antes de reconstruir.
+        val chipAtual = grupo.checkedChipId.takeIf { it != -1 }?.let { grupo.findViewById<Chip>(it) }
+        val chaveAtual: String? = chipAtual?.let {
+            (it.tag as? Categoria)?.chave ?: it.tag as? String
+        }
+
+        grupo.removeAllViews()
+        chipTodas = criarChip(getString(R.string.filtro_todas), null)
+        grupo.addView(chipTodas)
+
         Categoria.entries.forEach { categoria ->
             grupo.addView(criarChip("${categoria.emoji} ${categoria.rotulo}", categoria))
         }
 
-        grupo.setOnCheckedStateChangeListener { group, checkedIds ->
-            val chipId = checkedIds.firstOrNull()
-            val categoria = if (chipId != null) {
-                group.findViewById<Chip>(chipId)?.tag as? Categoria
-            } else {
-                null
+        // Fase 26 — categorias novas: chaves textuais presentes no catálogo que
+        // não pertencem ao enum fixo, exibidas com rótulo capitalizado.
+        val chavesFixas = Categoria.entries.map { it.chave }.toSet()
+        val chavesDoCatalogo = ias.flatMap { it.categorias }.toSet()
+        chavesDoCatalogo
+            .filterNot { it in chavesFixas }
+            .sorted()
+            .forEach { chaveNova ->
+                val chip = criarChip(CategoriaDinamica.rotulo(chaveNova), chaveNova)
+                grupo.addView(chip)
             }
-            viewModel.definirCategoria(categoria)
+
+        // Re-seleciona a categoria que estava ativa antes da reconstrução.
+        if (chaveAtual != null) {
+            for (i in 0 until grupo.childCount) {
+                val chip = grupo.getChildAt(i) as? Chip ?: continue
+                if ((chip.tag as? Categoria)?.chave == chaveAtual || chip.tag == chaveAtual) {
+                    chip.isChecked = true
+                    break
+                }
+            }
+        } else {
+            chipTodas.isChecked = true
         }
     }
 
@@ -194,6 +262,15 @@ class MainActivity : AppCompatActivity() {
         return Chip(this).apply {
             text = texto
             tag = categoria
+            isCheckable = true
+            isClickable = true
+        }
+    }
+
+    private fun criarChip(texto: String, chaveCategoria: String): Chip {
+        return Chip(this).apply {
+            text = texto
+            tag = chaveCategoria
             isCheckable = true
             isClickable = true
         }
@@ -224,21 +301,68 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Fase 13.6 — Botão "Limpar filtros": some quando nenhum filtro está ativo
-     * (observando [MainViewModel.filtroAtivo]) e, ao ser tocado, reseta pesquisa,
-     * categoria e ordenação tanto no [viewModel] quanto nos widgets da tela.
-     */
-    private fun configurarBotaoLimparFiltros() {
-        viewModel.filtroAtivo.observe(this) { ativo ->
-            binding.btnLimparFiltros.visibility = if (ativo) View.VISIBLE else View.GONE
+    /** Configura a atualização manual do catálogo usando a busca web da Groq Compound. */
+    private fun configurarBotaoAtualizarIAs() {
+        binding.btnAtualizarIAs.contentDescription = getString(R.string.atualizar_ias_desc)
+        binding.btnAtualizarIAs.setOnClickListener { atualizarIasComIA() }
+    }
+
+    private fun atualizarIasComIA() {
+        val apiKey = AssistenteIARepository(applicationContext).obterApiKey()
+        if (apiKey.isNullOrBlank()) {
+            Snackbar.make(binding.root, R.string.atualizar_ias_sem_api_key, Snackbar.LENGTH_LONG).show()
+            return
         }
-        binding.btnLimparFiltros.setOnClickListener {
-            binding.searchIAs.setQuery("", false)
-            binding.searchIAs.clearFocus()
-            chipTodas.isChecked = true
-            binding.toggleOrdenacao.clearChecked()
-            viewModel.limparFiltros()
+
+        binding.btnAtualizarIAs.isEnabled = false
+        binding.progressSincronizandoCatalogo.visibility = View.VISIBLE
+        Snackbar.make(binding.root, R.string.atualizar_ias_em_andamento, Snackbar.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            val resultado = try {
+                withContext(Dispatchers.IO) {
+                    val catalogoAtual = repositorio.carregarCatalogo()
+                    val prompt = PromptAtualizacaoCatalogoIA.construir(Categoria.entries, catalogoAtual)
+                    when (val resposta = enviarComBuscaNaWeb(
+                        GroqClient(apiKey),
+                        "Faça uma nova varredura na internet por novidades de IA e atualize o catálogo.",
+                        prompt
+                    )) {
+                        is ResultadoComFallback.Sucesso -> {
+                            val parseado = ParserAtualizacaoCatalogoIA.parsear(resposta.texto, catalogoAtual)
+                            val quantidade = CatalogoCuradoRepository(applicationContext).adicionar(parseado.novasIas)
+                            ResultadoAtualizacaoInterna.Sucesso(quantidade, repositorio.carregarCatalogo())
+                        }
+                        is ResultadoComFallback.Falha -> ResultadoAtualizacaoInterna.Falha(resposta.motivo)
+                    }
+                }
+            } catch (e: Exception) {
+                ResultadoAtualizacaoInterna.Falha(e.message ?: "Falha inesperada")
+            }
+
+            binding.progressSincronizandoCatalogo.visibility = View.GONE
+            binding.btnAtualizarIAs.isEnabled = true
+
+            when (resultado) {
+                is ResultadoAtualizacaoInterna.Sucesso -> {
+                    viewModel.definirCatalogo(resultado.catalogo)
+                    reconstruirChipsCategorias(resultado.catalogo)
+                    if (resultado.quantidade == 0) {
+                        Snackbar.make(binding.root, R.string.atualizar_ias_nenhuma, Snackbar.LENGTH_LONG).show()
+                    } else {
+                        Snackbar.make(
+                            binding.root,
+                            getString(R.string.atualizar_ias_sucesso, resultado.quantidade),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                }
+                is ResultadoAtualizacaoInterna.Falha -> Snackbar.make(
+                    binding.root,
+                    getString(R.string.atualizar_ias_falha, resultado.motivo),
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
@@ -253,6 +377,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val ias = repositorio.carregarCatalogo()
                 viewModel.definirCatalogo(ias)
+                reconstruirChipsCategorias(ias)
                 sincronizarCatalogoRemoto()
                 prefetchLogosSePrimeiraVez(ias)
             } catch (e: Exception) {
@@ -296,7 +421,9 @@ class MainActivity : AppCompatActivity() {
                 val versaoBase = repositorio.versaoDoAssetEmbutido()
                 val atualizou = atualizacaoRepositorio.verificarEAtualizar(versaoBase)
                 if (atualizou) {
-                    viewModel.definirCatalogo(repositorio.carregarCatalogo())
+                    val catalogo = repositorio.carregarCatalogo()
+                    viewModel.definirCatalogo(catalogo)
+                    reconstruirChipsCategorias(catalogo)
                 }
             } finally {
                 binding.progressSincronizandoCatalogo.visibility = View.GONE

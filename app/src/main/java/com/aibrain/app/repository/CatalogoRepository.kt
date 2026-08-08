@@ -46,12 +46,20 @@ class CatalogoRepository(private val context: Context) {
      */
     suspend fun carregarCatalogo(): List<IA> = withContext(Dispatchers.IO) {
         val json = lerCatalogoAtivoOuAsset()
+        val jsonCurado = CatalogoCuradoRepository(context).lerJson().orEmpty()
+        val chaveCache = json + "\n" + jsonCurado
 
         val cache = catalogoEmCache
-        if (cache != null && jsonEmCache == json) return@withContext cache
+        if (cache != null && jsonEmCache == chaveCache) return@withContext cache
 
-        val lista = parsearCatalogo(json)
-        jsonEmCache = json
+        val catalogoBase = parsearCatalogo(json)
+        val catalogoCurado = try {
+            if (jsonCurado.isBlank()) emptyList() else parsearCatalogo(jsonCurado)
+        } catch (_: Exception) {
+            emptyList()
+        }
+        val lista = mesclarSemDuplicatas(catalogoBase, catalogoCurado)
+        jsonEmCache = chaveCache
         catalogoEmCache = lista
         lista
     }
@@ -98,6 +106,22 @@ class CatalogoRepository(private val context: Context) {
             throw IllegalStateException("Não foi possível ler $nomeArquivo", e)
         }
     }
+
+    private fun mesclarSemDuplicatas(base: List<IA>, curadas: List<IA>): List<IA> {
+        val chaves = base.flatMap { listOf(it.nome, it.site) }.map(::chave).toMutableSet()
+        val unicas = curadas.filter { ia ->
+            val chavesDaIa = listOf(ia.nome, ia.site).map(::chave)
+            if (chavesDaIa.any { it in chaves }) {
+                false
+            } else {
+                chaves += chavesDaIa
+                true
+            }
+        }
+        return base + unicas
+    }
+
+    private fun chave(valor: String): String = valor.trim().lowercase()
 
     private fun parsearCatalogo(json: String): List<IA> {
         val raiz = JSONObject(json)

@@ -28,20 +28,22 @@ class IA18Adapter(
 
     inner class ViewHolder(private val binding: ItemIaBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(ia: IA18Repository.IA18) {
-            binding.txtNomeIA.text = ia.nome
-            binding.txtDescricaoIA.text = ia.descricao
-            binding.txtCategoriaIA.text = ia.status
-            
+            // Item do catálogo +18 reaproveita o layout padrão `item_ia.xml` do
+            // catálogo principal (Fase 6), adaptando os campos existentes ao
+            // schema `IA18Repository.IA18` (Fase 22).
+            binding.txtNomeItem.text = ia.nome
+            binding.txtDescricaoItem.text = ia.descricao
+            binding.txtCategoriasItem.text = ia.status
+
             // Ocultar elementos não utilizados no catálogo +18
-            binding.btnFavorito.visibility = android.view.View.GONE
-            binding.containerNotas.visibility = android.view.View.GONE
+            binding.btnFavoritoItem.visibility = android.view.View.GONE
 
             escopo.launch {
-                val bitmap = imagemCache.obter(ia.logo)
+                val bitmap = imagemCache.carregar(ia.logo)
                 if (bitmap != null) {
-                    binding.imgLogoIA.setImageBitmap(bitmap)
+                    binding.imgLogoItem.setImageBitmap(bitmap)
                 } else {
-                    binding.imgLogoIA.setImageResource(com.aibrain.app.R.drawable.ic_image_placeholder)
+                    binding.imgLogoItem.setImageResource(com.aibrain.app.R.drawable.ic_image_placeholder)
                 }
             }
 

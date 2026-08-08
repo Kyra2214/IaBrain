@@ -137,8 +137,7 @@
 
         </HorizontalScrollView>
 
-        <!-- Fase 15.6 — indicador da quantidade de filtros ativos + "Limpar filtros"
-             (mesmo padrão visual/string da Fase 13.6, reaproveitado aqui). -->
+        <!-- Indicador da quantidade de filtros ativos. -->
         <LinearLayout
             android:id="@+id/rowFiltrosStatus"
             android:layout_width="match_parent"
@@ -158,15 +157,6 @@
                 android:textSize="12sp"
                 tools:text="2 filtros ativos" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLimparFiltrosBrain"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:text="@string/filtro_limpar"
-                android:textColor="@color/on_background_muted"
-                android:textSize="12sp" />
 
         </LinearLayout>
 

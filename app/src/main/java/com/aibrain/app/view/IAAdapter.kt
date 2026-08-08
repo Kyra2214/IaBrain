@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aibrain.app.cache.ImagemCache
 import com.aibrain.app.databinding.ItemIaBinding
 import com.aibrain.app.model.Categoria
+import com.aibrain.app.model.CategoriaDinamica
 import com.aibrain.app.model.IA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -49,10 +50,11 @@ class IAAdapter(
 
         holder.binding.txtNomeItem.text = ia.nome
         holder.binding.txtDescricaoItem.text = ia.descricao
+        // Fase 26 — categorias dinâmicas (novas, fora do enum fixo) também são
+        // exibidas com rótulo legível via [CategoriaDinamica.rotulo].
         holder.binding.txtCategoriasItem.text = ia.categorias
-            .mapNotNull { Categoria.porChave(it) }
             .take(3)
-            .joinToString(" · ") { "${it.emoji} ${it.rotulo}" }
+            .joinToString(" · ") { CategoriaDinamica.rotulo(it) }
 
         holder.binding.btnFavoritoItem.setImageResource(
             if (favoritos.contains(ia.id)) com.aibrain.app.R.drawable.ic_star_filled

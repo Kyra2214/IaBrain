@@ -71,3 +71,21 @@ fun enviarComFallback(
 
     return ResultadoComFallback.Falha(ultimaFalha)
 }
+
+
+/** Sistemas Compound da Groq com busca na web nativa para atualização do catálogo. */
+val MODELOS_GROQ_COM_BUSCA_WEB = listOf(
+    "groq/compound",
+    "groq/compound-mini"
+)
+
+fun enviarComBuscaNaWeb(
+    cliente: GroqClient,
+    mensagemUsuario: String,
+    promptSistema: String? = null
+): ResultadoComFallback = enviarComFallback(
+    cliente = cliente,
+    mensagemUsuario = mensagemUsuario,
+    promptSistema = promptSistema,
+    modelos = MODELOS_GROQ_COM_BUSCA_WEB
+)

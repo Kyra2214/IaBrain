@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.aibrain.app.model.Categoria
 import com.aibrain.app.model.IA
+import com.aibrain.app.util.normalizarBusca
 import com.aibrain.app.util.notaMedia
 import com.aibrain.app.util.rankingGeral
 
@@ -37,7 +38,11 @@ class MainViewModel : ViewModel() {
         private set
 
     private var termoPesquisaAtual: String = ""
-    private var categoriaSelecionada: Categoria? = null
+    // Fase 26 — filtro por chave textual (não só enum): permite filtrar por
+    // categorias novas criadas pela curadoria, que não existem no enum fixo.
+    private var chaveCategoriaSelecionada: String? = null
+    private val categoriaSelecionada: Categoria?
+        get() = chaveCategoriaSelecionada?.let { Categoria.porChave(it) }
     private var ordenacaoAtual: Ordenacao = Ordenacao.NENHUMA
 
     /** Fase 14.1 — lista completa filtrada/ordenada (antes da paginação); base para [carregarMaisItens]. */
@@ -49,7 +54,7 @@ class MainViewModel : ViewModel() {
     private val _resultado = MutableLiveData<List<IA>>(emptyList())
     val resultado: LiveData<List<IA>> = _resultado
 
-    /** Fase 13.6 — true quando pesquisa, categoria ou ordenação está ativa, para exibir "Limpar filtros". */
+    /** Indica quando pesquisa, categoria ou ordenação está ativa. */
     private val _filtroAtivo = MutableLiveData(false)
     val filtroAtivo: LiveData<Boolean> = _filtroAtivo
 
@@ -70,7 +75,17 @@ class MainViewModel : ViewModel() {
     }
 
     fun definirCategoria(categoria: Categoria?) {
-        categoriaSelecionada = categoria
+        chaveCategoriaSelecionada = categoria?.chave
+        aplicarFiltros()
+    }
+
+    /**
+     * Fase 26 — filtro por chave textual de categoria: aceita tanto as chaves
+     * fixas do enum [Categoria] quanto categorias novas criadas pela curadoria
+     * (que ganham chip/aba próprio na tela principal).
+     */
+    fun definirCategoriaPorChave(chave: String?) {
+        chaveCategoriaSelecionada = chave
         aplicarFiltros()
     }
 
@@ -79,10 +94,10 @@ class MainViewModel : ViewModel() {
         aplicarFiltros()
     }
 
-    /** Fase 13.6 — reseta pesquisa + categoria + ordenação de uma vez. */
+    /** Reseta pesquisa + categoria + ordenação de uma vez para consumidores internos. */
     fun limparFiltros() {
         termoPesquisaAtual = ""
-        categoriaSelecionada = null
+        chaveCategoriaSelecionada = null
         ordenacaoAtual = Ordenacao.NENHUMA
         aplicarFiltros()
     }
@@ -101,19 +116,22 @@ class MainViewModel : ViewModel() {
 
     /** Combina pesquisa + categoria selecionada + ordenação sobre o catálogo completo. */
     private fun aplicarFiltros() {
-        val termo = termoPesquisaAtual.trim().lowercase()
+        val termo = termoPesquisaAtual.trim().normalizarBusca()
         val categoria = categoriaSelecionada
+        // Fase 26 — filtro pela chave textual direta, cobrindo também as
+        // categorias novas (dinâmicas) que não existem no enum fixo.
+        val chaveAtiva = chaveCategoriaSelecionada
 
         val filtradas = catalogoCompleto.filter { ia ->
             val passaPesquisa = termo.isEmpty() ||
-                ia.nome.lowercase().contains(termo) ||
-                ia.descricao.lowercase().contains(termo) ||
+                ia.nome.normalizarBusca().contains(termo) ||
+                ia.descricao.normalizarBusca().contains(termo) ||
                 ia.categorias.any { chave ->
-                    chave.lowercase().contains(termo) ||
-                        Categoria.porChave(chave)?.rotulo?.lowercase()?.contains(termo) == true
+                    chave.normalizarBusca().contains(termo) ||
+                        Categoria.porChave(chave)?.rotulo?.normalizarBusca()?.contains(termo) == true
                 }
 
-            val passaCategoria = categoria == null || ia.categorias.contains(categoria.chave)
+            val passaCategoria = chaveAtiva == null || ia.categorias.any { it == chaveAtiva || Categoria.porChave(it)?.chave == chaveAtiva }
 
             passaPesquisa && passaCategoria
         }
@@ -132,6 +150,6 @@ class MainViewModel : ViewModel() {
         resultadoCompletoFiltrado = ordenadas
         itensVisiveis = TAMANHO_PAGINA
         _resultado.value = ordenadas.take(itensVisiveis)
-        _filtroAtivo.value = termo.isNotEmpty() || categoria != null || ordenacaoAtual != Ordenacao.NENHUMA
+        _filtroAtivo.value = termo.isNotEmpty() || chaveAtiva != null || ordenacaoAtual != Ordenacao.NENHUMA
     }
 }

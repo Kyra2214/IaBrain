@@ -16,6 +16,13 @@ android {
         versionName = "1.0"
     }
 
+    // Fase 12.9 — permite rodar testes unitários locais que usam classes do
+    // framework Android (org.json.JSONObject), retornando valores padrão em
+    // vez de estourar "not mocked".
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -65,4 +72,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    // Fase 12.9 — org.json real em testes: o `org.json` embutido no Android SDK é
+    // um stub que estoura em testes locais; a dependência abaixo fornece a
+    // implementação completa para os testes de curadoria (Fase 18.8).
+    testImplementation("org.json:json:20240303")
 }

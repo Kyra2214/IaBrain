@@ -58,6 +58,17 @@
         <item name="android:windowAnimationStyle">@style/Animacao.AIBrain.Janela</item>
     </style>
 
+    <!--
+        Fase 24 — variante sem a barra de título do sistema (ActionBar).
+        Todas as telas do app desenham cabeçalhos próprios; sem este tema, o
+        sistema desenhava uma barra cinza extra no topo com o nome "AI Brain",
+        que era o bug reportado pelo usuário.
+    -->
+    <style name="Theme.AIBrain.NoActionBar" parent="Theme.AIBrain">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="Animacao.AIBrain.Janela" parent="android:Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
         <item name="android:activityOpenExitAnimation">@anim/fade_out</item>

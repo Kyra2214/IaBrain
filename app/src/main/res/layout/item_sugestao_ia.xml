@@ -40,7 +40,18 @@
             android:layout_marginTop="2dp"
             android:textColor="@color/on_background_muted"
             android:textSize="13sp"
-            tools:text="Pesquisa" />
+            tools:text="🧠 Saúde Mental" />
+
+        <!-- Fase 26 — descrição curta da IA sugerida pela Groq (formato estendido). -->
+        <TextView
+            android:id="@+id/txtDescricaoSugestao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_background"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="Assistente de terapia e bem-estar emocional, com conversas guiadas e diário de humor." />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAdicionarSugestao"

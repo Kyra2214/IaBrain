@@ -18,7 +18,13 @@
     <string name="lista_vazia">Nenhuma IA encontrada.</string>
     <string name="lista_pesquisar_hint">Pesquisar IA por nome ou função…</string>
     <string name="filtro_todas">Todas</string>
-    <string name="filtro_limpar">Limpar filtros</string>
+    <string name="atualizar_ias_botao">Atualizar IAs</string>
+    <string name="atualizar_ias_desc">Pesquisar e adicionar novas IAs</string>
+    <string name="atualizar_ias_sem_api_key">Configure uma API key da Groq no Assistente de IA antes de atualizar</string>
+    <string name="atualizar_ias_em_andamento">Pesquisando novidades na web…</string>
+    <string name="atualizar_ias_sucesso">%1$d nova(s) IA(s) adicionada(s) ao catálogo</string>
+    <string name="atualizar_ias_nenhuma">Nenhuma IA nova confiável foi encontrada</string>
+    <string name="atualizar_ias_falha">Não foi possível atualizar as IAs: %1$s</string>
 
     <string name="ordenar_ranking">🏆 Ranking</string>
     <string name="ordenar_populares">🔥 Populares</string>
@@ -79,6 +85,13 @@
     <string name="criador_prompts_botao_abrir_ia">Abrir IA recomendada</string>
     <string name="criador_prompts_prompt_salvo">Prompt salvo na Biblioteca</string>
 
+    <!-- Fase 25 — geração de prompts com a IA (Groq) no Criador de Prompts -->
+    <string name="criador_prompts_modo_ia">⚡ Gerar com IA</string>
+    <string name="criador_prompts_modo_ia_desc">Ativar geração de prompts com a Groq</string>
+    <string name="criador_prompts_sem_api_key">Configure a API key da Groq no Assistente de IA para gerar com a IA</string>
+    <string name="criador_prompts_gerando_ia">Gerando prompt com a IA…</string>
+    <string name="criador_prompts_falha_ia">Não foi possível gerar com a IA: %1$s</string>
+
     <!-- Assistente de IA / Groq (Fase 18.1/18.2) -->
     <string name="assistente_ia_titulo">Assistente de IA</string>
     <string name="assistente_ia_abrir_desc">Abrir Assistente de IA</string>
@@ -114,6 +127,9 @@
     <string name="assistente_ia_curadoria_resposta_malformada">A Groq respondeu em um formato inesperado. Tente reformular a pergunta.</string>
     <string name="assistente_ia_curadoria_botao_adicionar">Adicionar ao catálogo</string>
     <string name="assistente_ia_curadoria_snippet_copiado">Dados copiados — revise e cole no ia_catalogo.json</string>
+    <string name="assistente_ia_curadoria_adicionar_sucesso">%1$s foi adicionada ao catálogo</string>
+    <string name="assistente_ia_curadoria_adicionar_ja_existe">Essa IA já está no catálogo</string>
+    <string name="assistente_ia_curadoria_adicionar_falha">Não foi possível adicionar a IA: %1$s</string>
     <string name="brain_titulo">AI Brain</string>
     <string name="brain_hint_pergunta">O que você quer fazer? Ex: quero criar vídeo</string>
     <string name="brain_botao_perguntar">Perguntar</string>

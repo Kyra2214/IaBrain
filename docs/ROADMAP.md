@@ -4,7 +4,7 @@
 > Ordem: sempre do que **não precisa de nenhuma estrutura** para o que **depende de um conjunto** já pronto.
 > Ao final de cada submódulo → projeto completo enviado em **.zip**.
 >
-> **Progresso geral: 140/140 submódulos (100%)**
+> **Progresso geral: 140/140 submódulos concluídos + Fases 23, 24 e 25 (melhorias e correções) concluídas**
 
 ---
 
@@ -40,6 +40,41 @@
 - **22.3** ✅ Catálogo independente (`ia_18_catalogo.json`) com submenus por categoria
 - **22.4** ✅ Interface de listagem seguindo o padrão visual do app, mas com separação de dados
 - **22.5** ✅ Documentação e roadmap atualizados
+
+## FASE 23 — Correção da Tela do Criador de Prompts ✅ CONCLUÍDA
+*Correção do bug que fazia a tela "Criador de Prompts" abrir apenas com o título, sem o campo de mensagem, a conversa e os botões (layout reescrito com tema escuro consistente e estrutura robusta, mais ajustes de compilação e busca sem acentos no catálogo).*
+
+- **23.1** ✅ `activity_criador_prompts.xml` reescrito: entrada de mensagem, conversa e botões sempre visíveis, sem âncoras em views ocultas
+- **23.2** ✅ Cores explícitas compatíveis com o tema escuro (fundo/hint/texto)
+- **23.3** ✅ Correções de compilação (`CriadorPromptsActivity` KDoc, `IA18Adapter`, `IA18ViewModel`, `AIBrainActivity`)
+- **23.4** ✅ Pesquisa sem acentos (`normalizarBusca()`) e suíte de testes completa passando (52 testes)
+
+## FASE 25 — Geração de Prompts com IA (Groq) e Correções Visuais ✅ CONCLUÍDA
+*Correções na tela do Assistente de IA (link da Groq legível e balão "Remover API key" não cortado) e integração da Groq no Criador de Prompts: com o chip "⚡ Gerar com IA" ligado, o texto digitado vira um prompt completo gerado pela IA, usando a API key já cadastrada no app.*
+
+- **25.1** ✅ Botão "Gerar API key grátis →" com cor legível nos dois temas (`@color/secondary`)
+- **25.2** ✅ Snackbars ancoradas ao `CoordinatorLayout` — avisos (ex: "API key removida") exibem sem cortes
+- **25.3** ✅ Chip "⚡ Gerar com IA" no cabeçalho do Criador de Prompts + indicador de progresso
+- **25.4** ✅ `PromptGeneratorGroq` (prompt de sistema de engenharia de prompts) e envio via Groq com fallback automático entre modelos gratuitos
+- **25.5** ✅ Prompt gerado exibido na conversa, salvável na Biblioteca, com IA de destino recomendada; sem API key, a conversa orienta a configuração
+- **25.6** ✅ Modo clássico do Prompt Builder preservado (chip desligado) e suíte de testes completa passando (56 testes)
+
+## FASE 26 — Adição Real ao Catálogo pela Curadoria ✅ CONCLUÍDA
+
+*O botão "Adicionar ao catálogo" (pesquisa de IAs no Assistente de IA) agora adiciona a IA de verdade ao catálogo do app — e categorias novas, como "Saúde Mental", criam automaticamente sua própria aba/chip na tela principal.*
+
+- **26.1** ✅ `SnippetCatalogoIA.paraIA` gera uma [IA] completa da sugestão: id único `curada-*`, logo via favicon, descrição da Groq, categorias, idiomas, nota e acesso
+- **26.2** ✅ Persistência real via `CatalogoCuradoRepository.adicionarUma` — a IA entra no catálogo, aparece na listagem na hora e sobrevive a reinícios
+- **26.3** ✅ `CategoriaDinamica`: categorias novas ganham chip de filtro próprio na tela principal; categorias que casam com o enum fixo são mapeadas para a chave
+- **26.4** ✅ Prompt de curadoria estendido (descrição curta + lista de categorias existentes) e exibição da descrição no card de sugestão
+- **26.5** ✅ Feedback ao usuário: Snackbars de sucesso, "já está no catálogo" (proteção contra toque duplo) e falha; suíte completa com 70 testes passando
+
+## FASE 24 — Interface do Navegador e Barra de Navegação ✅ CONCLUÍDA
+- **24.1** ✅ Faixa cinza superior do navegador removida; site da IA ocupa a tela inteira (voltar/avançar via gestos do Android)
+- **24.2** ✅ "Compartilhar" e "Abrir externo" movidos para o menu de contexto de cada aba
+- **24.3** ✅ Ícone dedicado IA +18 (`ic_ia18.xml`) na barra de navegação do app, mantendo abertura dentro do próprio app
+- **24.4** ✅ Barra cinza do sistema (ActionBar com "AI Brain") removida de todas as 12 telas via tema `Theme.AIBrain.NoActionBar`
+- **24.5** ✅ IAs da área +18 agora abrem no navegador interno com abas, igual às demais IAs do catálogo
 
 ---
 

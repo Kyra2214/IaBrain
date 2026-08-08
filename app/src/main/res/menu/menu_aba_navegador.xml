@@ -9,4 +9,12 @@
     <item
         android:id="@+id/menuPaginaInicialAba"
         android:title="@string/browser_pagina_inicial_aba" />
+    <!-- Fase 24 — a barra superior (com botões compartilhar/abrir externo) foi
+         removida; as ações continuam disponíveis aqui no menu da aba. -->
+    <item
+        android:id="@+id/menuCompartilharAba"
+        android:title="@string/browser_compartilhar_desc" />
+    <item
+        android:id="@+id/menuAbrirExternoAba"
+        android:title="@string/browser_abrir_externo_desc" />
 </menu>

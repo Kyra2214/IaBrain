@@ -10,6 +10,7 @@ import com.aibrain.app.cache.ImagemCache
 import com.aibrain.app.data.FavoritosRepository
 import com.aibrain.app.databinding.ActivityDetalheIaBinding
 import com.aibrain.app.model.Categoria
+import com.aibrain.app.model.CategoriaDinamica
 import com.aibrain.app.model.IA
 import kotlinx.coroutines.launch
 
@@ -67,9 +68,10 @@ class DetalheIAActivity : AppCompatActivity() {
         binding.txtTipoAcesso.text = if (ia.gratuita) getString(com.aibrain.app.R.string.detalhe_gratuita)
         else getString(com.aibrain.app.R.string.detalhe_paga)
 
+        // Fase 26 — categorias dinâmicas (novas, fora do enum fixo) também são
+        // exibidas com rótulo legível via [CategoriaDinamica.rotulo].
         binding.txtCategorias.text = ia.categorias
-            .mapNotNull { Categoria.porChave(it) }
-            .joinToString(" · ") { "${it.emoji} ${it.rotulo}" }
+            .joinToString(" · ") { CategoriaDinamica.rotulo(it) }
 
         binding.txtIdiomas.text = ia.idiomas.joinToString(" · ") { it.uppercase() }
 
@@ -133,12 +135,9 @@ class DetalheIAActivity : AppCompatActivity() {
         ia.notas.entries
             .sortedByDescending { it.value }
             .forEach { (chaveCategoria, nota) ->
-                val categoria = Categoria.porChave(chaveCategoria)
-                val texto = if (categoria != null) {
-                    "${categoria.emoji} ${categoria.rotulo}: $nota"
-                } else {
-                    "$chaveCategoria: $nota"
-                }
+                // Fase 26 — rótulo legível tanto para categorias fixas (com emoji)
+                // quanto para categorias novas criadas pela curadoria.
+                val texto = "${CategoriaDinamica.rotulo(chaveCategoria)}: $nota"
 
                 val linha = TextView(this).apply {
                     text = texto

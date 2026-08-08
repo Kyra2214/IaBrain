@@ -125,13 +125,15 @@ class BrowserActivity : AppCompatActivity() {
                 adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
             },
             aoAtualizarAba = { aba -> tabManager.atualizarWebViewDaAba(aba.id) { webView -> configurarWebView(webView, aba.id) } },
-            aoAbrirPaginaInicialAba = { aba -> tabManager.abrirPaginaInicial(aba.id) { webView -> configurarWebView(webView, aba.id) } }
+            aoAbrirPaginaInicialAba = { aba -> tabManager.abrirPaginaInicial(aba.id) { webView -> configurarWebView(webView, aba.id) } },
+            // Fase 24 — barra superior removida; compartilhar/abrir externo ficam no menu da aba.
+            aoCompartilharAba = { _ -> compartilharPaginaAtual() },
+            aoAbrirExternoAba = { _ -> abrirNoNavegadorExterno() }
         )
         binding.recyclerAbasBrowser.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerAbasBrowser.adapter = adapter
 
-        configurarBarraSuperior()
         restaurarSessaoSalva()
         if (intent.getStringExtra(EXTRA_URL) != null) {
             abrirNovaAbaDoIntent(intent)
@@ -177,11 +179,12 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     private fun selecionarAba(id: String) {
-        val aba = tabManager.ativarNaTela(id, binding.containerWebViewBrowser) { webView ->
+        tabManager.ativarNaTela(id, binding.containerWebViewBrowser) { webView ->
             configurarWebView(webView, id)
         } ?: return
-        binding.txtBrowserTitulo.text = aba.nomeIA
-        atualizarEstadoNavegacao()
+        // Fase 24 — a barra superior foi removida; a seleção da aba só precisa
+        // atualizar a barra de abas. Voltar/avançar no histórico é feito pelos
+        // gestos de navegação do próprio Android.
         adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
     }
 
@@ -195,24 +198,11 @@ class BrowserActivity : AppCompatActivity() {
         selecionarAba(proximaAtiva)
     }
 
-    private fun configurarBarraSuperior() {
-        binding.btnBrowserVoltar.setOnClickListener {
-            tabManager.webViewAtiva()?.let { if (it.canGoBack()) it.goBack() }
-        }
-        binding.btnBrowserAvancar.setOnClickListener {
-            tabManager.webViewAtiva()?.let { if (it.canGoForward()) it.goForward() }
-        }
-        binding.btnBrowserAtualizar.setOnClickListener {
-            tabManager.webViewAtiva()?.reload()
-        }
-        binding.btnBrowserCompartilhar.setOnClickListener {
-            compartilharPaginaAtual()
-        }
-        binding.btnBrowserAbrirExterno.setOnClickListener {
-            abrirNoNavegadorExterno()
-        }
-        atualizarEstadoNavegacao()
-    }
+    // Fase 24 — os botões da barra superior foram removidos do layout;
+    // atualizar/compartilhar/abrir externo continuam disponíveis no menu de
+    // cada aba. Este helper permanece para uso futuro caso a barra retorne.
+    @Suppress("unused")
+    private fun configurarBarraSuperior() = Unit
 
     private fun compartilharPaginaAtual() {
         val url = tabManager.webViewAtiva()?.url ?: return
@@ -244,15 +234,10 @@ class BrowserActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun atualizarEstadoNavegacao() {
-        val webView = tabManager.webViewAtiva()
-        val podeVoltar = webView?.canGoBack() ?: false
-        val podeAvancar = webView?.canGoForward() ?: false
-        binding.btnBrowserVoltar.isEnabled = podeVoltar
-        binding.btnBrowserVoltar.alpha = if (podeVoltar) 1f else 0.4f
-        binding.btnBrowserAvancar.isEnabled = podeAvancar
-        binding.btnBrowserAvancar.alpha = if (podeAvancar) 1f else 0.4f
-    }
+    // Fase 24 — os botões de voltar/avançar da barra superior foram removidos;
+    // a navegação no histórico é feita pelos gestos de navegação do Android.
+    @Suppress("unused")
+    private fun atualizarEstadoNavegacao() = Unit
 
     /**
      * Aplica a configuração técnica (Fase 21.3) e os callbacks de UI sobre o
@@ -299,11 +284,8 @@ class BrowserActivity : AppCompatActivity() {
                 super.onPageFinished(view, url)
                 tabManager.sincronizarEstadoNavegacao(idAba)
                 if (tabManager.idAbaAtiva() == idAba) {
-                    atualizarEstadoNavegacao()
-                    val nomeIA = tabManager.obterAbaAtiva()?.nomeIA
-                    if (nomeIA.isNullOrBlank()) {
-                        binding.txtBrowserTitulo.text = view?.title ?: ""
-                    }
+                    // Fase 24 — barra superior removida; nada a atualizar além
+                    // da barra de abas abaixo do WebView.
                 }
                 adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
             }
