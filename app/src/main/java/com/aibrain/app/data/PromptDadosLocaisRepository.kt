@@ -77,7 +77,7 @@ class PromptDadosLocaisRepository(context: Context) {
         historico.remove(idPrompt)
         historico.add(0, idPrompt)
         while (historico.size > LIMITE_HISTORICO) historico.removeAt(historico.lastIndex)
-        prefs.edit().putString(CHAVE_HISTORICO, historico.joinToString(",")).apply()
+        prefs.edit().putString(CHAVE_HISTORICO, JSONArray(historico).toString()).apply()
     }
 
     fun obterContagemUso(idPrompt: String): Int = obterContagensUso()[idPrompt] ?: 0
@@ -85,27 +85,46 @@ class PromptDadosLocaisRepository(context: Context) {
     /** Todas as contagens de uso registradas, por ID de prompt. */
     fun obterContagensUso(): Map<String, Int> {
         val bruto = prefs.getString(CHAVE_CONTAGENS_USO, null) ?: return emptyMap()
-        return bruto.split(",")
-            .filter { it.isNotBlank() && it.contains(":") }
-            .associate { par ->
-                val (id, contagem) = par.split(":", limit = 2)
-                id to (contagem.toIntOrNull() ?: 0)
+        return runCatching {
+            val array = JSONArray(bruto)
+            buildMap {
+                for (index in 0 until array.length()) {
+                    val item = array.getJSONObject(index)
+                    put(item.getString("id"), item.optInt("contagem", 0))
+                }
             }
+        }.getOrElse {
+            // Compatibilidade com instalações que ainda possuem o CSV antigo.
+            bruto.split(",")
+                .filter { it.isNotBlank() && it.contains(":") }
+                .associate { par ->
+                    val (id, contagem) = par.split(":", limit = 2)
+                    id to (contagem.toIntOrNull() ?: 0)
+                }
+        }
     }
 
     private fun salvarContagens(contagens: Map<String, Int>) {
-        val serializado = contagens.entries.joinToString(",") { "${it.key}:${it.value}" }
-        prefs.edit().putString(CHAVE_CONTAGENS_USO, serializado).apply()
+        val array = JSONArray()
+        contagens.forEach { (id, contagem) ->
+            array.put(JSONObject().put("id", id).put("contagem", contagem))
+        }
+        prefs.edit().putString(CHAVE_CONTAGENS_USO, array.toString()).apply()
     }
 
     // ---- Histórico de utilização (Fase 16.16) ----
 
     /** IDs dos últimos prompts copiados/usados, do mais recente para o mais antigo. */
-    fun obterHistorico(): List<String> =
-        prefs.getString(CHAVE_HISTORICO, null)
-            ?.split(",")
-            ?.filter { it.isNotBlank() }
-            ?: emptyList()
+    fun obterHistorico(): List<String> {
+        val bruto = prefs.getString(CHAVE_HISTORICO, null) ?: return emptyList()
+        return runCatching {
+            val array = JSONArray(bruto)
+            (0 until array.length()).map { array.getString(it) }
+        }.getOrElse {
+            // Compatibilidade com instalações que ainda possuem o CSV antigo.
+            bruto.split(",").filter { it.isNotBlank() }
+        }
+    }
 
     // ---- Prompts gerados pelo Prompt Builder (Fase 17.15) ----
 

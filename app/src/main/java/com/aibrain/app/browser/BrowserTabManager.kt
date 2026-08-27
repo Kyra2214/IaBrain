@@ -263,20 +263,7 @@ class BrowserTabManager(context: Context) {
      */
     private fun criarWebView(): WebView {
         val webView = WebView(appContext)
-        webView.settings.apply {
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            cacheMode = WebSettings.LOAD_DEFAULT
-            mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-            mediaPlaybackRequiresUserGesture = false
-            setGeolocationEnabled(true)
-            allowFileAccess = true
-            allowFileAccessFromFileURLs = false
-            allowUniversalAccessFromFileURLs = false
-        }
-        val cookieManager = CookieManager.getInstance()
-        cookieManager.setAcceptCookie(true)
-        cookieManager.setAcceptThirdPartyCookies(webView, true)
+        WebViewSecurityPolicy.apply(webView)
         return webView
     }
 }

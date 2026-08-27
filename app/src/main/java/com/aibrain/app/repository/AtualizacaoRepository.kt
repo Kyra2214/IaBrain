@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
+import java.net.URI
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -80,18 +81,46 @@ class AtualizacaoRepository(private val context: Context) {
     suspend fun verificarEAtualizar(versaoLocalBase: Int): Boolean = withContext(Dispatchers.IO) {
         try {
             val json = baixarJson(URL_CATALOGO_REMOTO)
-            val versaoRemota = JSONObject(json).optInt("versao", -1)
+            val objeto = JSONObject(json)
+            val versaoRemota = objeto.optInt("versao", -1)
+            validarCatalogo(objeto, versaoRemota)
             val versaoAtual = if (versaoAtiva() >= 0) versaoAtiva() else versaoLocalBase
 
             if (versaoRemota <= versaoAtual) return@withContext false
 
-            arquivoCache().writeText(json)
+            // Escreve e valida o temporário antes do rename, evitando cache
+            // parcial se o processo for interrompido durante a gravação.
+            val destino = arquivoCache()
+            val temporario = File(destino.parentFile, "${destino.name}.tmp")
+            temporario.writeText(json)
+            if (!temporario.renameTo(destino)) {
+                temporario.delete()
+                throw IllegalStateException("Não foi possível ativar o catálogo atualizado")
+            }
             definirVersaoAtiva(versaoRemota)
             true
         } catch (e: Exception) {
             // Offline, serviço indisponível ou JSON remoto malformado —
             // mantém o catálogo atual (fallback para o último JSON salvo).
             false
+        }
+    }
+
+    private fun validarCatalogo(objeto: JSONObject, versao: Int) {
+        require(versao >= 0) { "Versão inválida" }
+        val ias = objeto.optJSONArray("ias") ?: error("Catálogo sem lista de IAs")
+        require(ias.length() > 0) { "Catálogo vazio" }
+        val ids = mutableSetOf<String>()
+        for (i in 0 until ias.length()) {
+            val ia = ias.getJSONObject(i)
+            val id = ia.optString("id").trim()
+            val site = ia.optString("site").trim()
+            require(id.isNotEmpty()) { "IA sem id" }
+            require(ids.add(id)) { "ID duplicado: $id" }
+            val uri = URI(site)
+            require(uri.scheme == "https" && !uri.host.isNullOrBlank()) {
+                "Site inseguro ou inválido para $id"
+            }
         }
     }
 

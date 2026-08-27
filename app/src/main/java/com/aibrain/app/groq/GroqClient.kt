@@ -80,8 +80,7 @@ class GroqClient(private val apiKey: String) {
 
             val codigo = conexao.responseCode
             if (codigo != HttpURLConnection.HTTP_OK) {
-                val corpoErro = conexao.errorStream?.bufferedReader()?.use { it.readText() }
-                throw IllegalStateException(mensagemDeErro(codigo, corpoErro))
+                throw IllegalStateException(mensagemDeErro(codigo))
             }
             return conexao.inputStream.bufferedReader().use { it.readText() }
         } finally {
@@ -90,12 +89,12 @@ class GroqClient(private val apiKey: String) {
     }
 
     /** Mensagem curta de erro a partir do código HTTP, sem expor detalhes internos da API. */
-    private fun mensagemDeErro(codigo: Int, corpoErro: String?): String = when (codigo) {
+    private fun mensagemDeErro(codigo: Int): String = when (codigo) {
         401 -> "API key inválida ou expirada"
         404 -> "Modelo indisponível"
         429 -> "Limite de uso atingido"
         in 500..599 -> "Serviço da Groq indisponível no momento"
-        else -> "Erro HTTP $codigo${corpoErro?.let { " — $it" } ?: ""}"
+        else -> "Erro HTTP $codigo"
     }
 
     private fun extrairTexto(respostaJson: String): Resultado {

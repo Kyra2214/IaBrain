@@ -64,6 +64,8 @@ dependencies {
     // Ciclo de vida / MVVM
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
+    // Armazenamento seguro da API key usando Android Keystore.
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // Coroutines (leitura assíncrona do JSON)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")

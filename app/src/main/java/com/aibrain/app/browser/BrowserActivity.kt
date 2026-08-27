@@ -256,28 +256,15 @@ class BrowserActivity : AppCompatActivity() {
      * `file://`.
      */
     private fun configurarWebView(webView: WebView, idAba: String) {
-        webView.settings.apply {
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            cacheMode = WebSettings.LOAD_DEFAULT
-            mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-            mediaPlaybackRequiresUserGesture = false // reprodução de vídeo inline
-            setGeolocationEnabled(true)
-            allowFileAccess = true
-            allowFileAccessFromFileURLs = false
-            allowUniversalAccessFromFileURLs = false
-        }
-
-        CookieManager.getInstance().apply {
-            setAcceptCookie(true)
-            setAcceptThirdPartyCookies(webView, true)
-        }
+        WebViewSecurityPolicy.apply(webView)
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
-                // Fase 21.14 — nunca intercepta/redireciona: toda URL é carregada
-                // normalmente dentro deste WebView, sem alterar o destino da navegação.
-                return false
+                val uri = request?.url ?: return true
+                // O navegador interno só renderiza páginas HTTPS. Esquemas como
+                // intent:, file:, content:, tel: e mailto: não devem ser aceitos
+                // diretamente por um WebView de catálogo.
+                return uri.scheme != "https"
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -331,27 +318,24 @@ class BrowserActivity : AppCompatActivity() {
                 origin: String?,
                 callback: GeolocationPermissions.Callback?
             ) {
-                if (origin == null || callback == null) return
-                val temPermissao = ContextCompat.checkSelfPermission(
-                    this@BrowserActivity,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-
-                if (temPermissao) {
-                    callback.invoke(origin, true, false)
-                } else {
-                    callbackGeolocalizacao = callback
-                    origemGeolocalizacao = origin
-                    launcherPermissaoLocalizacao.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
+                // Geolocalização não é necessária para o catálogo e permanece
+                // negada por padrão; não guardar callbacks de uma origem remota.
+                callback?.invoke(origin ?: "", false, false)
             }
         }
     }
 
     private fun iniciarDownload(url: String, contentDisposition: String?, mimeType: String?) {
-        val requisicao = DownloadManager.Request(url.toUri()).apply {
+        val uri = url.toUri()
+        if (uri.scheme != "https" || uri.host.isNullOrBlank()) {
+            Snackbar.make(binding.root, "Download bloqueado: apenas HTTPS é permitido", Snackbar.LENGTH_SHORT).show()
+            return
+        }
+        val requisicao = DownloadManager.Request(uri).apply {
             setMimeType(mimeType)
-            addRequestHeader("cookie", CookieManager.getInstance().getCookie(url))
+            CookieManager.getInstance().getCookie(url)?.takeIf { it.isNotBlank() }?.let {
+                addRequestHeader("cookie", it)
+            }
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             val nomeArquivo = android.webkit.URLUtil.guessFileName(url, contentDisposition, mimeType)
             setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, nomeArquivo)

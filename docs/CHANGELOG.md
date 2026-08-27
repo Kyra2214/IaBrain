@@ -1,5 +1,14 @@
 # CHANGELOG — AI BRAIN
 
+## Melhoria de manutenção e segurança — 2026-08-27
+- Adicionado Gradle Wrapper, README, `.gitignore` e CI com testes, lint, build e validação de catálogos.
+- API key da Groq movida para `EncryptedSharedPreferences` com Android Keystore.
+- WebView centralizado em uma política única, com conteúdo misto, arquivos locais, cookies de terceiros e geolocalização desabilitados por padrão.
+- Downloads limitados a HTTPS e erros da Groq não expõem o corpo bruto da resposta.
+- Atualização remota do catálogo passou a validar schema básico e ativar o cache por substituição atômica.
+- Contagens e histórico de prompts passaram a usar JSON versionável, mantendo leitura compatível com o formato legado.
+
+
 ## FASE 26 — Adição Real ao Catálogo pela Curadoria ✅ CONCLUÍDA
 *Solicitação do usuário: ao pesquisar IAs e tocar em "Adicionar ao catálogo", a IA deve de fato entrar no catálogo — e categorias novas (ex.: "Saúde Mental") devem criar sua própria aba automaticamente.*
 
