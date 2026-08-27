@@ -1,23 +1,18 @@
 package com.aibrain.app.browser
 
-import android.Manifest
 import android.app.DownloadManager
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.webkit.CookieManager
-import android.webkit.GeolocationPermissions
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -72,24 +67,11 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var historyManager: BrowserHistoryManager
 
     private var callbackUploadArquivo: ValueCallback<Array<Uri>>? = null
-    private var callbackGeolocalizacao: GeolocationPermissions.Callback? = null
-    private var origemGeolocalizacao: String? = null
-
     private val launcherUploadArquivo: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             val resultado = if (uri != null) arrayOf(uri) else null
             callbackUploadArquivo?.onReceiveValue(resultado)
             callbackUploadArquivo = null
-        }
-
-    private val launcherPermissaoLocalizacao: ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { concedida ->
-            val origem = origemGeolocalizacao
-            if (origem != null) {
-                callbackGeolocalizacao?.invoke(origem, concedida, false)
-            }
-            callbackGeolocalizacao = null
-            origemGeolocalizacao = null
         }
 
     companion object {
@@ -312,15 +294,6 @@ class BrowserActivity : AppCompatActivity() {
                 val tipoAceito = fileChooserParams?.acceptTypes?.firstOrNull { it.isNotBlank() } ?: "*/*"
                 launcherUploadArquivo.launch(tipoAceito)
                 return true
-            }
-
-            override fun onGeolocationPermissionsShowPrompt(
-                origin: String?,
-                callback: GeolocationPermissions.Callback?
-            ) {
-                // Geolocalização não é necessária para o catálogo e permanece
-                // negada por padrão; não guardar callbacks de uma origem remota.
-                callback?.invoke(origin ?: "", false, false)
             }
         }
     }
