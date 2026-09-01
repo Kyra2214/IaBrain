@@ -1,5 +1,13 @@
 # CHANGELOG — AI BRAIN
 
+## Criar com IA — 2026-09-01
+- Criada a experiência de recomendação por projeto, com interpretação local de texto livre, funções, ranking, alternativas e stack final baseada exclusivamente em itens reais do catálogo.
+- Adicionados `ProjetoIntentParser`, `CatalogoQuery`, `RecomendadorProjeto` e `ProjetoRecommendation`, preservando o recomendador legado.
+- O catálogo passou a ler e preservar plataformas, casos de uso, modelo de acesso, API, login, status e última verificação, mantendo compatibilidade com JSON antigo.
+- O atalho principal agora abre **Criar com IA**, com estado vazio explícito, abertura da tela normal de detalhes e fallback de funções para aplicativos sem área técnica declarada.
+- O chatbox passou a exibir a mensagem enviada pelo usuário, limpar a caixa após analisar, aceitar múltiplas linhas e acomodar textos longos com balão alinhado à direita.
+- Testes unitários e build de debug validados: 75 testes aprovados.
+
 ## Melhoria de manutenção e segurança — 2026-08-27
 - Adicionado Gradle Wrapper, README, `.gitignore` e CI com testes, lint, build e validação de catálogos.
 - API key da Groq movida para `EncryptedSharedPreferences` com Android Keystore.

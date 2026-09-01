@@ -4,7 +4,7 @@
 > Ordem: sempre do que **não precisa de nenhuma estrutura** para o que **depende de um conjunto** já pronto.
 > Ao final de cada submódulo → projeto completo enviado em **.zip**.
 >
-> **Progresso geral: 140/140 submódulos concluídos + Fases 23, 24 e 25 (melhorias e correções) concluídas**
+> **Progresso geral: 140/140 submódulos concluídos + Fases 23, 24, 25 e 27 (melhorias e correções) concluídas**
 
 ---
 
@@ -29,6 +29,17 @@
 ## FASE 19 — Correções de Bugs Reportados (pós-2.0) ✅ CONCLUÍDA
 ## FASE 20 — Novas Categorias/Abas no Catálogo ✅ CONCLUÍDA
 ## FASE 21 — Módulo Browser (Navegador Interno com Abas) ✅ CONCLUÍDA
+
+## FASE 27 — Criar com IA: recomendação por projeto ✅ CONCLUÍDA
+*Nova experiência para transformar uma ideia em funções e recomendações reais do catálogo.*
+
+- **27.1** ✅ Modelo de intenção com tipo de projeto, plataforma, áreas, complexidade, orçamento e preferência de acesso.
+- **27.2** ✅ Consulta segura do catálogo por IDs e metadados reais, com exclusão de itens inativos ou incompatíveis.
+- **27.3** ✅ Ranking por especialização, casos de uso, nota, acesso, compatibilidade e custo, com alternativas e stack final.
+- **27.4** ✅ Atalho na tela inicial e Activity dedicada com estado de carregamento, estado vazio e abertura dos detalhes.
+- **27.5** ✅ Chatbox multiline com mensagem enviada visível, limpeza após análise e suporte a textos longos.
+- **27.6** ✅ Compatibilidade dos parsers com campos opcionais de catálogos antigos.
+- **27.7** ✅ Testes unitários e APK debug validados no ambiente com Android SDK configurado.
 
 ---
 

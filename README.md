@@ -1,56 +1,91 @@
-# AI Brain
+# IaBrain
 
-Aplicativo Android para descoberta e organização de ferramentas de inteligência artificial, com catálogo pesquisável, favoritos, biblioteca de prompts, assistente de curadoria e navegador interno.
+Aplicativo Android para descobrir, comparar e organizar ferramentas de inteligência artificial. O IaBrain combina um catálogo pesquisável com favoritos, biblioteca de prompts, coleções, guias práticos, navegador interno e a experiência **Criar com IA**, que transforma uma ideia livre em funções de projeto e recomendações reais do catálogo.
+
+![Tela Criar com IA](docs/images/criar-com-ia.jpg)
+
+## Destaques
+
+### Criar com IA
+
+Descreva uma ideia como “quero criar um aplicativo para gerenciar uma rede de sorveteria” e toque em **Analisar**. O app interpreta o tipo de projeto, plataforma, complexidade e áreas envolvidas; em seguida, organiza recomendações por função, mostra alternativas, acesso, notas, motivos e uma stack final estimada.
+
+A análise funciona localmente, sem backend obrigatório. Nenhum nome é inventado: cada recomendação aponta para um `iaId` existente no catálogo. Quando uma descrição de aplicativo não informa funções técnicas, o sistema sugere funções padrão de **Código, Design, Escrita e Imagem** para evitar resultados vazios.
+
+A interface segue um fluxo de conversa: o texto enviado aparece como mensagem do usuário, a caixa é limpa após a análise e textos longos são exibidos com quebra automática de linha.
+
+### Catálogo tradicional
+
+O catálogo continua sendo o fluxo principal de exploração. É possível pesquisar por nome ou função, filtrar por categoria, avaliação e acesso, ordenar por ranking, popularidade ou novidade, favoritar IAs e abrir seus detalhes no navegador interno.
+
+Também estão disponíveis **Coleções**, **Guias práticos**, **Biblioteca de Prompts**, **Criador de Prompts**, **Assistente de IA/curadoria** e uma área independente para conteúdo restrito.
+
+## Download
+
+Baixe a versão de demonstração na página de [Releases](https://github.com/Kyra2214/IaBrain/releases). O APK de debug é destinado a testes e pode exigir a autorização de instalação de fontes desconhecidas no Android.
 
 ## Requisitos
 
 - JDK 17 ou superior;
 - Android SDK com API 34;
-- acesso à internet apenas para baixar dependências e, durante o uso do aplicativo, para sincronizar o catálogo e acessar os serviços selecionados.
+- acesso à internet para baixar dependências e, durante o uso, sincronizar o catálogo e acessar os serviços selecionados.
 
 ## Build e testes
 
 O projeto inclui Gradle Wrapper. Em um clone limpo, execute:
 
 ```bash
-./gradlew test
+./gradlew testDebugUnitTest
 ./gradlew lint
 ./gradlew assembleDebug
 ./gradlew assembleRelease
 ```
 
-O APK de debug é gerado em `app/build/outputs/apk/debug/`. A versão release possui minificação habilitada; valide-a em um dispositivo ou emulador antes de distribuir.
+O APK de debug é gerado em `app/build/outputs/apk/debug/app-debug.apk`. A versão release possui minificação habilitada; valide-a em um dispositivo ou emulador antes de distribuir.
+
+## Arquitetura da recomendação por projeto
+
+O fluxo **texto → interpretação → funções → consulta ao catálogo → ranking → apresentação** está dividido em responsabilidades reutilizáveis:
+
+| Componente | Responsabilidade |
+|---|---|
+| `ProjetoIntentParser` | Interpreta texto livre, tipo, plataforma, áreas, complexidade, orçamento e preferência de acesso. |
+| `CatalogoQuery` | Filtra apenas itens existentes, ativos e compatíveis com a intenção. |
+| `RecomendadorProjeto` | Ranqueia especialização, casos de uso, nota, acesso, compatibilidade e custo. |
+| `ProjetoRecommendation` | Representa funções, recomendações, alternativas e stack final. |
+
+Os campos opcionais do modelo `IA` incluem plataforma, modelo de acesso, API, login, status, última verificação e casos de uso. Catálogos JSON antigos continuam válidos por meio de defaults compatíveis.
 
 ## Catálogos
 
-O catálogo base fica em `app/src/main/assets/ia_catalogo.json`. Os arquivos de publicação em `para-subir-no-github/` devem ser mantidos sincronizados com os assets. Antes de publicar uma nova versão, incremente `versao`, valide o JSON e confira IDs, URLs HTTPS, categorias, idiomas e notas.
+O catálogo base fica em `app/src/main/assets/ia_catalogo.json`. Os arquivos de publicação em `para-subir-no-github/` devem ser mantidos sincronizados com os assets. Antes de publicar uma nova versão, incremente `versao`, valide o JSON e confira IDs, URLs HTTPS, categorias, idiomas, acesso e notas.
+
+```bash
+python3 scripts/validate_catalog.py
+```
 
 ## API key da Groq
 
-A chave é opcional e usada somente no Assistente de IA. Nunca inclua chaves no código-fonte, nos assets, em logs ou em issues. Em produção, prefira um backend com autenticação e controle de uso. No aplicativo, a chave deve ser tratada como segredo do usuário e armazenada no Android Keystore.
+A chave é opcional e usada somente no Assistente de IA e nos recursos de curadoria e geração assistida. Nunca inclua chaves no código-fonte, assets, logs ou issues. No aplicativo, a chave é tratada como segredo do usuário e armazenada no Android Keystore.
 
 ## Segurança do navegador
 
-O navegador interno foi restringido a HTTPS, com bloqueio de conteúdo misto, arquivos locais e domínios fora da allowlist configurada. Capacidades como geolocalização, cookies de terceiros, downloads e upload devem ser habilitadas apenas quando necessárias para o domínio atual.
+O navegador interno é restringido a HTTPS, bloqueia conteúdo misto, arquivos locais e domínios fora da allowlist configurada. Capacidades como geolocalização, cookies de terceiros, downloads e upload devem ser habilitadas apenas quando necessárias para o domínio atual.
 
 ## Estrutura
 
 - `app/src/main/java/com/aibrain/app/model`: modelos de domínio;
+- `app/src/main/java/com/aibrain/app/brain`: parsing e motores de recomendação;
 - `app/src/main/java/com/aibrain/app/repository`: leitura, sincronização e composição do catálogo;
 - `app/src/main/java/com/aibrain/app/viewmodel`: estado de tela e filtros;
 - `app/src/main/java/com/aibrain/app/browser`: abas e WebView;
 - `app/src/test`: testes unitários;
-- `docs`: changelog e roadmap.
+- `docs`: changelog, roadmap e imagens de documentação.
 
 ## Contribuição
 
 Antes de abrir um pull request, execute testes, lint e build. Mudanças no catálogo devem incluir validação do JSON. Mudanças de segurança ou no WebView devem incluir testes de regressão e uma descrição do impacto.
 
+## Status
 
-## Coleções e Guias práticos
-
-O catálogo principal continua focado em ferramentas de IA. A tela **Coleções** agrupa recursos por intenção, como criação, programação, aprendizado e pesquisa. A tela **Guias práticos** apresenta fluxos curtos com passos e ferramentas recomendadas para tarefas reais.
-
-O conteúdo inicial fica centralizado em `ColecaoRepository`, com os modelos `Colecao` e `Guia`. A implementação é independente de qualquer código ou asset externo e pode ser migrada futuramente para JSON versionado pelo mesmo pipeline de validação do catálogo.
-
-As próximas extensões naturais são metadados de preço/plataforma/status, comparação de até três IAs, sugestões comunitárias em fila de revisão e traduções adicionais. Sugestões externas devem ser revisadas antes de entrar no catálogo oficial.
+O projeto está em evolução ativa. Consulte o [roadmap](docs/ROADMAP.md) e o [changelog](docs/CHANGELOG.md) para o histórico das fases implementadas.
