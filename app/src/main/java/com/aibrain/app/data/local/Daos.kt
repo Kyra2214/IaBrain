@@ -82,3 +82,11 @@ data class ComandoResumo(val id: String, val nome: String, val comando: String, 
     @Query("SELECT * FROM ia_capacidades WHERE iaId=:iaId") suspend fun porIA(iaId: String): List<IACapabilityEntity>
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarTodos(itens: List<IACapabilityEntity>)
 }
+
+@Dao interface IARoutingProfileDao {
+    @Query("SELECT * FROM ia_routing_profiles WHERE iaId=:iaId LIMIT 1") suspend fun buscarPorIA(iaId: String): IARoutingProfileEntity?
+    @Query("SELECT * FROM ia_routing_profiles WHERE enabled=1 ORDER BY updatedAt DESC") suspend fun listarAtivos(): List<IARoutingProfileEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun inserir(profile: IARoutingProfileEntity)
+    @Update suspend fun atualizar(profile: IARoutingProfileEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(profile: IARoutingProfileEntity) = inserir(profile)
+}

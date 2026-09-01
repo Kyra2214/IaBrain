@@ -4,7 +4,7 @@ import com.aibrain.app.command.ParsedSlashCommand
 import com.aibrain.app.command.SlashCommandParser
 
  data class RoutingRequest(val rawUserRequest: String, val canonicalCommand: String?, val freeArguments: String = "", val namedParameters: Map<String,String> = emptyMap(), val requiredCapabilities: Set<String> = emptySet(), val preferredCapabilities: Set<String> = emptySet(), val context: String? = null)
- data class RoutingCandidate(val iaId: String, val nome: String, val capabilities: Set<String> = emptySet(), val supportedCommands: Set<String> = emptySet(), val specialties: Set<String> = emptySet(), val quality: Double = 0.5, val speed: Double = 0.5, val cost: Double = 0.0, val supportsCode: Boolean = false, val supportsFiles: Boolean = false, val supportsImages: Boolean = false, val supportsWeb: Boolean = false, val supportsReasoning: Boolean = false)
+ data class RoutingCandidate(val iaId: String, val nome: String, val capabilities: Set<String> = emptySet(), val supportedCommands: Set<String> = emptySet(), val specialties: Set<String> = emptySet(), val quality: Double = 0.5, val speed: Double = 0.5, val cost: Double = 0.0, val supportsCode: Boolean = false, val supportsFiles: Boolean = false, val supportsImages: Boolean = false, val supportsWeb: Boolean = false, val supportsReasoning: Boolean = false, val reliability: Double = 0.5, val contextQuality: Double = 0.5, val isDefaultProfile: Boolean = true)
  data class RoutingScore(val commandCompatibility: Double, val capabilityCompatibility: Double, val specialization: Double, val quality: Double, val speed: Double, val context: Double, val cost: Double) {
     fun total(policy: RoutingPolicy) = commandCompatibility*policy.commandWeight + capabilityCompatibility*policy.capabilityWeight + specialization*policy.specializationWeight + quality*policy.qualityWeight + speed*policy.speedWeight + context*policy.contextWeight - cost*policy.costWeight
  }
@@ -23,7 +23,7 @@ object LocalAIRouter {
             val command = if (request.canonicalCommand != null && request.canonicalCommand in candidate.supportedCommands) 1.0 else 0.0
             val required = if (request.requiredCapabilities.isEmpty()) 1.0 else request.requiredCapabilities.count { it in candidate.capabilities }.toDouble()/request.requiredCapabilities.size
             val preferred = if (request.preferredCapabilities.isEmpty()) 0.0 else request.preferredCapabilities.count { it in candidate.capabilities || it in candidate.specialties }.toDouble()/request.preferredCapabilities.size
-            val score = RoutingScore(command, required, preferred, candidate.quality, candidate.speed, if (request.context.isNullOrBlank()) 0.5 else 1.0, candidate.cost)
+            val score = RoutingScore(command, required, preferred, candidate.quality, candidate.speed, if (request.context.isNullOrBlank()) 0.5 else candidate.contextQuality, candidate.cost)
             candidate to score
         }.sortedByDescending { it.second.total(policy) }.map { RoutingCandidateScore(it.first,it.second) }
         val top = ranked.first(); val second = ranked.getOrNull(1)?.score?.total(policy) ?: top.score.total(policy)

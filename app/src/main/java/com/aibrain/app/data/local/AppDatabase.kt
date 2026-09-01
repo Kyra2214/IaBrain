@@ -18,7 +18,7 @@ class RoomConverters {
     }.getOrDefault(emptyMap())
 }
 
-@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class, ComandoEntity::class, ComandoCapacidadeEntity::class, ComandoRelacionamentoEntity::class, ComandoParametroEntity::class, ComandoIAEntity::class, WorkflowEntity::class, WorkflowComandoEntity::class, ComandoExecucaoEntity::class, IACapabilityEntity::class], version = 6, exportSchema = true)
+@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class, ComandoEntity::class, ComandoCapacidadeEntity::class, ComandoRelacionamentoEntity::class, ComandoParametroEntity::class, ComandoIAEntity::class, WorkflowEntity::class, WorkflowComandoEntity::class, ComandoExecucaoEntity::class, IACapabilityEntity::class, IARoutingProfileEntity::class], version = 7, exportSchema = true)
 @TypeConverters(RoomConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun iaDao(): IADao
@@ -32,6 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workflowDao(): WorkflowDao
     abstract fun comandoExecucaoDao(): ComandoExecucaoDao
     abstract fun iaCapabilityDao(): IACapabilityDao
+    abstract fun iaRoutingProfileDao(): IARoutingProfileDao
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
         private val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -71,9 +72,16 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_ia_capacidades_capacidade ON ia_capacidades(capacidade)")
             }
         }
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS ia_routing_profiles (id TEXT NOT NULL, iaId TEXT NOT NULL, qualityScore REAL NOT NULL, speedScore REAL NOT NULL, costScore REAL NOT NULL, reliabilityScore REAL NOT NULL, contextScore REAL NOT NULL, enabled INTEGER NOT NULL, updatedAt INTEGER NOT NULL, PRIMARY KEY(id))")
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_ia_routing_profiles_iaId ON ia_routing_profiles(iaId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_ia_routing_profiles_enabled ON ia_routing_profiles(enabled)")
+            }
+        }
         fun getInstance(context: Context): AppDatabase = INSTANCE ?: synchronized(this) {
             INSTANCE ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "iabrain.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build().also { INSTANCE = it }
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7).build().also { INSTANCE = it }
         }
     }
 }

@@ -132,6 +132,21 @@ data class ComandoIAEntity(val comandoId: String, val iaId: String, val priorida
 @Entity(tableName = "ia_capacidades", primaryKeys = ["iaId", "capacidade"], indices = [Index("capacidade")])
 data class IACapabilityEntity(val iaId: String, val capacidade: String, val especialidade: Boolean = false, val nivel: Int = 1)
 
+@Entity(tableName = "ia_routing_profiles", indices = [Index("iaId", unique = true), Index("enabled")])
+data class IARoutingProfileEntity(
+    @androidx.room.PrimaryKey val id: String,
+    val iaId: String,
+    val qualityScore: Double,
+    val speedScore: Double,
+    val costScore: Double,
+    val reliabilityScore: Double,
+    val contextScore: Double,
+    val enabled: Boolean,
+    val updatedAt: Long
+) {
+    init { require(listOf(qualityScore, speedScore, costScore, reliabilityScore, contextScore).all { it in 0.0..1.0 }) { "Routing profile scores must be between 0.0 and 1.0" } }
+}
+
 @Entity(tableName = "workflows", indices = [Index("atualizadoEm")])
 data class WorkflowEntity(@androidx.room.PrimaryKey val id: String, val nome: String, val estrategia: String, val estado: String, val criadoEm: Long, val atualizadoEm: Long)
 

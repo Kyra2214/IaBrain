@@ -1,0 +1,1275 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "8f4ac5654247663220708311f6db69a9",
+    "entities": [
+      {
+        "tableName": "ias",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `nome` TEXT NOT NULL, `descricao` TEXT NOT NULL, `url` TEXT NOT NULL, `logo` TEXT NOT NULL, `idiomas` TEXT NOT NULL, `categoria` TEXT, `categorias` TEXT NOT NULL, `notas` TEXT NOT NULL, `plataformas` TEXT NOT NULL, `modeloAcesso` TEXT, `possuiApi` INTEGER, `requerLogin` INTEGER, `status` TEXT, `ultimaVerificacao` TEXT, `casosDeUso` TEXT NOT NULL, `gratuita` INTEGER NOT NULL, `acesso` TEXT NOT NULL, `ativo` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nome",
+            "columnName": "nome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descricao",
+            "columnName": "descricao",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logo",
+            "columnName": "logo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idiomas",
+            "columnName": "idiomas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoria",
+            "columnName": "categoria",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "categorias",
+            "columnName": "categorias",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notas",
+            "columnName": "notas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plataformas",
+            "columnName": "plataformas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modeloAcesso",
+            "columnName": "modeloAcesso",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "possuiApi",
+            "columnName": "possuiApi",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "requerLogin",
+            "columnName": "requerLogin",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ultimaVerificacao",
+            "columnName": "ultimaVerificacao",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "casosDeUso",
+            "columnName": "casosDeUso",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gratuita",
+            "columnName": "gratuita",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "acesso",
+            "columnName": "acesso",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ativo",
+            "columnName": "ativo",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "projetos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `nome` TEXT NOT NULL, `descricao` TEXT NOT NULL, `plataforma` TEXT, `complexidade` TEXT NOT NULL, `modeloAcessoPreferido` TEXT, `criadoEm` INTEGER NOT NULL, `atualizadoEm` INTEGER NOT NULL, `status` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nome",
+            "columnName": "nome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descricao",
+            "columnName": "descricao",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plataforma",
+            "columnName": "plataforma",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "complexidade",
+            "columnName": "complexidade",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modeloAcessoPreferido",
+            "columnName": "modeloAcessoPreferido",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "criadoEm",
+            "columnName": "criadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "atualizadoEm",
+            "columnName": "atualizadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "projeto_funcoes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `projetoId` TEXT NOT NULL, `funcao` TEXT NOT NULL, `descricao` TEXT NOT NULL, `ordem` INTEGER NOT NULL, `status` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projetoId",
+            "columnName": "projetoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "funcao",
+            "columnName": "funcao",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descricao",
+            "columnName": "descricao",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ordem",
+            "columnName": "ordem",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_projeto_funcoes_projetoId",
+            "unique": false,
+            "columnNames": [
+              "projetoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_projeto_funcoes_projetoId` ON `${TABLE_NAME}` (`projetoId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "projeto_ias",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `projetoId` TEXT NOT NULL, `funcaoId` TEXT NOT NULL, `iaId` TEXT NOT NULL, `prioridade` INTEGER NOT NULL, `motivo` TEXT NOT NULL, `selecionada` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projetoId",
+            "columnName": "projetoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "funcaoId",
+            "columnName": "funcaoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iaId",
+            "columnName": "iaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prioridade",
+            "columnName": "prioridade",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "motivo",
+            "columnName": "motivo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selecionada",
+            "columnName": "selecionada",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_projeto_ias_projetoId",
+            "unique": false,
+            "columnNames": [
+              "projetoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_projeto_ias_projetoId` ON `${TABLE_NAME}` (`projetoId`)"
+          },
+          {
+            "name": "index_projeto_ias_funcaoId",
+            "unique": false,
+            "columnNames": [
+              "funcaoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_projeto_ias_funcaoId` ON `${TABLE_NAME}` (`funcaoId`)"
+          },
+          {
+            "name": "index_projeto_ias_iaId",
+            "unique": false,
+            "columnNames": [
+              "iaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_projeto_ias_iaId` ON `${TABLE_NAME}` (`iaId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "prompts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `projetoId` TEXT, `funcaoId` TEXT, `iaId` TEXT, `titulo` TEXT NOT NULL, `prompt` TEXT NOT NULL, `modeloGeracao` TEXT, `origem` TEXT NOT NULL, `criadoEm` INTEGER NOT NULL, `atualizadoEm` INTEGER NOT NULL, `favorito` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projetoId",
+            "columnName": "projetoId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "funcaoId",
+            "columnName": "funcaoId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "iaId",
+            "columnName": "iaId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "titulo",
+            "columnName": "titulo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prompt",
+            "columnName": "prompt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modeloGeracao",
+            "columnName": "modeloGeracao",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "origem",
+            "columnName": "origem",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "criadoEm",
+            "columnName": "criadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "atualizadoEm",
+            "columnName": "atualizadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "favorito",
+            "columnName": "favorito",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_prompts_projetoId",
+            "unique": false,
+            "columnNames": [
+              "projetoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_prompts_projetoId` ON `${TABLE_NAME}` (`projetoId`)"
+          },
+          {
+            "name": "index_prompts_funcaoId",
+            "unique": false,
+            "columnNames": [
+              "funcaoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_prompts_funcaoId` ON `${TABLE_NAME}` (`funcaoId`)"
+          },
+          {
+            "name": "index_prompts_iaId",
+            "unique": false,
+            "columnNames": [
+              "iaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_prompts_iaId` ON `${TABLE_NAME}` (`iaId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "projeto_contextos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `projetoId` TEXT NOT NULL, `objetivo` TEXT NOT NULL, `stack` TEXT NOT NULL, `memoria` TEXT NOT NULL, `preferencias` TEXT NOT NULL, `estadoAtual` TEXT NOT NULL, `recursos` TEXT NOT NULL, `atualizadoEm` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projetoId",
+            "columnName": "projetoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "objetivo",
+            "columnName": "objetivo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stack",
+            "columnName": "stack",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memoria",
+            "columnName": "memoria",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "preferencias",
+            "columnName": "preferencias",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "estadoAtual",
+            "columnName": "estadoAtual",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recursos",
+            "columnName": "recursos",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "atualizadoEm",
+            "columnName": "atualizadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_projeto_contextos_projetoId",
+            "unique": true,
+            "columnNames": [
+              "projetoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_projeto_contextos_projetoId` ON `${TABLE_NAME}` (`projetoId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "comandos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `slug` TEXT NOT NULL, `nome` TEXT NOT NULL, `comando` TEXT NOT NULL, `categoria` TEXT NOT NULL, `descricaoCurta` TEXT NOT NULL, `explicacao` TEXT NOT NULL, `objetivo` TEXT NOT NULL, `quandoUsar` TEXT NOT NULL, `quandoNaoUsar` TEXT NOT NULL, `sintaxe` TEXT NOT NULL, `exemplo` TEXT NOT NULL, `aliases` TEXT NOT NULL, `iaRecomendada` TEXT NOT NULL, `modoExecucao` TEXT NOT NULL, `suportaWeb` INTEGER NOT NULL, `suportaArquivos` INTEGER NOT NULL, `suportaProjeto` INTEGER NOT NULL, `suportaMultiplasIAs` INTEGER NOT NULL, `nivel` TEXT NOT NULL, `ativo` INTEGER NOT NULL, `favorito` INTEGER NOT NULL, `usoCount` INTEGER NOT NULL, `criadoEm` INTEGER NOT NULL, `atualizadoEm` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "slug",
+            "columnName": "slug",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nome",
+            "columnName": "nome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comando",
+            "columnName": "comando",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoria",
+            "columnName": "categoria",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descricaoCurta",
+            "columnName": "descricaoCurta",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "explicacao",
+            "columnName": "explicacao",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "objetivo",
+            "columnName": "objetivo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quandoUsar",
+            "columnName": "quandoUsar",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quandoNaoUsar",
+            "columnName": "quandoNaoUsar",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sintaxe",
+            "columnName": "sintaxe",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exemplo",
+            "columnName": "exemplo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aliases",
+            "columnName": "aliases",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iaRecomendada",
+            "columnName": "iaRecomendada",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modoExecucao",
+            "columnName": "modoExecucao",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suportaWeb",
+            "columnName": "suportaWeb",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suportaArquivos",
+            "columnName": "suportaArquivos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suportaProjeto",
+            "columnName": "suportaProjeto",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suportaMultiplasIAs",
+            "columnName": "suportaMultiplasIAs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nivel",
+            "columnName": "nivel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ativo",
+            "columnName": "ativo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "favorito",
+            "columnName": "favorito",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usoCount",
+            "columnName": "usoCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "criadoEm",
+            "columnName": "criadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "atualizadoEm",
+            "columnName": "atualizadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_comandos_categoria",
+            "unique": false,
+            "columnNames": [
+              "categoria"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comandos_categoria` ON `${TABLE_NAME}` (`categoria`)"
+          },
+          {
+            "name": "index_comandos_ativo",
+            "unique": false,
+            "columnNames": [
+              "ativo"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comandos_ativo` ON `${TABLE_NAME}` (`ativo`)"
+          },
+          {
+            "name": "index_comandos_usoCount",
+            "unique": false,
+            "columnNames": [
+              "usoCount"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comandos_usoCount` ON `${TABLE_NAME}` (`usoCount`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "comando_capacidades",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`comandoId` TEXT NOT NULL, `capacidade` TEXT NOT NULL, `obrigatoria` INTEGER NOT NULL, `peso` INTEGER NOT NULL, PRIMARY KEY(`comandoId`, `capacidade`))",
+        "fields": [
+          {
+            "fieldPath": "comandoId",
+            "columnName": "comandoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capacidade",
+            "columnName": "capacidade",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obrigatoria",
+            "columnName": "obrigatoria",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "peso",
+            "columnName": "peso",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "comandoId",
+            "capacidade"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_comando_capacidades_capacidade",
+            "unique": false,
+            "columnNames": [
+              "capacidade"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comando_capacidades_capacidade` ON `${TABLE_NAME}` (`capacidade`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "comando_relacionamentos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`origemId` TEXT NOT NULL, `destinoId` TEXT NOT NULL, `tipo` TEXT NOT NULL, `ordem` INTEGER NOT NULL, PRIMARY KEY(`origemId`, `destinoId`, `tipo`))",
+        "fields": [
+          {
+            "fieldPath": "origemId",
+            "columnName": "origemId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "destinoId",
+            "columnName": "destinoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipo",
+            "columnName": "tipo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ordem",
+            "columnName": "ordem",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "origemId",
+            "destinoId",
+            "tipo"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_comando_relacionamentos_destinoId",
+            "unique": false,
+            "columnNames": [
+              "destinoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comando_relacionamentos_destinoId` ON `${TABLE_NAME}` (`destinoId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "comando_parametros",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`comandoId` TEXT NOT NULL, `nome` TEXT NOT NULL, `tipo` TEXT NOT NULL, `obrigatorio` INTEGER NOT NULL, `valorPadrao` TEXT, `descricao` TEXT NOT NULL, `opcoes` TEXT NOT NULL, PRIMARY KEY(`comandoId`, `nome`))",
+        "fields": [
+          {
+            "fieldPath": "comandoId",
+            "columnName": "comandoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nome",
+            "columnName": "nome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipo",
+            "columnName": "tipo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obrigatorio",
+            "columnName": "obrigatorio",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "valorPadrao",
+            "columnName": "valorPadrao",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "descricao",
+            "columnName": "descricao",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opcoes",
+            "columnName": "opcoes",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "comandoId",
+            "nome"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "comando_ias",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`comandoId` TEXT NOT NULL, `iaId` TEXT NOT NULL, `prioridade` INTEGER NOT NULL, `motivo` TEXT NOT NULL, PRIMARY KEY(`comandoId`, `iaId`))",
+        "fields": [
+          {
+            "fieldPath": "comandoId",
+            "columnName": "comandoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iaId",
+            "columnName": "iaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prioridade",
+            "columnName": "prioridade",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "motivo",
+            "columnName": "motivo",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "comandoId",
+            "iaId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_comando_ias_iaId",
+            "unique": false,
+            "columnNames": [
+              "iaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comando_ias_iaId` ON `${TABLE_NAME}` (`iaId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workflows",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `nome` TEXT NOT NULL, `estrategia` TEXT NOT NULL, `estado` TEXT NOT NULL, `criadoEm` INTEGER NOT NULL, `atualizadoEm` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nome",
+            "columnName": "nome",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "estrategia",
+            "columnName": "estrategia",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "estado",
+            "columnName": "estado",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "criadoEm",
+            "columnName": "criadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "atualizadoEm",
+            "columnName": "atualizadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workflows_atualizadoEm",
+            "unique": false,
+            "columnNames": [
+              "atualizadoEm"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workflows_atualizadoEm` ON `${TABLE_NAME}` (`atualizadoEm`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workflow_comandos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workflowId` TEXT NOT NULL, `ordem` INTEGER NOT NULL, `comandoId` TEXT NOT NULL, `iaId` TEXT, `handoff` INTEGER NOT NULL, PRIMARY KEY(`workflowId`, `ordem`))",
+        "fields": [
+          {
+            "fieldPath": "workflowId",
+            "columnName": "workflowId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ordem",
+            "columnName": "ordem",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comandoId",
+            "columnName": "comandoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iaId",
+            "columnName": "iaId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "handoff",
+            "columnName": "handoff",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workflowId",
+            "ordem"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workflow_comandos_comandoId",
+            "unique": false,
+            "columnNames": [
+              "comandoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workflow_comandos_comandoId` ON `${TABLE_NAME}` (`comandoId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "comando_execucoes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `comandoId` TEXT NOT NULL, `iaId` TEXT, `workflowId` TEXT, `duracaoMs` INTEGER, `sucesso` INTEGER, `erro` TEXT, `avaliacao` INTEGER, `criadoEm` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comandoId",
+            "columnName": "comandoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iaId",
+            "columnName": "iaId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "workflowId",
+            "columnName": "workflowId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "duracaoMs",
+            "columnName": "duracaoMs",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sucesso",
+            "columnName": "sucesso",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "erro",
+            "columnName": "erro",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "avaliacao",
+            "columnName": "avaliacao",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "criadoEm",
+            "columnName": "criadoEm",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_comando_execucoes_comandoId",
+            "unique": false,
+            "columnNames": [
+              "comandoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comando_execucoes_comandoId` ON `${TABLE_NAME}` (`comandoId`)"
+          },
+          {
+            "name": "index_comando_execucoes_iaId",
+            "unique": false,
+            "columnNames": [
+              "iaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_comando_execucoes_iaId` ON `${TABLE_NAME}` (`iaId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ia_capacidades",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`iaId` TEXT NOT NULL, `capacidade` TEXT NOT NULL, `especialidade` INTEGER NOT NULL, `nivel` INTEGER NOT NULL, PRIMARY KEY(`iaId`, `capacidade`))",
+        "fields": [
+          {
+            "fieldPath": "iaId",
+            "columnName": "iaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capacidade",
+            "columnName": "capacidade",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "especialidade",
+            "columnName": "especialidade",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nivel",
+            "columnName": "nivel",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "iaId",
+            "capacidade"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ia_capacidades_capacidade",
+            "unique": false,
+            "columnNames": [
+              "capacidade"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ia_capacidades_capacidade` ON `${TABLE_NAME}` (`capacidade`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ia_routing_profiles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `iaId` TEXT NOT NULL, `qualityScore` REAL NOT NULL, `speedScore` REAL NOT NULL, `costScore` REAL NOT NULL, `reliabilityScore` REAL NOT NULL, `contextScore` REAL NOT NULL, `enabled` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "iaId",
+            "columnName": "iaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "qualityScore",
+            "columnName": "qualityScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "speedScore",
+            "columnName": "speedScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "costScore",
+            "columnName": "costScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reliabilityScore",
+            "columnName": "reliabilityScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contextScore",
+            "columnName": "contextScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ia_routing_profiles_iaId",
+            "unique": true,
+            "columnNames": [
+              "iaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ia_routing_profiles_iaId` ON `${TABLE_NAME}` (`iaId`)"
+          },
+          {
+            "name": "index_ia_routing_profiles_enabled",
+            "unique": false,
+            "columnNames": [
+              "enabled"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ia_routing_profiles_enabled` ON `${TABLE_NAME}` (`enabled`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f4ac5654247663220708311f6db69a9')"
+    ]
+  }
+}

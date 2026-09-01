@@ -15,6 +15,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,6 +56,7 @@ class AppDatabaseTest {
         db.comandoDao().inserirTodos(listOf(ComandoEntity("research", "research", "Pesquisa", "/research", "Pesquisa", "Pesquisa verificável", "Busca evidências", "Encontrar fontes", "Quando precisar pesquisar", "Quando não houver pesquisa", "/research [tema]", "/research Android", emptyList(), "IA de pesquisa", "PROMPT", true, false, false, false, "INTERMEDIARIO", true, false, 0, agora, agora)))
         db.comandoGrafoDao().salvarCapacidades(listOf(ComandoCapacidadeEntity("research", "PESQUISA", true, 1)))
         db.comandoGrafoDao().salvarComandosIA(listOf(ComandoIAEntity("research", "ia-pesquisa", 1, "suporta pesquisa")))
+        db.iaRoutingProfileDao().upsert(IARoutingProfileEntity("profile-research", "ia-pesquisa", .9, .7, .2, .8, .9, true, agora))
         val resolver = RoomCommandResolver(ApplicationProvider.getApplicationContext(), db)
         val request = resolver.resolve("/research tema=\"Android offline\"")!!
         assertEquals("/research", request.canonicalCommand)
@@ -64,8 +66,26 @@ class AppDatabaseTest {
         val decision = LocalAIRouter.route(request, candidatos)
         assertEquals(RoutingStatus.SELECTED, decision.status)
         assertEquals("ia-pesquisa", decision.selectedAI?.iaId)
+        assertEquals(.9, decision.selectedAI?.quality ?: 0.0, 0.0)
+        assertFalse(decision.selectedAI?.isDefaultProfile ?: true)
         assertTrue(decision.alternatives.any { it.candidate.iaId == "ia-generica" })
         assertTrue(decision.score!!.commandCompatibility > 0.0)
         assertTrue(decision.score != null && decision.reasons.isNotEmpty())
+    }
+
+    @Test fun perfilRoutingUpsertAtualizaListaAtivosERejeitaScoreInvalido() = runBlocking {
+        val dao = db.iaRoutingProfileDao(); val agora = System.currentTimeMillis()
+        val base = IARoutingProfileEntity("p1", "ia1", .9, .4, .2, .8, .7, true, agora)
+        dao.upsert(base); dao.upsert(base.copy(qualityScore = .95))
+        assertEquals(.95, dao.buscarPorIA("ia1")!!.qualityScore, 0.0)
+        assertEquals(1, dao.listarAtivos().size)
+        dao.upsert(base.copy(enabled = false)); assertFalse(dao.listarAtivos().any { it.iaId == "ia1" })
+        try { IARoutingProfileEntity("bad", "ia1", 1.1, .5, 0.0, .5, .5, true, agora); throw AssertionError("score inválido aceito") } catch (_: IllegalArgumentException) { }
+    }
+
+    @Test fun registryMarcaPerfilAusenteComoDefault() = runBlocking {
+        db.iaDao().salvarTodos(listOf(IA("sem-perfil", "Sem Perfil", "", "", "", listOf("PESQUISA"), emptyList(), true).toEntity()))
+        val candidatos = com.aibrain.app.brain.IACapabilityRegistry(ApplicationProvider.getApplicationContext(), db).candidates()
+        assertEquals(1, candidatos.size); assertTrue(candidatos.single().isDefaultProfile); assertEquals(.5, candidatos.single().quality, 0.0)
     }
 }
