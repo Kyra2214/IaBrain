@@ -41,3 +41,16 @@ import kotlinx.coroutines.flow.Flow
     @Query("SELECT * FROM projeto_contextos WHERE projetoId = :projetoId LIMIT 1") suspend fun buscar(projetoId: String): ProjetoContextoEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvar(contexto: ProjetoContextoEntity)
 }
+
+data class ComandoResumo(val id: String, val nome: String, val comando: String, val categoria: String, val descricaoCurta: String, val favorito: Boolean, val usoCount: Int)
+
+@Dao interface ComandoDao {
+    @Query("SELECT id,nome,comando,categoria,descricaoCurta,favorito,usoCount FROM comandos WHERE ativo=1 AND (:termo='' OR nome LIKE '%'||:termo||'%' OR comando LIKE '%'||:termo||'%' OR aliases LIKE '%'||:termo||'%' OR descricaoCurta LIKE '%'||:termo||'%' OR categoria LIKE '%'||:termo||'%') AND (:categoria='' OR categoria=:categoria) ORDER BY favorito DESC, usoCount DESC, nome LIMIT :limite OFFSET :offset")
+    suspend fun pesquisar(termo: String, categoria: String, limite: Int, offset: Int): List<ComandoResumo>
+    @Query("SELECT * FROM comandos WHERE id=:id LIMIT 1") suspend fun buscar(id: String): ComandoEntity?
+    @Query("SELECT DISTINCT categoria FROM comandos WHERE ativo=1 ORDER BY categoria") suspend fun categorias(): List<String>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun inserirTodos(comandos: List<ComandoEntity>)
+    @Query("UPDATE comandos SET favorito=:favorito, atualizadoEm=:agora WHERE id=:id") suspend fun marcarFavorito(id: String, favorito: Boolean, agora: Long)
+    @Query("UPDATE comandos SET usoCount=usoCount+1, atualizadoEm=:agora WHERE id=:id") suspend fun registrarUso(id: String, agora: Long)
+    @Query("SELECT COUNT(*) FROM comandos") suspend fun contar(): Int
+}

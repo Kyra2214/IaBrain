@@ -18,7 +18,7 @@ class RoomConverters {
     }.getOrDefault(emptyMap())
 }
 
-@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class], version = 3, exportSchema = true)
+@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class, ComandoEntity::class], version = 4, exportSchema = true)
 @TypeConverters(RoomConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun iaDao(): IADao
@@ -27,6 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun projetoIADao(): ProjetoIADao
     abstract fun promptDao(): PromptDao
     abstract fun projetoContextoDao(): ProjetoContextoDao
+    abstract fun comandoDao(): ComandoDao
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
         private val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -41,9 +42,17 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_projeto_contextos_projetoId ON projeto_contextos(projetoId)")
             }
         }
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS comandos (id TEXT NOT NULL, slug TEXT NOT NULL, nome TEXT NOT NULL, comando TEXT NOT NULL, categoria TEXT NOT NULL, descricaoCurta TEXT NOT NULL, explicacao TEXT NOT NULL, objetivo TEXT NOT NULL, quandoUsar TEXT NOT NULL, quandoNaoUsar TEXT NOT NULL, sintaxe TEXT NOT NULL, exemplo TEXT NOT NULL, aliases TEXT NOT NULL, iaRecomendada TEXT NOT NULL, modoExecucao TEXT NOT NULL, suportaWeb INTEGER NOT NULL, suportaArquivos INTEGER NOT NULL, suportaProjeto INTEGER NOT NULL, suportaMultiplasIAs INTEGER NOT NULL, nivel TEXT NOT NULL, ativo INTEGER NOT NULL, favorito INTEGER NOT NULL, usoCount INTEGER NOT NULL, criadoEm INTEGER NOT NULL, atualizadoEm INTEGER NOT NULL, PRIMARY KEY(id))")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_comandos_categoria ON comandos(categoria)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_comandos_ativo ON comandos(ativo)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_comandos_usoCount ON comandos(usoCount)")
+            }
+        }
         fun getInstance(context: Context): AppDatabase = INSTANCE ?: synchronized(this) {
             INSTANCE ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "iabrain.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { INSTANCE = it }
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build().also { INSTANCE = it }
         }
     }
 }

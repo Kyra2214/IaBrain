@@ -86,6 +86,7 @@ class CriadorPromptsActivity : AppCompatActivity() {
         configurarEntrada()
         configurarAcoesResultado()
         binding.btnVoltarCriadorPrompts.setOnClickListener { finish() }
+        intent.getStringExtra(EXTRA_COMANDO)?.let { binding.editMensagemConversa.setText(it); binding.editMensagemConversa.setSelection(it.length) }
 
         carregarDados()
     }
@@ -269,4 +270,5 @@ class CriadorPromptsActivity : AppCompatActivity() {
         val intent = intentParaDetalhePromptGerado(this, sessao) ?: return
         startActivity(intent)
     }
+    companion object { const val EXTRA_COMANDO = "comando_inicial" }
 }

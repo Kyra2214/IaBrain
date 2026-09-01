@@ -87,3 +87,32 @@ data class ProjetoContextoEntity(
     val recursos: List<String>,
     val atualizadoEm: Long
 )
+
+@Entity(tableName = "comandos", indices = [Index("categoria"), Index("ativo"), Index("usoCount")])
+data class ComandoEntity(
+    @androidx.room.PrimaryKey val id: String,
+    val slug: String,
+    val nome: String,
+    val comando: String,
+    val categoria: String,
+    val descricaoCurta: String,
+    val explicacao: String,
+    val objetivo: String,
+    val quandoUsar: String,
+    val quandoNaoUsar: String,
+    val sintaxe: String,
+    val exemplo: String,
+    val aliases: List<String>,
+    val iaRecomendada: String,
+    val modoExecucao: String,
+    val suportaWeb: Boolean,
+    val suportaArquivos: Boolean,
+    val suportaProjeto: Boolean,
+    val suportaMultiplasIAs: Boolean,
+    val nivel: String,
+    val ativo: Boolean,
+    val favorito: Boolean,
+    val usoCount: Int,
+    val criadoEm: Long,
+    val atualizadoEm: Long
+)

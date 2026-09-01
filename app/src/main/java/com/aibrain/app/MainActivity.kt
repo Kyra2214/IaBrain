@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotaoAtualizarIAs()
         binding.btnAbrirColecoes.setOnClickListener { startActivity(Intent(this, ColecoesActivity::class.java)) }
         binding.btnAbrirGuias.setOnClickListener { startActivity(Intent(this, GuiasActivity::class.java)) }
+        binding.btnAbrirComandos.setOnClickListener { startActivity(Intent(this, com.aibrain.app.view.ComandosActivity::class.java)) }
         observarResultado()
         carregarCatalogoSeNecessario()
     }
