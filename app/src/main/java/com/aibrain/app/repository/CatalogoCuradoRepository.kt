@@ -77,7 +77,14 @@ class CatalogoCuradoRepository(private val context: Context) {
                     ?: if (obj.optBoolean("gratuita", false)) com.aibrain.app.model.NivelAcesso.GRATUITA
                     else com.aibrain.app.model.NivelAcesso.PAGA,
                 notas = notas,
-                categoriaPrincipal = obj.optString("categoriaPrincipal").takeIf { it.isNotBlank() }
+                categoriaPrincipal = obj.optString("categoriaPrincipal").takeIf { it.isNotBlank() },
+                plataformas = obj.optJSONArray("plataformas")?.let { arr -> (0 until arr.length()).map { arr.getString(it) } }.orEmpty(),
+                modeloAcesso = obj.optString("modeloDeAcesso").takeIf { it.isNotBlank() },
+                possuiApi = if (obj.has("possuiApi")) obj.optBoolean("possuiApi") else null,
+                requerLogin = if (obj.has("requerLogin")) obj.optBoolean("requerLogin") else null,
+                ultimaVerificacao = obj.optString("ultimaVerificacao").takeIf { it.isNotBlank() },
+                status = obj.optString("status").takeIf { it.isNotBlank() },
+                casosDeUso = obj.optJSONArray("casosDeUso")?.let { arr -> (0 until arr.length()).map { arr.getString(it) } }.orEmpty()
             )
         }
     }
@@ -94,6 +101,13 @@ class CatalogoCuradoRepository(private val context: Context) {
         put("acesso", ia.acesso.chave)
         put("notas", JSONObject().apply { ia.notas.forEach { (chave, nota) -> put(chave, nota) } })
         ia.categoriaPrincipal?.let { put("categoriaPrincipal", it) }
+        put("plataformas", JSONArray().apply { ia.plataformas.forEach(::put) })
+        ia.modeloAcesso?.let { put("modeloDeAcesso", it) }
+        ia.possuiApi?.let { put("possuiApi", it) }
+        ia.requerLogin?.let { put("requerLogin", it) }
+        ia.ultimaVerificacao?.let { put("ultimaVerificacao", it) }
+        ia.status?.let { put("status", it) }
+        put("casosDeUso", JSONArray().apply { ia.casosDeUso.forEach(::put) })
     }
 
     private fun chave(valor: String): String = valor.trim().lowercase()

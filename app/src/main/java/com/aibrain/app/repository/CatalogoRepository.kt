@@ -156,6 +156,8 @@ class CatalogoRepository(private val context: Context) {
             } else {
                 null
             }
+            val plataformas = obj.optJSONArray("plataformas")?.let { arr -> (0 until arr.length()).map { arr.getString(it) } }.orEmpty()
+            val casosDeUso = obj.optJSONArray("casosDeUso")?.let { arr -> (0 until arr.length()).map { arr.getString(it) } }.orEmpty()
 
             lista.add(
                 IA(
@@ -169,7 +171,14 @@ class CatalogoRepository(private val context: Context) {
                     gratuita = gratuita,
                     acesso = acesso,
                     notas = notas,
-                    categoriaPrincipal = categoriaPrincipal
+                    categoriaPrincipal = categoriaPrincipal,
+                    plataformas = plataformas,
+                    modeloAcesso = obj.optString("modeloDeAcesso").takeIf { it.isNotBlank() },
+                    possuiApi = if (obj.has("possuiApi")) obj.optBoolean("possuiApi") else null,
+                    requerLogin = if (obj.has("requerLogin")) obj.optBoolean("requerLogin") else null,
+                    ultimaVerificacao = obj.optString("ultimaVerificacao").takeIf { it.isNotBlank() },
+                    status = obj.optString("status").takeIf { it.isNotBlank() },
+                    casosDeUso = casosDeUso
                 )
             )
         }

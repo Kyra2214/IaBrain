@@ -25,7 +25,7 @@ import com.aibrain.app.groq.enviarComBuscaNaWeb
 import com.aibrain.app.repository.AtualizacaoRepository
 import com.aibrain.app.repository.CatalogoCuradoRepository
 import com.aibrain.app.repository.CatalogoRepository
-import com.aibrain.app.view.AIBrainActivity
+import com.aibrain.app.view.CriarComIAActivity
 import com.aibrain.app.view.AssistenteIAActivity
 import com.aibrain.app.view.BibliotecaActivity
 import com.aibrain.app.view.CriadorPromptsActivity
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, FavoritosActivity::class.java))
         }
         binding.btnAbrirAIBrain.setOnClickListener {
-            startActivity(Intent(this, AIBrainActivity::class.java))
+            startActivity(Intent(this, CriarComIAActivity::class.java))
         }
         binding.btnAbrirBiblioteca.setOnClickListener {
             startActivity(Intent(this, BibliotecaActivity::class.java))

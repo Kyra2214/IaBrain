@@ -39,6 +39,10 @@
             android:name=".view.AIBrainActivity"
             android:exported="false"
             android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity
+            android:name=".view.CriarComIAActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AIBrain.NoActionBar" />
 
         <activity
             android:name=".view.BibliotecaActivity"
