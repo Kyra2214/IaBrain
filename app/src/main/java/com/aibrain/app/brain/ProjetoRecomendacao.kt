@@ -54,19 +54,26 @@ object ProjetoIntentParser {
     fun parse(texto: String): ProjetoIntent {
         val t = texto.trim()
         val normalizado = t.lowercase().normalizar()
-        val areas = detectarCategorias(t, 5)
+        val tipoDetectado = when {
+            "aplicativo" in normalizado || "app" in normalizado -> "Aplicativo"
+            "site" in normalizado || "web" in normalizado -> "Site"
+            "video" in normalizado -> "Vídeo"
+            else -> null
+        }
+        val areasDetectadas = detectarCategorias(t, 5)
+        // Um pedido de aplicativo frequentemente descreve o domínio do produto,
+        // não as tarefas técnicas. Nesse caso, explicita as funções essenciais
+        // para que o usuário receba uma stack útil em vez de uma tela vazia.
+        val areas = if (areasDetectadas.isNotEmpty()) areasDetectadas else if (tipoDetectado == "Aplicativo") {
+            listOf(Categoria.CODIGO, Categoria.DESIGN, Categoria.ESCRITA, Categoria.IMAGEM)
+        } else emptyList()
         val plataforma = when {
             "android" in normalizado -> "android"
             "ios" in normalizado || "iphone" in normalizado -> "ios"
             "web" in normalizado || "site" in normalizado -> "web"
             else -> null
         }
-        val tipo = when {
-            "aplicativo" in normalizado || "app" in normalizado -> "Aplicativo"
-            "site" in normalizado || "web" in normalizado -> "Site"
-            "video" in normalizado -> "Vídeo"
-            else -> null
-        }
+        val tipo = tipoDetectado
         val orçamento = Regex("(?:r\\$|rs|orçamento|budget)\\s*(\\d+[,.]?\\d*)", RegexOption.IGNORE_CASE)
             .find(normalizado)?.groupValues?.getOrNull(1)?.replace(',', '.')?.toDoubleOrNull()
         val acesso = when {
