@@ -24,10 +24,29 @@ class CriarComIAActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val raiz = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(24, 20, 24, 24) }
-        val titulo = TextView(this).apply { text = getString(R.string.criar_com_ia_titulo); textSize = 26f; setTypeface(null, Typeface.BOLD) }
+        val titulo = TextView(this).apply {
+            text = getString(R.string.criar_com_ia_titulo)
+            textSize = 26f
+            typeface = Typeface.create("sans-serif", Typeface.BOLD)
+            letterSpacing = 0.01f
+        }
         raiz.addView(titulo)
-        raiz.addView(TextView(this).apply { text = getString(R.string.criar_com_ia_descricao); textSize = 15f; setPadding(0, 8, 0, 12) })
-        entrada = EditText(this).apply { hint = getString(R.string.criar_com_ia_hint); minLines = 4; gravity = Gravity.TOP; inputType = 0x80001 }
+        raiz.addView(TextView(this).apply {
+            text = getString(R.string.criar_com_ia_descricao)
+            textSize = 15f
+            typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+            setPadding(0, 8, 0, 12)
+        })
+        entrada = EditText(this).apply {
+            hint = getString(R.string.criar_com_ia_hint)
+            minLines = 3
+            maxLines = 7
+            gravity = Gravity.TOP or Gravity.START
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            setHorizontallyScrolling(false)
+            isSingleLine = false
+            setPadding(12, 12, 12, 12)
+        }
         raiz.addView(entrada, LinearLayout.LayoutParams(-1, -2))
         val analisar = Button(this).apply { text = getString(R.string.criar_com_ia_analisar); setOnClickListener { analisarProjeto() } }
         raiz.addView(analisar)
@@ -43,8 +62,28 @@ class CriarComIAActivity : AppCompatActivity() {
     private fun analisarProjeto() {
         val texto = entrada.text.toString().trim()
         if (texto.isBlank()) { entrada.error = getString(R.string.criar_com_ia_vazio); return }
+        entrada.setText("")
+        val mensagemUsuario = TextView(this).apply {
+            text = texto
+            textSize = 16f
+            setPadding(16, 14, 16, 14)
+            setTextColor(getColor(R.color.on_background))
+            typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+            setBackgroundResource(R.drawable.bg_chat_user)
+        }
         progresso.visibility = View.VISIBLE
         resultado.removeAllViews()
+        resultado.addView(TextView(this).apply {
+            text = "Você"
+            textSize = 13f
+            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            gravity = Gravity.END
+            setPadding(0, 12, 0, 4)
+        })
+        resultado.addView(mensagemUsuario, LinearLayout.LayoutParams(-2, -2).apply {
+            gravity = Gravity.END
+            marginStart = 32
+        })
         val recomendacao = catalogo.recomendarProjeto(texto)
         progresso.visibility = View.GONE
         val intent = recomendacao.intent
@@ -71,8 +110,10 @@ class CriarComIAActivity : AppCompatActivity() {
     }
 
     private fun secao(titulo: String, texto: String): TextView = TextView(this).apply {
-        text = if (texto.isBlank()) titulo else "$titulo\n$texto"; textSize = 16f; setPadding(0, 14, 0, 10)
-        if (texto.isBlank()) setTypeface(null, Typeface.BOLD)
+        text = if (texto.isBlank()) titulo else "$titulo\n$texto"
+        textSize = if (texto.isBlank()) 18f else 16f
+        typeface = Typeface.create("sans-serif", if (texto.isBlank()) Typeface.BOLD else Typeface.NORMAL)
+        setPadding(0, 18, 0, 10)
     }
     private fun abrirDetalhe(ia: IA) { startActivity(DetalheIAActivity.criarIntent(this, ia)) }
 }
