@@ -98,4 +98,12 @@ class AppDatabaseTest {
         val salvo = db.promptDao().buscar(entity.id)!!
         assertEquals("ia-pesquisa", salvo.iaId); assertTrue(salvo.origem.contains("/research")); assertEquals("Prompt contextual", salvo.prompt)
     }
+
+    @Test fun textoLivreClaroResolveComandoExistente() = runBlocking {
+        val agora = System.currentTimeMillis()
+        db.comandoDao().inserirTodos(listOf(ComandoEntity("implement", "implement", "Implementar", "/implement", "Desenvolvimento", "Implementação", "Implementar solução", "Criar código", "Quando desenvolver", "Quando não desenvolver", "/implement [instrução]", "/implement app", emptyList(), "IA código", "PROMPT", false, false, true, false, "INTERMEDIARIO", true, false, 0, agora, agora)))
+        db.comandoGrafoDao().salvarCapacidades(listOf(ComandoCapacidadeEntity("implement", "CODIGO", true, 1)))
+        val request = RoomCommandResolver(ApplicationProvider.getApplicationContext(), db).resolve("Quero criar um aplicativo de análise de vendas")
+        assertEquals("/implement", request?.canonicalCommand); assertTrue(request?.requiredCapabilities?.contains("CODIGO") == true)
+    }
 }

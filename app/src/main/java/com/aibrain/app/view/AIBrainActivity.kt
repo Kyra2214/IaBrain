@@ -304,7 +304,6 @@ class AIBrainActivity : AppCompatActivity() {
 
     private fun gerarPromptContextual(texto: String) {
         binding.containerPromptGerado.visibility = View.GONE
-        if (!texto.trim().startsWith("/")) return
         lifecycleScope.launch {
             try {
                 val request = commandResolver.resolve(texto) ?: return@launch
