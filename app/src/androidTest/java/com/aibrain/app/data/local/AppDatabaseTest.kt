@@ -8,6 +8,8 @@ import com.aibrain.app.brain.RecomendadorProjeto
 import com.aibrain.app.brain.LocalAIRouter
 import com.aibrain.app.brain.RoomCommandResolver
 import com.aibrain.app.brain.RoutingStatus
+import com.aibrain.app.brain.PromptGenerationSpec
+import com.aibrain.app.brain.toEntity
 import com.aibrain.app.model.Categoria
 import com.aibrain.app.model.IA
 import kotlinx.coroutines.flow.first
@@ -87,5 +89,13 @@ class AppDatabaseTest {
         db.iaDao().salvarTodos(listOf(IA("sem-perfil", "Sem Perfil", "", "", "", listOf("PESQUISA"), emptyList(), true).toEntity()))
         val candidatos = com.aibrain.app.brain.IACapabilityRegistry(ApplicationProvider.getApplicationContext(), db).candidates()
         assertEquals(1, candidatos.size); assertTrue(candidatos.single().isDefaultProfile); assertEquals(.5, candidatos.single().quality, 0.0)
+    }
+
+    @Test fun promptGeradoPersisteIAComandoEOrigem() = runBlocking {
+        val spec = PromptGenerationSpec("Pesquisar Android offline", "ia-pesquisa", "IA Pesquisa", "/research", setOf("PESQUISA"), funcaoId = "f1")
+        val entity = spec.toEntity("Prompt contextual")
+        db.promptDao().salvar(entity)
+        val salvo = db.promptDao().buscar(entity.id)!!
+        assertEquals("ia-pesquisa", salvo.iaId); assertTrue(salvo.origem.contains("/research")); assertEquals("Prompt contextual", salvo.prompt)
     }
 }

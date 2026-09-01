@@ -145,3 +145,7 @@ O catálogo de IAs pode alimentar o roteamento por meio do `IACapabilityRegistry
 ## IA Routing Profile v1
 
 Cada IA pode possuir um `IARoutingProfileEntity` persistido no Room com `qualityScore`, `speedScore`, `costScore`, `reliabilityScore`, `contextScore`, `enabled` e `updatedAt`. O `IACapabilityRegistry` transforma esse perfil, as capacidades, especialidades e comandos suportados em `RoutingCandidate`; o `LocalAIRouter` continua puro e determinístico. Scores fora de `0.0..1.0` falham explicitamente. IAs sem perfil recebem defaults identificáveis por `isDefaultProfile`, sem transformar categorias em métricas.
+
+## Geração contextual de prompts
+
+Após a seleção do `LocalAIRouter`, `PromptGenerationSpecBuilder` transforma a solicitação, a `RoutingDecision`, o comando, as capacidades e o contexto em uma especificação explícita. `ContextualPromptGenerator` produz um prompt determinístico específico para a tarefa e para a IA escolhida, sem substituir o chat nem chamar providers. A persistência reutiliza `PromptEntity`, registrando `iaId`, `funcaoId`, `modeloGeracao` e a origem `ROUTER_COMMAND:<comando>` para rastreabilidade.
