@@ -1,3 +1,10 @@
+## FASE — Pré-preenchimento assistido do prompt — 2026-09-01
+- `IAOpenContract` evoluído com capacidade explícita (`CONFIRMED`, `NOT_SUPPORTED`, `UNKNOWN`) e modo seguro (`OPEN_ONLY` ou `PREFILL_ONLY`), sem qualquer modo de envio.
+- `IAUrlResolver` continua sendo a fonte única da URL e consulta a tabela Room `ia_capacidades`; capacidade desconhecida mantém a abertura somente.
+- `BrowserActivity` recebe o resultado do contrato, aguarda o carregamento e faz no máximo uma tentativa através de `PrefillAdapterRegistry`. O registro não possui adaptadores inventados: sem suporte técnico confirmado, não há JavaScript, seletor genérico ou tentativa falsa.
+- O prompt continua disponível para cópia e revisão manual. Nenhuma ação de envio, clique em Send/Enviar ou submissão é executada.
+- Testes do contrato ampliados e build Android validado.
+
 # CHANGELOG — AI BRAIN
 
 ## Criar com IA — 2026-09-01

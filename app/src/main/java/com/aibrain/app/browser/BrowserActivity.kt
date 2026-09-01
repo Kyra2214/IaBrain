@@ -18,6 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aibrain.app.cache.ImagemCache
 import com.aibrain.app.brain.IAOpenContract
+import com.aibrain.app.brain.BrowserOpenMode
+import com.aibrain.app.brain.PrefillCapability
+import com.aibrain.app.brain.PrefillAdapterRegistry
 import com.aibrain.app.databinding.ActivityBrowserBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -65,7 +68,8 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBrowserBinding
     private lateinit var tabManager: BrowserTabManager
     private lateinit var adapter: BrowserAdapter
-    private lateinit var historyManager: BrowserHistoryManager
+	private lateinit var historyManager: BrowserHistoryManager
+	private var prefillTentado = false
 
     private var callbackUploadArquivo: ValueCallback<Array<Uri>>? = null
     private val launcherUploadArquivo: ActivityResultLauncher<String> =
@@ -80,6 +84,8 @@ class BrowserActivity : AppCompatActivity() {
         const val EXTRA_NOME_IA = "extra_nome_ia"
         const val EXTRA_ICONE_IA = "extra_icone_ia"
         const val EXTRA_PROMPT = "extra_prompt"
+        const val EXTRA_PREFILL_CAPABILITY = "extra_prefill_capability"
+        const val EXTRA_OPEN_MODE = "extra_open_mode"
 
         /** Helper — nova aba com a IA informada, reaproveitando a instância singleTask já aberta. */
         fun criarIntent(context: android.content.Context, nomeIA: String, url: String, iconeIA: String): Intent {
@@ -95,6 +101,8 @@ class BrowserActivity : AppCompatActivity() {
                 putExtra(EXTRA_NOME_IA, contract.selectedAIName)
                 putExtra(EXTRA_URL, contract.officialResolvedUrl)
                 putExtra(EXTRA_PROMPT, contract.generatedPrompt)
+                putExtra(EXTRA_PREFILL_CAPABILITY, contract.prefillCapability.name)
+                putExtra(EXTRA_OPEN_MODE, contract.openMode.name)
             }
         }
     }
@@ -163,9 +171,16 @@ class BrowserActivity : AppCompatActivity() {
         val url = intent.getStringExtra(EXTRA_URL) ?: return
         val nomeIA = intent.getStringExtra(EXTRA_NOME_IA) ?: ""
         val iconeIA = intent.getStringExtra(EXTRA_ICONE_IA) ?: ""
+        val request = PrefillRequest(
+            intent.getStringExtra(EXTRA_PROMPT).orEmpty(),
+            intent.getStringExtra(EXTRA_PREFILL_CAPABILITY)?.let { runCatching { PrefillCapability.valueOf(it) }.getOrNull() } ?: PrefillCapability.UNKNOWN,
+            intent.getStringExtra(EXTRA_OPEN_MODE)?.let { runCatching { BrowserOpenMode.valueOf(it) }.getOrNull() } ?: BrowserOpenMode.OPEN_ONLY
+        )
 
         val aba = tabManager.criarAba(nomeIA, url, iconeIA)
         configurarWebView(tabManager.obterWebView(aba.id) ?: return, aba.id)
+        prefillTentado = false
+        tabManager.obterWebView(aba.id)?.tag = request
         tabManager.obterWebView(aba.id)?.loadUrl(url)
         selecionarAba(aba.id)
     }
@@ -237,8 +252,8 @@ class BrowserActivity : AppCompatActivity() {
      *
      * Fase 21.14 — garante que o navegador só renderiza o site oficial de
      * cada IA, sem modificar, injetar script em, ou alterar nenhuma página:
-     * nenhuma chamada a `evaluateJavascript`/`loadDataWithBaseURL`/
-     * `addJavascriptInterface` existe em todo o módulo Browser (nada é
+     * nenhum mecanismo de injeção de script ou conteúdo local existe em todo o
+     * módulo Browser (nada é
      * injetado na página carregada); `shouldOverrideUrlLoading` é
      * sobrescrito explicitamente retornando `false` — toda navegação dentro
      * do domínio da IA continua sendo carregada pelo próprio WebView (nunca
@@ -261,6 +276,7 @@ class BrowserActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                tentarPrefillUmaVez(view, idAba)
                 tabManager.sincronizarEstadoNavegacao(idAba)
                 if (tabManager.idAbaAtiva() == idAba) {
                     // Fase 24 — barra superior removida; nada a atualizar além
@@ -326,6 +342,20 @@ class BrowserActivity : AppCompatActivity() {
         val gerenciador = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         gerenciador.enqueue(requisicao)
     }
+
+    private fun tentarPrefillUmaVez(view: WebView?, idAba: String) {
+        if (prefillTentado || view == null || tabManager.idAbaAtiva() != idAba) return
+        val request = view.tag as? PrefillRequest ?: return
+        prefillTentado = true
+        if (request.capability != PrefillCapability.CONFIRMED || request.mode != BrowserOpenMode.PREFILL_ONLY) return
+        PrefillAdapterRegistry.tryPrefill(view, request.prompt)
+    }
+
+    private data class PrefillRequest(
+        val prompt: String,
+        val capability: PrefillCapability,
+        val mode: BrowserOpenMode
+    )
 
     /** Fase 21.10 — salva a sessão de abas sempre que a tela sai de primeiro plano (background ou fechamento). */
     override fun onStop() {

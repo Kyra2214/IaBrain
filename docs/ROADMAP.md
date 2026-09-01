@@ -112,3 +112,7 @@ A persistência do grafo Projeto → Função → IA foi completada com `SalvarP
 Também foram adicionados `HeavyResource`, `LocalResourceStore` e `HeavyResourceManager`, com manifesto do Qwen3-0.6B Q4_0 fora do APK, download retomável por HTTP Range, progresso real, verificação de tamanho e SHA-256 e suporte a versões. A abstração `LocalLLMProvider`/`LocalRuntime` e o `GroqLLMProvider` definem o fallback sem acoplar a UI ao runtime.
 
 A integração concreta do runtime llama.cpp para inferência Android e a tela de bootstrap/download com consentimento de dados móveis permanecem como próxima subfase: o contrato já está isolado, mas não foi incluída uma biblioteca experimental nem um modelo de 429 MB no APK. O Qwen3 permanece opcional até que a ABI/runtime seja validada no dispositivo-alvo.
+
+## FASE — Pré-preenchimento assistido do prompt
+
+Contrato central evoluído com capacidade persistida e modo de abertura seguro. O navegador aguarda o carregamento e consulta exclusivamente o registro de adaptadores confirmados; na ausência de adaptador específico, mantém abertura normal e cópia manual. O limite da automação permanece antes de qualquer envio.
