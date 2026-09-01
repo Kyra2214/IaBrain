@@ -90,3 +90,17 @@
 ---
 
 **Conceito Final:** *"O ecossistema definitivo de inteligência artificial: catálogo, biblioteca de prompts, assistente inteligente e navegação integrada, agora com área segura e independente para conteúdo adulto."*
+
+## FASE 28 — Fundação SQL local com Room ✅ CONCLUÍDA
+*Migração incremental para persistência estruturada, mantendo o funcionamento offline e os fluxos legados.*
+
+- **28.1** ✅ `AppDatabase` Room centralizado sobre SQLite, versão 1, sem migration destrutiva.
+- **28.2** ✅ Entidades `IAEntity`, `ProjetoEntity`, `ProjetoFuncaoEntity`, `ProjetoIAEntity` e `PromptEntity`.
+- **28.3** ✅ DAOs e conversores para listas/mapas, com repositories separados e mapper `IAEntity ↔ IA`.
+- **28.4** ✅ `CriarComIAViewModel` mediando o novo fluxo de projeto; catálogo JSON permanece fonte de importação inicial.
+- **28.5** ✅ Teste instrumentado do relacionamento Projeto → Função → IA → Prompt.
+- **28.6** ✅ Arquitetura documentada para futura `RemoteDataSource`, API e PostgreSQL, sem backend nesta fase.
+
+### Próximas extensões estruturais
+
+Roadmap, tarefas e dependências continuam fora do escopo atual. Quando necessários, deverão ser adicionados como `RoadmapEntity`, `RoadmapTarefaEntity` e `RoadmapDependenciaEntity`, preservando as entidades de projeto, função e IA já estabelecidas. A futura sincronização deverá usar IDs estáveis e migrations explícitas.

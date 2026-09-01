@@ -82,3 +82,12 @@
 - Expandido o modelo `IA` com metadados opcionais para plataforma, acesso, API, login, status, verificação e casos de uso.
 - Incluído teste unitário do conteúdo editorial e smoke test instrumentado para os atalhos da tela principal.
 - CI ampliado com job E2E em emulador Android API 34.
+
+## Fundação SQL local com Room — 2026-09-01
+
+- Criada a camada Room/SQLite local-first com `AppDatabase`, conversores, DAOs e schema versionado na versão 1.
+- Adicionadas as entidades `IAEntity`, `ProjetoEntity`, `ProjetoFuncaoEntity`, `ProjetoIAEntity` e `PromptEntity`, com repositories independentes e mapper entre `IAEntity` e o modelo de domínio.
+- O fluxo Criar com IA passou a usar `CriarComIAViewModel` e a persistir a análise de projeto; o catálogo JSON continua como fonte de importação inicial.
+- Mantidos os repositories legados de catálogo, favoritos, histórico e Prompt Builder, sem backend obrigatório e sem migration destrutiva.
+- Incluído teste instrumentado do relacionamento Projeto → Função → IA → Prompt e documentação da futura extensão por `RemoteDataSource`, API e PostgreSQL.
+- Validação local: `git diff --check`, `testDebugUnitTest` e `assembleDebug` concluídos com sucesso.

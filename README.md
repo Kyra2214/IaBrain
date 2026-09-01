@@ -89,3 +89,23 @@ Antes de abrir um pull request, execute testes, lint e build. Mudanças no catá
 ## Status
 
 O projeto está em evolução ativa. Consulte o [roadmap](docs/ROADMAP.md) e o [changelog](docs/CHANGELOG.md) para o histórico das fases implementadas.
+
+## Arquitetura de dados local-first
+
+Os dados estruturados de projetos, funções, vínculos entre funções e IAs e prompts gerados utilizam Room sobre SQLite:
+
+```text
+UI
+ ↓
+ViewModel
+ ↓
+Repository
+ ↓
+DAO
+ ↓
+Room / SQLite
+```
+
+A fundação está em `data/local`, com `AppDatabase`, entidades, DAOs, conversores e repositories separados. O JSON continua sendo a fonte inicial do catálogo e pode ser importado para a tabela local de IAs. A migração foi incremental: favoritos, histórico, catálogo curado e o Prompt Builder legado continuam preservados enquanto os novos dados de projeto passam a ter estrutura SQL.
+
+O banco está na versão 1 e não usa `fallbackToDestructiveMigration`. Futuras versões devem adicionar migrations explícitas sem apagar dados do usuário. A separação de repositories permite acrescentar posteriormente `RemoteDataSource` e sincronização com uma API/PostgreSQL sem reescrever o domínio ou a UI; nenhum backend ou PostgreSQL faz parte desta versão.

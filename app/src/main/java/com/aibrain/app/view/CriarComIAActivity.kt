@@ -12,6 +12,8 @@ import com.aibrain.app.R
 import com.aibrain.app.brain.*
 import com.aibrain.app.model.IA
 import com.aibrain.app.repository.CatalogoRepository
+import com.aibrain.app.data.local.IARepository
+import com.aibrain.app.viewmodel.CriarComIAViewModel
 import kotlinx.coroutines.launch
 
 /** Experiência de descoberta por projeto; recomenda apenas IDs presentes no catálogo. */
@@ -19,6 +21,7 @@ class CriarComIAActivity : AppCompatActivity() {
     private lateinit var entrada: EditText
     private lateinit var resultado: LinearLayout
     private lateinit var progresso: ProgressBar
+    private lateinit var viewModel: CriarComIAViewModel
     private var catalogo: List<IA> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +59,11 @@ class CriarComIAActivity : AppCompatActivity() {
         val scroll = ScrollView(this).apply { addView(resultado) }
         raiz.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(raiz)
-        lifecycleScope.launch { catalogo = runCatching { CatalogoRepository(applicationContext).carregarCatalogoSincronizado() }.getOrDefault(emptyList()) }
+        viewModel = androidx.lifecycle.ViewModelProvider(this)[CriarComIAViewModel::class.java]
+        lifecycleScope.launch {
+            catalogo = runCatching { CatalogoRepository(applicationContext).carregarCatalogoSincronizado() }.getOrDefault(emptyList())
+            runCatching { IARepository(applicationContext).importar(catalogo) }
+        }
     }
 
     private fun analisarProjeto() {
@@ -85,6 +92,7 @@ class CriarComIAActivity : AppCompatActivity() {
             marginStart = 32
         })
         val recomendacao = catalogo.recomendarProjeto(texto)
+        viewModel.salvarAnalise(recomendacao)
         progresso.visibility = View.GONE
         val intent = recomendacao.intent
         resultado.addView(secao("Análise do projeto", buildString {
