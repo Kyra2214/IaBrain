@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.content.res.ColorStateList
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.aibrain.app.MainActivity
 import com.aibrain.app.R
@@ -24,6 +25,11 @@ object GlobalNavigation {
             inflateMenu(R.menu.menu_navegacao_global)
             labelVisibilityMode = BottomNavigationView.LABEL_VISIBILITY_LABELED
             itemIconTintList = null
+            itemTextColor = activity.getColorStateList(R.color.nav_item_colors)
+            itemRippleColor = ColorStateList.valueOf(activity.getColor(R.color.secondary_container))
+            backgroundTintList = ColorStateList.valueOf(activity.getColor(R.color.surface_container))
+            elevation = activity.resources.getDimension(R.dimen.space_sm)
+            minimumHeight = activity.resources.getDimensionPixelSize(R.dimen.global_navigation_height)
             setOnItemSelectedListener { item ->
                 val destination = when (item.itemId) {
                     R.id.nav_chat -> CHAT

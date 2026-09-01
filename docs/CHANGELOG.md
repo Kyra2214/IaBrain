@@ -102,3 +102,7 @@
 
 A experiência principal passou a expor quatro áreas irmãs: Chat, Navegador, Brain e Prompts/Comandos. A barra inferior reutilizável direciona para as Activities existentes sem duplicar catálogo, router, resolver, comandos ou biblioteca de prompts. O Chat é o destino inicial após o onboarding; o Brain permanece responsável pela descoberta de IAs; o Navegador preserva suas abas; e a nova central Prompts/Comandos oferece acesso à Biblioteca, ao Criador e à lista de Comandos já existentes. O contrato `IAOpenContract` e o `IAUrlResolver` permanecem intactos como fonte única para abertura de IAs.
 
+## FASE — Design System e embelezamento global — 2026-09-01
+
+Foi consolidado o Design System do IaBrain com paleta semântica para temas claro e escuro, superfícies, bordas, estados, tipografia, espaçamentos e formas. A navegação global recebeu estados visuais consistentes, ripple, elevação, altura e cores centralizadas. Cards de IA e o Chat passaram a consumir tokens de dimensão e hierarquia tipográfica; o conteúdo rolável também recebeu espaço inferior para não ficar encoberto pela navegação. A lógica funcional, o catálogo, o roteamento, os prompts, o contrato de abertura e o navegador foram preservados.
+

@@ -16,13 +16,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="24dp">
+        android:paddingBottom="@dimen/content_bottom_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:padding="16dp">
+                android:padding="@dimen/space_md">
 
             <ImageButton
                 android:id="@+id/btnVoltar"
@@ -38,15 +38,14 @@
                 android:layout_marginStart="12dp"
                 android:text="@string/brain_titulo"
                 android:textColor="@color/on_background"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                style="@style/TextAppearance.AIBrain.TituloSecao" />
 
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="@dimen/space_md"
             android:hint="@string/brain_hint_pergunta"
             app:boxBackgroundColor="@color/surface">
 
@@ -64,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/space_sm"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -308,15 +307,14 @@
             android:id="@+id/containerPromptGerado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/space_md"
             android:orientation="vertical"
             android:visibility="gone">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Prompt contextualizado"
-                android:textColor="@color/on_background"
-                android:textStyle="bold" />
+                style="@style/TextAppearance.AIBrain.TituloSecao" />
             <TextView
                 android:id="@+id/txtPromptMeta"
                 android:layout_width="match_parent"
@@ -329,8 +327,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@color/surface"
-                android:padding="12dp"
+                android:background="@color/surface_container"
+                android:padding="@dimen/space_md"
                 android:textColor="@color/on_background"
                 android:textIsSelectable="true" />
             <com.google.android.material.button.MaterialButton

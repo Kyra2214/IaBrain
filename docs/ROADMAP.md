@@ -120,3 +120,7 @@ Contrato central evoluído com capacidade persistida e modo de abertura seguro. 
 ## FASE — Reestruturação da navegação principal ✅ CONCLUÍDA
 
 A navegação global agora separa Chat, Navegador, Brain e Prompts/Comandos. O Chat é a entrada principal após o onboarding, as abas do navegador são preservadas pelo `BrowserTabManager`, o Brain mantém catálogo e descoberta, e a central de Prompts/Comandos reutiliza Biblioteca, Criador e Comandos.
+
+## FASE — Design System + Embelezamento Global ✅ CONCLUÍDA
+
+Design System centralizado aplicado ao tema, navegação global, Chat, Brain e cards de IA, com suporte consistente a temas claro/escuro, tipografia, espaçamento, formas, estados e superfícies.

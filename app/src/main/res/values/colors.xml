@@ -16,4 +16,23 @@
     <color name="divider">#E1E3EC</color>
     <!-- Fase 18.2 — cor de alerta/remoção, usada no botão "Remover API key". -->
     <color name="error">#D64545</color>
+    <color name="primary_container">#D8F7F2</color>
+    <color name="on_primary_container">#003731</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#B8F1E8</color>
+    <color name="on_secondary_container">#003731</color>
+    <color name="tertiary">#6750A4</color>
+    <color name="on_tertiary">#FFFFFF</color>
+    <color name="tertiary_container">#EADDFF</color>
+    <color name="on_tertiary_container">#21005D</color>
+    <color name="on_surface">#14141F</color>
+    <color name="surface_container">#F0F1F7</color>
+    <color name="surface_container_high">#E8E9F0</color>
+    <color name="surface_container_low">#F8F8FC</color>
+    <color name="outline">#777780</color>
+    <color name="outline_variant">#C7C7D0</color>
+    <color name="on_surface_variant">#454650</color>
+    <color name="success">#197A5A</color>
+    <color name="warning">#8A5A00</color>
+    <color name="info">#2969A8</color>
 </resources>
