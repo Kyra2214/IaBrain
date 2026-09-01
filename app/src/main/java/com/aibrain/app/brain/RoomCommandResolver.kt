@@ -5,14 +5,14 @@ import com.aibrain.app.command.SlashCommandParser
 import com.aibrain.app.data.local.ComandoRepository
 import com.aibrain.app.data.local.IARepository
 
-class RoomCommandResolver(private val context: Context) {
+class RoomCommandResolver(private val context: Context, private val database: com.aibrain.app.data.local.AppDatabase = com.aibrain.app.data.local.AppDatabase.getInstance(context)) {
     private val comandos = ComandoRepository(context.applicationContext)
     private val ias = IARepository(context.applicationContext)
     suspend fun resolve(raw: String): RoutingRequest? {
         comandos.ensureSeed()
         val parsed = SlashCommandParser.parse(raw) ?: return null
-        val definition = com.aibrain.app.data.local.AppDatabase.getInstance(context).comandoDao().buscarPorComando(parsed.comando, parsed.comando.removePrefix("/")) ?: return null
-        val capabilities = com.aibrain.app.data.local.AppDatabase.getInstance(context).comandoGrafoDao().capacidades(definition.id).map { it.capacidade }
+        val definition = database.comandoDao().buscarPorComando(parsed.comando, parsed.comando.removePrefix("/")) ?: return null
+        val capabilities = database.comandoGrafoDao().capacidades(definition.id).map { it.capacidade }
         return LocalAIRouter.request(raw, parsed, capabilities.toSet(), emptySet())
     }
     suspend fun candidates(): List<RoutingCandidate> = ias.listarAtivas().map { ia ->
