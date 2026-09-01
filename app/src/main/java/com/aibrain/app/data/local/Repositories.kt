@@ -9,8 +9,8 @@ import com.aibrain.app.model.NivelAcesso
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
-fun IA.toEntity(): IAEntity = IAEntity(id, nome, descricao, site, categoriaPrincipal, categorias, notas, plataformas, modeloAcesso, possuiApi, requerLogin, status, ultimaVerificacao, casosDeUso, gratuita, acesso.chave)
-fun IAEntity.toDomain(): IA = IA(id, nome, "", url, descricao, categorias, emptyList(), gratuita, NivelAcesso.porChave(acesso) ?: if (gratuita) NivelAcesso.GRATUITA else NivelAcesso.PAGA, notas, categoria, plataformas, modeloAcesso, possuiApi, requerLogin, ultimaVerificacao, status, casosDeUso)
+fun IA.toEntity(): IAEntity = IAEntity(id, nome, descricao, site, logo, idiomas, categoriaPrincipal, categorias, notas, plataformas, modeloAcesso, possuiApi, requerLogin, status, ultimaVerificacao, casosDeUso, gratuita, acesso.chave)
+fun IAEntity.toDomain(): IA = IA(id, nome, logo, url, descricao, categorias, idiomas, gratuita, NivelAcesso.porChave(acesso) ?: if (gratuita) NivelAcesso.GRATUITA else NivelAcesso.PAGA, notas, categoria, plataformas, modeloAcesso, possuiApi, requerLogin, ultimaVerificacao, status, casosDeUso)
 
 class IARepository(context: Context) {
     private val dao = AppDatabase.getInstance(context).iaDao()

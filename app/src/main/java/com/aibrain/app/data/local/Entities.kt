@@ -9,6 +9,8 @@ data class IAEntity(
     val nome: String,
     val descricao: String,
     val url: String,
+    val logo: String,
+    val idiomas: List<String>,
     val categoria: String?,
     val categorias: List<String>,
     val notas: Map<String, Int>,

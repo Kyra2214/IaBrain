@@ -2,6 +2,8 @@ package com.aibrain.app.data.local
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -16,7 +18,7 @@ class RoomConverters {
     }.getOrDefault(emptyMap())
 }
 
-@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class], version = 1, exportSchema = true)
+@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class], version = 2, exportSchema = true)
 @TypeConverters(RoomConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun iaDao(): IADao
@@ -26,8 +28,15 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun promptDao(): PromptDao
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE ias ADD COLUMN logo TEXT NOT NULL DEFAULT ''")
+                database.execSQL("ALTER TABLE ias ADD COLUMN idiomas TEXT NOT NULL DEFAULT '[]'")
+            }
+        }
         fun getInstance(context: Context): AppDatabase = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "iabrain.db").build().also { INSTANCE = it }
+            INSTANCE ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "iabrain.db")
+                .addMigrations(MIGRATION_1_2).build().also { INSTANCE = it }
         }
     }
 }
