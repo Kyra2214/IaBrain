@@ -153,3 +153,7 @@ Após a seleção do `LocalAIRouter`, `PromptGenerationSpecBuilder` transforma a
 ## Padrão universal de desenvolvimento
 
 Prompts gerados para criação, implementação ou execução de desenvolvimento começam automaticamente com o cabeçalho `MODO DE EXECUÇÃO SILENCIOSA`, seguido das regras universais e das seções `PROJETO`, `FASE`, `MÓDULO`, `SUBMÓDULO`, `OBJETIVO`, `IMPLEMENTAÇÃO`, `CRITÉRIOS DE CONCLUSÃO` e `REGRA`. A detecção é feita no domínio por comando ou objetivo. Prompts comuns, como pesquisa, não recebem esse cabeçalho.
+
+## Texto livre → comando automático
+
+O `RoomCommandResolver` aceita comandos explícitos e texto livre. Comandos `/comando` têm prioridade absoluta; para texto livre, apenas intenções claras são mapeadas para slugs já existentes (`/implement`, `/debug`, `/test`, `/review` e `/research`). A seleção é determinística, sem provider externo: correspondências específicas são avaliadas antes das genéricas, e texto ambíguo retorna `null` sem inventar intenção. O resultado segue pelo mesmo fluxo `RoutingRequest` → `RoutingDecision` → prompt contextualizado.
