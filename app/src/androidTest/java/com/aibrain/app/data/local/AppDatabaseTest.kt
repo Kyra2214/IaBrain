@@ -48,7 +48,10 @@ class AppDatabaseTest {
 
     @Test fun e2eParserRoomGrafoERouterProduzDecisionSemExecutarProvider() = runBlocking {
         val agora = System.currentTimeMillis()
-        db.iaDao().salvarTodos(listOf(IA("ia-pesquisa", "IA Pesquisa", "", "", "", listOf("PESQUISA"), emptyList(), true).toEntity()))
+        db.iaDao().salvarTodos(listOf(
+            IA("ia-generica", "IA Genérica", "", "https://generic.example", "", listOf("PESQUISA"), emptyList(), true).toEntity(),
+            IA("ia-pesquisa", "IA Pesquisa", "", "https://research.example", "", listOf("PESQUISA"), emptyList(), true).toEntity()
+        ))
         db.comandoDao().inserirTodos(listOf(ComandoEntity("research", "research", "Pesquisa", "/research", "Pesquisa", "Pesquisa verificável", "Busca evidências", "Encontrar fontes", "Quando precisar pesquisar", "Quando não houver pesquisa", "/research [tema]", "/research Android", emptyList(), "IA de pesquisa", "PROMPT", true, false, false, false, "INTERMEDIARIO", true, false, 0, agora, agora)))
         db.comandoGrafoDao().salvarCapacidades(listOf(ComandoCapacidadeEntity("research", "PESQUISA", true, 1)))
         db.comandoGrafoDao().salvarComandosIA(listOf(ComandoIAEntity("research", "ia-pesquisa", 1, "suporta pesquisa")))
@@ -56,9 +59,13 @@ class AppDatabaseTest {
         val request = resolver.resolve("/research tema=\"Android offline\"")!!
         assertEquals("/research", request.canonicalCommand)
         assertEquals("Android offline", request.namedParameters["tema"])
-        val decision = LocalAIRouter.route(request, resolver.candidates())
+        val candidatos = resolver.candidates()
+        assertEquals(2, candidatos.size)
+        val decision = LocalAIRouter.route(request, candidatos)
         assertEquals(RoutingStatus.SELECTED, decision.status)
         assertEquals("ia-pesquisa", decision.selectedAI?.iaId)
+        assertTrue(decision.alternatives.any { it.candidate.iaId == "ia-generica" })
+        assertTrue(decision.score!!.commandCompatibility > 0.0)
         assertTrue(decision.score != null && decision.reasons.isNotEmpty())
     }
 }
