@@ -131,3 +131,9 @@ O Qwen3 é usado inicialmente somente como **prompt engine**. A camada `LocalRun
 O catálogo de comandos permanece persistido no Room e agora possui uma camada de grafo preparada para orquestração futura. A migration atual é a **5**, com migrations explícitas `1 → 2`, `2 → 3`, `3 → 4` e `4 → 5`. A versão 5 adiciona capacidades, relacionamentos tipados, parâmetros, vínculos comando/IA, workflows, handoffs e registros de execução/métricas. O `SlashCommandParser` interpreta comandos como `/research tema="Android offline"` sem criar um segundo motor de chat.
 
 A base atual preserva os **344 comandos** existentes. Não foram criados milhares de registros artificiais: a expansão para 3.000–5.000 comandos deverá ocorrer por curadoria e novos seeds versionados, mantendo pesquisa paginada e consultas leves para a interface.
+
+## LocalAIRouter v1
+
+O `SlashCommandParser` pode encaminhar uma solicitação ao `RoomCommandResolver`, que consulta o comando e suas capacidades persistidas. O `LocalAIRouter` então calcula uma `RoutingDecision` determinística, usando uma `RoutingPolicy` centralizada, score explicável, confiança heurística e até três alternativas. Ele **não executa modelos, não chama Groq, não faz HTTP e não depende de API**; a execução será responsabilidade de um futuro `AIExecutor`.
+
+O roteador usa compatibilidade direta de comando, capacidades, especialidades, qualidade, velocidade, contexto e custo conhecidos. Quando não há candidato, retorna `NO_COMPATIBLE_PROVIDER` em vez de mascarar a ausência como sucesso. O modelo suporta evolução futura para handoff, workflows, métricas e roteamento multi-IA sem duplicar o motor de chat.
