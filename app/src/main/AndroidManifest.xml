@@ -78,6 +78,16 @@
             android:label="Verificação de Idade"
             android:theme="@style/Theme.AIBrain.NoActionBar" />
 
+        <activity
+            android:name=".view.ColecoesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AIBrain.NoActionBar" />
+
+        <activity
+            android:name=".view.GuiasActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AIBrain.NoActionBar" />
+
     </application>
 
 </manifest>

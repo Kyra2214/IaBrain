@@ -29,6 +29,8 @@ import com.aibrain.app.view.AIBrainActivity
 import com.aibrain.app.view.AssistenteIAActivity
 import com.aibrain.app.view.BibliotecaActivity
 import com.aibrain.app.view.CriadorPromptsActivity
+import com.aibrain.app.view.ColecoesActivity
+import com.aibrain.app.view.GuiasActivity
 import com.aibrain.app.view.DetalheIAActivity
 import com.aibrain.app.view.FavoritosActivity
 import com.aibrain.app.view.IAAdapter
@@ -82,6 +84,8 @@ class MainActivity : AppCompatActivity() {
         configurarOrdenacao()
         configurarBotaoFavoritos()
         configurarBotaoAtualizarIAs()
+        binding.btnAbrirColecoes.setOnClickListener { startActivity(Intent(this, ColecoesActivity::class.java)) }
+        binding.btnAbrirGuias.setOnClickListener { startActivity(Intent(this, GuiasActivity::class.java)) }
         observarResultado()
         carregarCatalogoSeNecessario()
     }

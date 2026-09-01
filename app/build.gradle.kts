@@ -78,4 +78,8 @@ dependencies {
     // um stub que estoura em testes locais; a dependência abaixo fornece a
     // implementação completa para os testes de curadoria (Fase 18.8).
     testImplementation("org.json:json:20240303")
+
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:core:1.6.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }

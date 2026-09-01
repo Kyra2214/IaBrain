@@ -107,6 +107,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/rowDescoberta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/progressSincronizandoCatalogo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAbrirColecoes"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/atalho_colecoes"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAbrirGuias"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="@string/atalho_guias"
+            android:textSize="12sp" />
+    </LinearLayout>
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchIAs"
         android:layout_width="match_parent"
@@ -117,7 +150,7 @@
         android:background="@drawable/bg_search_rounded"
         android:iconifiedByDefault="false"
         android:queryHint="@string/lista_pesquisar_hint"
-        app:layout_constraintTop_toBottomOf="@id/progressSincronizandoCatalogo"
+        app:layout_constraintTop_toBottomOf="@id/rowDescoberta"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

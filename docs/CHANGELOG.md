@@ -64,3 +64,13 @@
 
 ## FASE 21 — Módulo Browser ✅ CONCLUÍDA
 ... (conteúdo anterior preservado)
+
+
+## Próxima versão — descoberta editorial
+
+- Adicionadas as telas de Coleções e Guias práticos, com atalhos na tela principal.
+- Criados os modelos `Colecao` e `Guia` e um repositório local de conteúdo editorial inicial.
+- Adicionados cards reutilizáveis, busca de coleções e detalhes dos guias com passos e ferramentas.
+- Expandido o modelo `IA` com metadados opcionais para plataforma, acesso, API, login, status, verificação e casos de uso.
+- Incluído teste unitário do conteúdo editorial e smoke test instrumentado para os atalhos da tela principal.
+- CI ampliado com job E2E em emulador Android API 34.

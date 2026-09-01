@@ -45,3 +45,12 @@ O navegador interno foi restringido a HTTPS, com bloqueio de conteúdo misto, ar
 ## Contribuição
 
 Antes de abrir um pull request, execute testes, lint e build. Mudanças no catálogo devem incluir validação do JSON. Mudanças de segurança ou no WebView devem incluir testes de regressão e uma descrição do impacto.
+
+
+## Coleções e Guias práticos
+
+O catálogo principal continua focado em ferramentas de IA. A tela **Coleções** agrupa recursos por intenção, como criação, programação, aprendizado e pesquisa. A tela **Guias práticos** apresenta fluxos curtos com passos e ferramentas recomendadas para tarefas reais.
+
+O conteúdo inicial fica centralizado em `ColecaoRepository`, com os modelos `Colecao` e `Guia`. A implementação é independente de qualquer código ou asset externo e pode ser migrada futuramente para JSON versionado pelo mesmo pipeline de validação do catálogo.
+
+As próximas extensões naturais são metadados de preço/plataforma/status, comparação de até três IAs, sugestões comunitárias em fila de revisão e traduções adicionais. Sugestões externas devem ser revisadas antes de entrar no catálogo oficial.

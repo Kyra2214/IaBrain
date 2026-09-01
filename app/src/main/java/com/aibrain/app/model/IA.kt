@@ -32,5 +32,12 @@ data class IA(
     // reconhecida, distinta das demais categorias em que ela também atua (`categorias`).
     // Curadoria manual (Fase 19.2); null enquanto não curada — ranking (Fase 19.3)
     // trata null como "sem principal definida", sem alterar o comportamento atual.
-    val categoriaPrincipal: String? = null
+    val categoriaPrincipal: String? = null,
+    val plataformas: List<String> = emptyList(),
+    val modeloAcesso: String? = null,
+    val possuiApi: Boolean? = null,
+    val requerLogin: Boolean? = null,
+    val ultimaVerificacao: String? = null,
+    val status: String? = null,
+    val casosDeUso: List<String> = emptyList()
 ) : Parcelable

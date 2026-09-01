@@ -169,4 +169,16 @@
     <string name="ia18_verificacao_sair">Sou menor de idade - Sair</string>
     <string name="ia18_categoria_vazia">Nenhuma IA encontrada nesta categoria.</string>
     <string name="ia18_configuracoes_breve">Configurações +18 em breve</string>
+
+    <string name="colecoes_titulo">Coleções</string>
+    <string name="colecoes_pesquisar_hint">Pesquisar coleções</string>
+    <string name="guias_titulo">Guias práticos</string>
+    <string name="guias_descricao">Fluxos curtos para transformar uma tarefa em resultado.</string>
+    <string name="colecoes_fechar">Fechar</string>
+    <string name="colecoes_temas_incluidos">Temas incluídos:</string>
+    <string name="colecoes_meta">%1$s · %2$d temas</string>
+    <string name="guias_meta">%1$d passos · %2$d ferramentas</string>
+    <string name="guias_ferramentas">Ferramentas: %1$s</string>
+    <string name="atalho_colecoes">Coleções</string>
+    <string name="atalho_guias">Guias práticos</string>
 </resources>
