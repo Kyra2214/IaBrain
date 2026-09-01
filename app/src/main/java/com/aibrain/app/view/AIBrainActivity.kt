@@ -15,6 +15,10 @@ import com.aibrain.app.brain.PromptGenerationSpecBuilder
 import com.aibrain.app.brain.RoomCommandResolver
 import com.aibrain.app.brain.toEntity
 import com.aibrain.app.data.local.PromptRoomRepository
+import com.aibrain.app.browser.BrowserActivity
+import com.aibrain.app.brain.IAOpenContract
+import com.aibrain.app.brain.IAUrlResolver
+import com.aibrain.app.brain.UrlResolutionStatus
 import com.aibrain.app.cache.ImagemCache
 import com.aibrain.app.data.FavoritosRepository
 import androidx.core.widget.NestedScrollView
@@ -60,6 +64,8 @@ class AIBrainActivity : AppCompatActivity() {
     private lateinit var promptRepository: PromptRoomRepository
     private lateinit var commandResolver: RoomCommandResolver
     private var promptAtual: String = ""
+    private var iaSelecionadaId: String? = null
+    private var contratoIA: IAOpenContract? = null
 
     private var catalogoCompleto: List<IA> = emptyList()
 
@@ -89,6 +95,7 @@ class AIBrainActivity : AppCompatActivity() {
         binding.btnVoltar.setOnClickListener { finish() }
         binding.btnPerguntar.setOnClickListener { processarPergunta() }
         binding.btnCopiarPrompt.setOnClickListener { copiarPromptAtual() }
+        binding.btnAbrirIA.setOnClickListener { abrirIASelecionada() }
 
         carregarCatalogo()
     }
@@ -312,12 +319,29 @@ class AIBrainActivity : AppCompatActivity() {
                 val prompt = ContextualPromptGenerator.generate(spec)
                 promptRepository.salvar(spec.toEntity(prompt))
                 promptAtual = prompt
+                iaSelecionadaId = spec.iaId
+                contratoIA = IAOpenContract(spec.iaId, spec.iaNome, null, UrlResolutionStatus.NOT_FOUND, prompt)
                 binding.txtPromptMeta.text = "IA: ${spec.iaNome} · Comando: ${spec.comando} · Capacidades: ${spec.capacidades.joinToString() }"
                 binding.txtPromptGerado.text = prompt
                 binding.containerPromptGerado.visibility = View.VISIBLE
             } catch (_: Exception) {
                 binding.containerPromptGerado.visibility = View.GONE
             }
+        }
+    }
+
+    private fun abrirIASelecionada() {
+        lifecycleScope.launch {
+            val contrato = contratoIA ?: return@launch
+            val resolvido = IAUrlResolver(applicationContext).resolve(contrato)
+            contratoIA = resolvido
+            val url = resolvido.officialResolvedUrl
+            if (resolvido.urlStatus != UrlResolutionStatus.RESOLVED || url == null) {
+                Toast.makeText(this@AIBrainActivity, "Esta IA não possui endereço configurado", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            copiarPromptAtual()
+            startActivity(BrowserActivity.criarIntent(this@AIBrainActivity, resolvido))
         }
     }
 

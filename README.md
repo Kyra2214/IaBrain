@@ -157,3 +157,7 @@ Prompts gerados para criação, implementação ou execução de desenvolvimento
 ## Texto livre → comando automático
 
 O `RoomCommandResolver` aceita comandos explícitos e texto livre. Comandos `/comando` têm prioridade absoluta; para texto livre, apenas intenções claras são mapeadas para slugs já existentes (`/implement`, `/debug`, `/test`, `/review` e `/research`). A seleção é determinística, sem provider externo: correspondências específicas são avaliadas antes das genéricas, e texto ambíguo retorna `null` sem inventar intenção. O resultado segue pelo mesmo fluxo `RoutingRequest` → `RoutingDecision` → prompt contextualizado.
+
+## Contrato de abertura da IA
+
+O `IAUrlResolver` é o único componente responsável por atualizar/consultar o catálogo sincronizado e validar a URL oficial atual. A UI não define URLs. Após uma decisão, o motor produz `IAOpenContract` com IA, ID, URL resolvida, status, prompt, capacidade de pré-preenchimento e modo de abertura. O `BrowserActivity` recebe esse contrato e apenas abre a página; nesta fase o modo é `OPEN_ONLY`, sem injeção ou envio automático do prompt.

@@ -17,6 +17,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aibrain.app.cache.ImagemCache
+import com.aibrain.app.brain.IAOpenContract
 import com.aibrain.app.databinding.ActivityBrowserBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -78,6 +79,7 @@ class BrowserActivity : AppCompatActivity() {
         const val EXTRA_URL = "extra_url"
         const val EXTRA_NOME_IA = "extra_nome_ia"
         const val EXTRA_ICONE_IA = "extra_icone_ia"
+        const val EXTRA_PROMPT = "extra_prompt"
 
         /** Helper — nova aba com a IA informada, reaproveitando a instância singleTask já aberta. */
         fun criarIntent(context: android.content.Context, nomeIA: String, url: String, iconeIA: String): Intent {
@@ -85,6 +87,14 @@ class BrowserActivity : AppCompatActivity() {
                 putExtra(EXTRA_NOME_IA, nomeIA)
                 putExtra(EXTRA_URL, url)
                 putExtra(EXTRA_ICONE_IA, iconeIA)
+            }
+        }
+
+        fun criarIntent(context: android.content.Context, contract: IAOpenContract): Intent {
+            return Intent(context, BrowserActivity::class.java).apply {
+                putExtra(EXTRA_NOME_IA, contract.selectedAIName)
+                putExtra(EXTRA_URL, contract.officialResolvedUrl)
+                putExtra(EXTRA_PROMPT, contract.generatedPrompt)
             }
         }
     }
