@@ -11,5 +11,14 @@ class PromptGenerationFlowTest {
         val prompt = ContextualPromptGenerator.generate(spec)
         assertTrue(spec.iaId == "ia" && spec.comando == "/research")
         assertTrue(prompt.contains("/research") && prompt.contains("PESQUISA") && prompt.contains("Pesquisa"))
+        assertTrue(!prompt.contains("MODO DE EXECUÇÃO SILENCIOSA"))
+    }
+
+    @Test fun promptDeImplementacaoComecaComPadraoUniversalUmaVez() {
+        val spec = PromptGenerationSpec("Criar aplicativo Android", "ia-code", "IA Código", "/implement", setOf("CODIGO"), isDevelopmentPrompt = true, fase = "FASE 1", modulo = "MÓDULO 1", submodulo = "SUBMÓDULO 1", pesoSubmodulo = "1")
+        val prompt = ContextualPromptGenerator.generate(spec)
+        assertTrue(prompt.startsWith(DeveloperPromptStandard.HEADER))
+        assertTrue(prompt.contains("PROJETO") && prompt.contains("IMPLEMENTAÇÃO") && prompt.contains("CRITÉRIOS DE CONCLUSÃO"))
+        assertTrue(prompt.indexOf("MODO DE EXECUÇÃO SILENCIOSA") == prompt.lastIndexOf("MODO DE EXECUÇÃO SILENCIOSA"))
     }
 }

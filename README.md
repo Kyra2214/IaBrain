@@ -149,3 +149,7 @@ Cada IA pode possuir um `IARoutingProfileEntity` persistido no Room com `quality
 ## Geração contextual de prompts
 
 Após a seleção do `LocalAIRouter`, `PromptGenerationSpecBuilder` transforma a solicitação, a `RoutingDecision`, o comando, as capacidades e o contexto em uma especificação explícita. `ContextualPromptGenerator` produz um prompt determinístico específico para a tarefa e para a IA escolhida, sem substituir o chat nem chamar providers. A persistência reutiliza `PromptEntity`, registrando `iaId`, `funcaoId`, `modeloGeracao` e a origem `ROUTER_COMMAND:<comando>` para rastreabilidade.
+
+## Padrão universal de desenvolvimento
+
+Prompts gerados para criação, implementação ou execução de desenvolvimento começam automaticamente com o cabeçalho `MODO DE EXECUÇÃO SILENCIOSA`, seguido das regras universais e das seções `PROJETO`, `FASE`, `MÓDULO`, `SUBMÓDULO`, `OBJETIVO`, `IMPLEMENTAÇÃO`, `CRITÉRIOS DE CONCLUSÃO` e `REGRA`. A detecção é feita no domínio por comando ou objetivo. Prompts comuns, como pesquisa, não recebem esse cabeçalho.
