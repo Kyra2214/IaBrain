@@ -137,3 +137,7 @@ A base atual preserva os **344 comandos** existentes. Não foram criados milhare
 O `SlashCommandParser` pode encaminhar uma solicitação ao `RoomCommandResolver`, que consulta o comando e suas capacidades persistidas. O `LocalAIRouter` então calcula uma `RoutingDecision` determinística, usando uma `RoutingPolicy` centralizada, score explicável, confiança heurística e até três alternativas. Ele **não executa modelos, não chama Groq, não faz HTTP e não depende de API**; a execução será responsabilidade de um futuro `AIExecutor`.
 
 O roteador usa compatibilidade direta de comando, capacidades, especialidades, qualidade, velocidade, contexto e custo conhecidos. Quando não há candidato, retorna `NO_COMPATIBLE_PROVIDER` em vez de mascarar a ausência como sucesso. O modelo suporta evolução futura para handoff, workflows, métricas e roteamento multi-IA sem duplicar o motor de chat.
+
+## IA Capability Registry v1
+
+O catálogo de IAs pode alimentar o roteamento por meio do `IACapabilityRegistry`: `Room` → capacidades, especialidades e comandos persistidos → `RoutingCandidate` → `LocalAIRouter` → `RoutingDecision`. O Registry acessa o Room; o `LocalAIRouter` permanece puro, determinístico e sem rede, APIs ou execução de providers. A migration atual é a **6**, com a migration explícita `5 → 6` criando `ia_capacidades`. Métricas de qualidade, velocidade e custo usam defaults locais documentados (`0.5`, `0.5`, `0.0`) enquanto não houver medições reais.
