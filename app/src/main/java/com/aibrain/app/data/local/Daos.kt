@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao interface IADao {
     @Query("SELECT * FROM ias WHERE ativo = 1 ORDER BY nome") fun observarAtivas(): Flow<List<IAEntity>>
+    @Query("SELECT * FROM ias WHERE ativo = 1 ORDER BY nome") suspend fun listarAtivas(): List<IAEntity>
     @Query("SELECT * FROM ias WHERE id = :id LIMIT 1") suspend fun buscar(id: String): IAEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarTodos(ias: List<IAEntity>)
     @Query("DELETE FROM ias") suspend fun limpar()

@@ -104,3 +104,11 @@
 ### Próximas extensões estruturais
 
 Roadmap, tarefas e dependências continuam fora do escopo atual. Quando necessários, deverão ser adicionados como `RoadmapEntity`, `RoadmapTarefaEntity` e `RoadmapDependenciaEntity`, preservando as entidades de projeto, função e IA já estabelecidas. A futura sincronização deverá usar IDs estáveis e migrations explícitas.
+
+## FASE 29 — Persistência transacional e recursos externos ✅ CONCLUÍDA PARCIALMENTE
+
+A persistência do grafo Projeto → Função → IA foi completada com `SalvarProjetoCompletoUseCase` e `RoomDatabase.withTransaction`. O fluxo Criar com IA consulta as IAs importadas no Room, e o teste Android agora usa nomes compatíveis com D8 e inclui o caso de uso real.
+
+Também foram adicionados `HeavyResource`, `LocalResourceStore` e `HeavyResourceManager`, com manifesto do Qwen3-0.6B Q4_0 fora do APK, download retomável por HTTP Range, progresso real, verificação de tamanho e SHA-256 e suporte a versões. A abstração `LocalLLMProvider`/`LocalRuntime` e o `GroqLLMProvider` definem o fallback sem acoplar a UI ao runtime.
+
+A integração concreta do runtime llama.cpp para inferência Android e a tela de bootstrap/download com consentimento de dados móveis permanecem como próxima subfase: o contrato já está isolado, mas não foi incluída uma biblioteca experimental nem um modelo de 429 MB no APK. O Qwen3 permanece opcional até que a ABI/runtime seja validada no dispositivo-alvo.

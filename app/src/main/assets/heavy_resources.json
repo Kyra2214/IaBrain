@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "resources": [
+    {
+      "id": "qwen3-0.6b-q4-0",
+      "version": "1.0.0",
+      "type": "llm",
+      "filename": "qwen3-0.6b-q4-0.gguf",
+      "sizeBytes": 428970080,
+      "sha256": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+      "url": "https://huggingface.co/ggml-org/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_0.gguf",
+      "required": false
+    }
+  ]
+}

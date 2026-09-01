@@ -61,8 +61,10 @@ class CriarComIAActivity : AppCompatActivity() {
         setContentView(raiz)
         viewModel = androidx.lifecycle.ViewModelProvider(this)[CriarComIAViewModel::class.java]
         lifecycleScope.launch {
-            catalogo = runCatching { CatalogoRepository(applicationContext).carregarCatalogoSincronizado() }.getOrDefault(emptyList())
-            runCatching { IARepository(applicationContext).importar(catalogo) }
+            val fonteInicial = runCatching { CatalogoRepository(applicationContext).carregarCatalogoSincronizado() }.getOrDefault(emptyList())
+            val iasLocais = IARepository(applicationContext)
+            if (iasLocais.listarAtivas().isEmpty()) iasLocais.importar(fonteInicial)
+            catalogo = iasLocais.listarAtivas()
         }
     }
 

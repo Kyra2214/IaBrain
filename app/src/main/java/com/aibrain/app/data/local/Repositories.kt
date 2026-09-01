@@ -15,6 +15,7 @@ fun IAEntity.toDomain(): IA = IA(id, nome, logo, url, descricao, categorias, idi
 class IARepository(context: Context) {
     private val dao = AppDatabase.getInstance(context).iaDao()
     fun observarAtivas(): Flow<List<IAEntity>> = dao.observarAtivas()
+    suspend fun listarAtivas(): List<IA> = dao.listarAtivas().map { it.toDomain() }
     suspend fun buscar(id: String): IA? = dao.buscar(id)?.toDomain()
     suspend fun importar(ias: List<IA>) { dao.salvarTodos(ias.map { it.toEntity() }) }
 }

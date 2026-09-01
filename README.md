@@ -108,4 +108,20 @@ Room / SQLite
 
 A fundação está em `data/local`, com `AppDatabase`, entidades, DAOs, conversores e repositories separados. O JSON continua sendo a fonte inicial do catálogo e pode ser importado para a tabela local de IAs. A migração foi incremental: favoritos, histórico, catálogo curado e o Prompt Builder legado continuam preservados enquanto os novos dados de projeto passam a ter estrutura SQL.
 
-O banco está na versão 1 e não usa `fallbackToDestructiveMigration`. Futuras versões devem adicionar migrations explícitas sem apagar dados do usuário. A separação de repositories permite acrescentar posteriormente `RemoteDataSource` e sincronização com uma API/PostgreSQL sem reescrever o domínio ou a UI; nenhum backend ou PostgreSQL faz parte desta versão.
+O banco Room está na **versão 2** e possui a migration explícita **1 → 2**; não usa `fallbackToDestructiveMigration`. Futuras versões devem adicionar migrations explícitas sem apagar dados do usuário. A separação de repositories permite acrescentar posteriormente `RemoteDataSource` e sincronização com uma API/PostgreSQL sem reescrever o domínio ou a UI; nenhum backend ou PostgreSQL faz parte desta versão.
+
+## Modelo local e recursos pesados
+
+O IaBrain é **local-first**, mas o APK **não contém o modelo LLM**. O manifesto `app/src/main/assets/heavy_resources.json` descreve o primeiro recurso externo: **Qwen3-0.6B GGUF Q4_0**, com 428.970.080 bytes e SHA-256 validado. O arquivo é baixado sob demanda para `filesDir/resources/llm/`, nunca para `assets/` nem para dentro do APK.
+
+O `HeavyResourceManager` faz download real com progresso baseado em bytes recebidos, tenta retomar downloads HTTP por `Range`, verifica espaço antes de uma integração de UI futura, e só considera o recurso pronto quando tamanho e SHA-256 conferem. Arquivos inválidos são removidos. A versão do manifesto permite atualizar o recurso sem publicar novo APK; uma nova versão deve ser baixada e validada antes de substituir a anterior.
+
+A arquitetura do gerador é:
+
+```text
+PromptGenerator
+ ├── LocalLLMProvider (Qwen3 via runtime GGUF isolado)
+ └── GroqLLMProvider (fallback externo)
+```
+
+O Qwen3 é usado inicialmente somente como **prompt engine**. A camada `LocalRuntime` isola a futura implementação llama.cpp compatível com Android/ABI; nenhum runtime experimental foi acoplado ao aplicativo sem validação específica. Se o modelo não estiver instalado ou o runtime local falhar, o `PromptGenerator` usa Groq quando houver chave e conectividade. O Project Brain completo continua fora do escopo.

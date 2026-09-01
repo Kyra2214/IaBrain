@@ -3,6 +3,11 @@ package com.aibrain.app.data.local
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.aibrain.app.brain.ProjetoIntentParser
+import com.aibrain.app.brain.RecomendadorProjeto
+import com.aibrain.app.model.Categoria
+import com.aibrain.app.model.IA
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -19,7 +24,7 @@ class AppDatabaseTest {
     }
     @After fun fechar() = db.close()
 
-    @Test fun `projeto funcao ia e prompt podem ser relacionados`() = runBlocking {
+    @Test fun projetoFuncaoIaEPromptPodemSerRelacionados() = runBlocking {
         db.projetoDao().salvar(ProjetoEntity("p1", "App", "desc", "android", "MEDIA", null, 1, 1, "ATIVO"))
         db.projetoFuncaoDao().salvarTodos(listOf(ProjetoFuncaoEntity("f1", "p1", "CODIGO", "", 0, "ATIVA")))
         db.projetoIADao().salvarTodos(listOf(ProjetoIAEntity("pi1", "p1", "f1", "ia1", 1, "nota", true)))
@@ -27,5 +32,14 @@ class AppDatabaseTest {
         assertEquals("App", db.projetoDao().buscar("p1")?.nome)
         assertEquals("ia1", db.projetoIADao().buscarEscolhidas("p1", "f1").single().iaId)
         assertTrue(db.promptDao().buscar("pr1") != null)
+    }
+
+    @Test fun fluxoRealPersisteProjetoFuncoesEIas() = runBlocking {
+        val ia = IA("ia1", "Editor", "", "https://example.com", "Editor", listOf(Categoria.CODIGO.chave), emptyList(), true)
+        val recomendacao = RecomendadorProjeto.recomendar(listOf(ia), ProjetoIntentParser.parse("aplicativo de código gratuito"))
+        val projetoId = SalvarProjetoCompletoUseCase(db)(recomendacao)
+        assertTrue(db.projetoDao().buscar(projetoId) != null)
+        assertEquals(recomendacao.funcoes.size, db.projetoFuncaoDao().observarDoProjeto(projetoId).first().size)
+        assertTrue(db.projetoIADao().observarDoProjeto(projetoId).first().isNotEmpty())
     }
 }
