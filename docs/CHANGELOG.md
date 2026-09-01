@@ -98,3 +98,7 @@
 - Mantidos os repositories legados de catálogo, favoritos, histórico e Prompt Builder, sem backend obrigatório e sem migration destrutiva.
 - Incluído teste instrumentado do relacionamento Projeto → Função → IA → Prompt e documentação da futura extensão por `RemoteDataSource`, API e PostgreSQL.
 - Validação local: `git diff --check`, `testDebugUnitTest` e `assembleDebug` concluídos com sucesso.
+## FASE — Navegação principal global — 2026-09-01
+
+A experiência principal passou a expor quatro áreas irmãs: Chat, Navegador, Brain e Prompts/Comandos. A barra inferior reutilizável direciona para as Activities existentes sem duplicar catálogo, router, resolver, comandos ou biblioteca de prompts. O Chat é o destino inicial após o onboarding; o Brain permanece responsável pela descoberta de IAs; o Navegador preserva suas abas; e a nova central Prompts/Comandos oferece acesso à Biblioteca, ao Criador e à lista de Comandos já existentes. O contrato `IAOpenContract` e o `IAUrlResolver` permanecem intactos como fonte única para abertura de IAs.
+

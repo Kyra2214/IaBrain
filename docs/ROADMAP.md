@@ -116,3 +116,7 @@ A integração concreta do runtime llama.cpp para inferência Android e a tela d
 ## FASE — Pré-preenchimento assistido do prompt
 
 Contrato central evoluído com capacidade persistida e modo de abertura seguro. O navegador aguarda o carregamento e consulta exclusivamente o registro de adaptadores confirmados; na ausência de adaptador específico, mantém abertura normal e cópia manual. O limite da automação permanece antes de qualquer envio.
+
+## FASE — Reestruturação da navegação principal ✅ CONCLUÍDA
+
+A navegação global agora separa Chat, Navegador, Brain e Prompts/Comandos. O Chat é a entrada principal após o onboarding, as abas do navegador são preservadas pelo `BrowserTabManager`, o Brain mantém catálogo e descoberta, e a central de Prompts/Comandos reutiliza Biblioteca, Criador e Comandos.

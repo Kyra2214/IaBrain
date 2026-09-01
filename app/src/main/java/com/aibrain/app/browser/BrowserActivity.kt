@@ -22,6 +22,7 @@ import com.aibrain.app.brain.BrowserOpenMode
 import com.aibrain.app.brain.PrefillCapability
 import com.aibrain.app.brain.PrefillAdapterRegistry
 import com.aibrain.app.databinding.ActivityBrowserBinding
+import com.aibrain.app.navigation.GlobalNavigation
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -111,6 +112,7 @@ class BrowserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityBrowserBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        GlobalNavigation.attach(this, binding.root, GlobalNavigation.NAVEGADOR)
 
         tabManager = BrowserTabManager(applicationContext)
         historyManager = BrowserHistoryManager(applicationContext)

@@ -35,6 +35,7 @@ import com.aibrain.app.view.DetalheIAActivity
 import com.aibrain.app.view.FavoritosActivity
 import com.aibrain.app.view.IAAdapter
 import com.aibrain.app.viewmodel.MainViewModel
+import com.aibrain.app.navigation.GlobalNavigation
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        GlobalNavigation.attach(this, binding.root, GlobalNavigation.BRAIN)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 

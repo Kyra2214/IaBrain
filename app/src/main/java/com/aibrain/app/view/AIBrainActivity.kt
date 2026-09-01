@@ -15,6 +15,7 @@ import com.aibrain.app.brain.PromptGenerationSpecBuilder
 import com.aibrain.app.brain.RoomCommandResolver
 import com.aibrain.app.brain.toEntity
 import com.aibrain.app.data.local.PromptRoomRepository
+import com.aibrain.app.navigation.GlobalNavigation
 import com.aibrain.app.browser.BrowserActivity
 import com.aibrain.app.brain.IAOpenContract
 import com.aibrain.app.brain.IAUrlResolver
@@ -83,6 +84,7 @@ class AIBrainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAiBrainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        GlobalNavigation.attach(this, binding.root, GlobalNavigation.CHAT)
 
         repositorio = CatalogoRepository(applicationContext)
         favoritosRepositorio = FavoritosRepository(applicationContext)

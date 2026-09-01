@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.aibrain.app.MainActivity
 import com.aibrain.app.data.AssistenteIARepository
 import com.aibrain.app.databinding.ActivityWelcomeBinding
 
@@ -63,7 +62,7 @@ class WelcomeActivity : AppCompatActivity() {
                 return
             }
         }
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, AIBrainActivity::class.java))
         finish()
     }
 
@@ -72,4 +71,3 @@ class WelcomeActivity : AppCompatActivity() {
         private const val CHAVE_JA_VIU_WELCOME = "ja_viu_welcome"
     }
 }
-
