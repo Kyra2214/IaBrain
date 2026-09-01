@@ -54,3 +54,23 @@ data class ComandoResumo(val id: String, val nome: String, val comando: String, 
     @Query("UPDATE comandos SET usoCount=usoCount+1, atualizadoEm=:agora WHERE id=:id") suspend fun registrarUso(id: String, agora: Long)
     @Query("SELECT COUNT(*) FROM comandos") suspend fun contar(): Int
 }
+
+@Dao interface ComandoGrafoDao {
+    @Query("SELECT * FROM comando_capacidades WHERE comandoId=:comandoId ORDER BY obrigatoria DESC, peso DESC") suspend fun capacidades(comandoId: String): List<ComandoCapacidadeEntity>
+    @Query("SELECT * FROM comando_relacionamentos WHERE origemId=:comandoId ORDER BY ordem") suspend fun relacionamentos(comandoId: String): List<ComandoRelacionamentoEntity>
+    @Query("SELECT * FROM comando_parametros WHERE comandoId=:comandoId") suspend fun parametros(comandoId: String): List<ComandoParametroEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarCapacidades(itens: List<ComandoCapacidadeEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarRelacionamentos(itens: List<ComandoRelacionamentoEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarParametros(itens: List<ComandoParametroEntity>)
+}
+
+@Dao interface WorkflowDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvar(workflow: WorkflowEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarComandos(comandos: List<WorkflowComandoEntity>)
+    @Query("SELECT * FROM workflows ORDER BY atualizadoEm DESC") fun observarTodos(): Flow<List<WorkflowEntity>>
+    @Query("SELECT * FROM workflow_comandos WHERE workflowId=:workflowId ORDER BY ordem") suspend fun comandos(workflowId: String): List<WorkflowComandoEntity>
+}
+
+@Dao interface ComandoExecucaoDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun registrar(execucao: ComandoExecucaoEntity)
+}

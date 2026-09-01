@@ -116,3 +116,24 @@ data class ComandoEntity(
     val criadoEm: Long,
     val atualizadoEm: Long
 )
+
+@Entity(tableName = "comando_capacidades", primaryKeys = ["comandoId", "capacidade"], indices = [Index("capacidade")])
+data class ComandoCapacidadeEntity(val comandoId: String, val capacidade: String, val obrigatoria: Boolean, val peso: Int = 1)
+
+@Entity(tableName = "comando_relacionamentos", primaryKeys = ["origemId", "destinoId", "tipo"], indices = [Index("destinoId")])
+data class ComandoRelacionamentoEntity(val origemId: String, val destinoId: String, val tipo: String, val ordem: Int = 0)
+
+@Entity(tableName = "comando_parametros", primaryKeys = ["comandoId", "nome"])
+data class ComandoParametroEntity(val comandoId: String, val nome: String, val tipo: String, val obrigatorio: Boolean, val valorPadrao: String?, val descricao: String, val opcoes: List<String>)
+
+@Entity(tableName = "comando_ias", primaryKeys = ["comandoId", "iaId"], indices = [Index("iaId")])
+data class ComandoIAEntity(val comandoId: String, val iaId: String, val prioridade: Int, val motivo: String)
+
+@Entity(tableName = "workflows", indices = [Index("atualizadoEm")])
+data class WorkflowEntity(@androidx.room.PrimaryKey val id: String, val nome: String, val estrategia: String, val estado: String, val criadoEm: Long, val atualizadoEm: Long)
+
+@Entity(tableName = "workflow_comandos", primaryKeys = ["workflowId", "ordem"], indices = [Index("comandoId")])
+data class WorkflowComandoEntity(val workflowId: String, val ordem: Int, val comandoId: String, val iaId: String?, val handoff: Boolean)
+
+@Entity(tableName = "comando_execucoes", indices = [Index("comandoId"), Index("iaId")])
+data class ComandoExecucaoEntity(@androidx.room.PrimaryKey val id: String, val comandoId: String, val iaId: String?, val workflowId: String?, val duracaoMs: Long?, val sucesso: Boolean?, val erro: String?, val avaliacao: Int?, val criadoEm: Long)
