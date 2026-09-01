@@ -300,6 +300,43 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/containerPromptGerado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Prompt contextualizado"
+                android:textColor="@color/on_background"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/txtPromptMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/on_background_muted"
+                android:textSize="13sp" />
+            <TextView
+                android:id="@+id/txtPromptGerado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/surface"
+                android:padding="12dp"
+                android:textColor="@color/on_background"
+                android:textIsSelectable="true" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopiarPrompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="COPIAR" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aibrain.app.R
 import com.aibrain.app.brain.recomendar
+import com.aibrain.app.brain.ContextualPromptGenerator
+import com.aibrain.app.brain.PromptGenerationSpecBuilder
+import com.aibrain.app.brain.RoomCommandResolver
+import com.aibrain.app.brain.toEntity
+import com.aibrain.app.data.local.PromptRoomRepository
 import com.aibrain.app.cache.ImagemCache
 import com.aibrain.app.data.FavoritosRepository
 import androidx.core.widget.NestedScrollView
@@ -25,6 +30,9 @@ import com.aibrain.app.util.filtroIdioma
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import kotlinx.coroutines.launch
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.widget.Toast
 
 /**
  * Tela do AI Brain — IA Auxiliar (Fase 9).
@@ -49,6 +57,9 @@ class AIBrainActivity : AppCompatActivity() {
     private lateinit var adapterSegunda: IAAdapter
     private lateinit var adapterGratuitas: IAAdapter
     private lateinit var adapterFiltros: IAAdapter
+    private lateinit var promptRepository: PromptRoomRepository
+    private lateinit var commandResolver: RoomCommandResolver
+    private var promptAtual: String = ""
 
     private var catalogoCompleto: List<IA> = emptyList()
 
@@ -70,11 +81,14 @@ class AIBrainActivity : AppCompatActivity() {
         repositorio = CatalogoRepository(applicationContext)
         favoritosRepositorio = FavoritosRepository(applicationContext)
         imagemCache = ImagemCache(applicationContext)
+        promptRepository = PromptRoomRepository(applicationContext)
+        commandResolver = RoomCommandResolver(applicationContext)
 
         configurarListas()
         configurarFiltrosRapidos()
         binding.btnVoltar.setOnClickListener { finish() }
         binding.btnPerguntar.setOnClickListener { processarPergunta() }
+        binding.btnCopiarPrompt.setOnClickListener { copiarPromptAtual() }
 
         carregarCatalogo()
     }
@@ -254,6 +268,7 @@ class AIBrainActivity : AppCompatActivity() {
     /** Fase 9.1 + 9.2 — processa o texto livre e exibe a recomendação estruturada. */
     private fun processarPergunta() {
         val texto = binding.editPergunta.text?.toString().orEmpty()
+        gerarPromptContextual(texto)
         binding.containerResultadoFiltros.visibility = View.GONE
         val recomendacao = catalogoCompleto.recomendar(texto)
         val categorias = recomendacao.categoriasDetectadas
@@ -285,6 +300,33 @@ class AIBrainActivity : AppCompatActivity() {
         exibirResultado(binding.recyclerGratuitas, binding.txtGratuitasVazio, adapterGratuitas, recomendacao.alternativasGratuitas)
 
         atualizarFavoritosNasListas()
+    }
+
+    private fun gerarPromptContextual(texto: String) {
+        binding.containerPromptGerado.visibility = View.GONE
+        if (!texto.trim().startsWith("/")) return
+        lifecycleScope.launch {
+            try {
+                val request = commandResolver.resolve(texto) ?: return@launch
+                val decision = com.aibrain.app.brain.LocalAIRouter.route(request, commandResolver.candidates())
+                val spec = PromptGenerationSpecBuilder.from(request, decision)
+                val prompt = ContextualPromptGenerator.generate(spec)
+                promptRepository.salvar(spec.toEntity(prompt))
+                promptAtual = prompt
+                binding.txtPromptMeta.text = "IA: ${spec.iaNome} · Comando: ${spec.comando} · Capacidades: ${spec.capacidades.joinToString() }"
+                binding.txtPromptGerado.text = prompt
+                binding.containerPromptGerado.visibility = View.VISIBLE
+            } catch (_: Exception) {
+                binding.containerPromptGerado.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun copiarPromptAtual() {
+        if (promptAtual.isBlank()) return
+        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("Prompt IaBrain", promptAtual))
+        Toast.makeText(this, "Prompt copiado", Toast.LENGTH_SHORT).show()
     }
 
     private fun exibirResultado(
