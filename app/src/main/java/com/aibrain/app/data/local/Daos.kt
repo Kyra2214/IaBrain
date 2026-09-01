@@ -48,6 +48,7 @@ data class ComandoResumo(val id: String, val nome: String, val comando: String, 
     @Query("SELECT id,nome,comando,categoria,descricaoCurta,favorito,usoCount FROM comandos WHERE ativo=1 AND (:termo='' OR nome LIKE '%'||:termo||'%' OR comando LIKE '%'||:termo||'%' OR aliases LIKE '%'||:termo||'%' OR descricaoCurta LIKE '%'||:termo||'%' OR categoria LIKE '%'||:termo||'%') AND (:categoria='' OR categoria=:categoria) ORDER BY favorito DESC, usoCount DESC, nome LIMIT :limite OFFSET :offset")
     suspend fun pesquisar(termo: String, categoria: String, limite: Int, offset: Int): List<ComandoResumo>
     @Query("SELECT * FROM comandos WHERE id=:id LIMIT 1") suspend fun buscar(id: String): ComandoEntity?
+    @Query("SELECT * FROM comandos WHERE comando=:comando OR slug=:slug LIMIT 1") suspend fun buscarPorComando(comando: String, slug: String): ComandoEntity?
     @Query("SELECT DISTINCT categoria FROM comandos WHERE ativo=1 ORDER BY categoria") suspend fun categorias(): List<String>
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun inserirTodos(comandos: List<ComandoEntity>)
     @Query("UPDATE comandos SET favorito=:favorito, atualizadoEm=:agora WHERE id=:id") suspend fun marcarFavorito(id: String, favorito: Boolean, agora: Long)
