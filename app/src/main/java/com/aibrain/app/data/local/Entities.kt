@@ -74,3 +74,16 @@ data class PromptEntity(
     val atualizadoEm: Long,
     val favorito: Boolean
 )
+
+@Entity(tableName = "projeto_contextos", indices = [Index("projetoId", unique = true)])
+data class ProjetoContextoEntity(
+    @androidx.room.PrimaryKey val id: String,
+    val projetoId: String,
+    val objetivo: String,
+    val stack: List<String>,
+    val memoria: String,
+    val preferencias: String,
+    val estadoAtual: String,
+    val recursos: List<String>,
+    val atualizadoEm: Long
+)

@@ -19,6 +19,7 @@ class SalvarProjetoCompletoUseCase(private val database: AppDatabase) {
             database.projetoDao().salvar(ProjetoEntity(projetoId, nome, recommendation.intent.textoOriginal, recommendation.intent.plataforma, recommendation.intent.complexidade.name, recommendation.intent.acessoPreferido?.chave, agora, agora, "ATIVO"))
             database.projetoFuncaoDao().salvarTodos(funcoes)
             database.projetoIADao().salvarTodos(vinculos)
+            database.projetoContextoDao().salvar(ProjetoContextoEntity("$projetoId-contexto", projetoId, recommendation.intent.textoOriginal, recommendation.stack.itens.map { it.nome }, "", recommendation.intent.restricoes.joinToString(), "ANALISADO", emptyList(), agora))
         }
         return projetoId
     }

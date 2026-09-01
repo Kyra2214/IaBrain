@@ -5,7 +5,8 @@ import com.aibrain.app.groq.PromptGeneratorGroq
 import com.aibrain.app.resource.HeavyResource
 
  data class GenerationOptions(val contextSize: Int = 2048, val temperature: Float = 0.7f, val maxTokens: Int = 512)
- data class PromptContext(val objetivo: String, val iaDestino: String? = null, val funcao: String? = null, val contexto: String? = null, val restricoes: List<String> = emptyList())
+ data class ProjetoContextSnapshot(val projetoId: String? = null, val objetivo: String, val stack: List<String> = emptyList(), val memoria: String = "", val decisoes: List<String> = emptyList(), val preferencias: String = "", val estadoAtual: String = "")
+ data class PromptContext(val objetivo: String, val iaDestino: String? = null, val funcao: String? = null, val contexto: String? = null, val restricoes: List<String> = emptyList(), val projeto: ProjetoContextSnapshot? = null)
 
 interface LocalLLMProvider {
     suspend fun isAvailable(): Boolean
@@ -38,6 +39,14 @@ class PromptGenerator(private val local: LocalLLMProvider?, private val groq: Lo
             context.iaDestino?.let { appendLine("IA destino: $it") }
             context.funcao?.let { appendLine("Função: $it") }
             context.contexto?.let { appendLine("Contexto: $it") }
+            context.projeto?.let {
+                appendLine("Projeto: ${it.objetivo}")
+                if (it.stack.isNotEmpty()) appendLine("Stack: ${it.stack.joinToString()}")
+                if (it.memoria.isNotBlank()) appendLine("Memória: ${it.memoria}")
+                if (it.decisoes.isNotEmpty()) appendLine("Decisões anteriores: ${it.decisoes.joinToString()}")
+                if (it.preferencias.isNotBlank()) appendLine("Preferências: ${it.preferencias}")
+                if (it.estadoAtual.isNotBlank()) appendLine("Estado: ${it.estadoAtual}")
+            }
             if (context.restricoes.isNotEmpty()) appendLine("Restrições: ${context.restricoes.joinToString()}")
             appendLine("Retorne somente um prompt final estruturado, em português brasileiro.")
         }

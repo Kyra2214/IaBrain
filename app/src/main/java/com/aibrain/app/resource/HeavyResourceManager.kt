@@ -1,6 +1,7 @@
 package com.aibrain.app.resource
 
 import android.content.Context
+import android.os.StatFs
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -10,10 +11,13 @@ import kotlinx.coroutines.withContext
 data class ResourceProgress(val resource: HeavyResource, val receivedBytes: Long, val totalBytes: Long)
 
 class HeavyResourceManager(context: Context) {
+    private val context = context.applicationContext
     private val store = LocalResourceStore(context)
     suspend fun ensure(resource: HeavyResource, onProgress: (ResourceProgress) -> Unit = {}): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
             if (store.isValid(resource)) return@runCatching store.fileFor(resource).absolutePath
+            val available = StatFs(context.filesDir.path).availableBytes
+            if (available < resource.sizeBytes) error("Espaço insuficiente: necessário ${resource.sizeBytes} bytes, disponível $available bytes")
             val target = store.fileFor(resource); store.directory(resource)
             var offset = if (target.exists()) target.length() else 0L
             val connection = (URL(resource.url).openConnection() as HttpURLConnection).apply {

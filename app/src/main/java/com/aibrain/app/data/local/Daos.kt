@@ -36,3 +36,8 @@ import kotlinx.coroutines.flow.Flow
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvar(prompt: PromptEntity)
     @Query("UPDATE prompts SET favorito = :favorito, atualizadoEm = :atualizadoEm WHERE id = :id") suspend fun marcarFavorito(id: String, favorito: Boolean, atualizadoEm: Long)
 }
+
+@Dao interface ProjetoContextoDao {
+    @Query("SELECT * FROM projeto_contextos WHERE projetoId = :projetoId LIMIT 1") suspend fun buscar(projetoId: String): ProjetoContextoEntity?
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvar(contexto: ProjetoContextoEntity)
+}

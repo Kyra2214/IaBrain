@@ -108,7 +108,7 @@ Room / SQLite
 
 A fundação está em `data/local`, com `AppDatabase`, entidades, DAOs, conversores e repositories separados. O JSON continua sendo a fonte inicial do catálogo e pode ser importado para a tabela local de IAs. A migração foi incremental: favoritos, histórico, catálogo curado e o Prompt Builder legado continuam preservados enquanto os novos dados de projeto passam a ter estrutura SQL.
 
-O banco Room está na **versão 2** e possui a migration explícita **1 → 2**; não usa `fallbackToDestructiveMigration`. Futuras versões devem adicionar migrations explícitas sem apagar dados do usuário. A separação de repositories permite acrescentar posteriormente `RemoteDataSource` e sincronização com uma API/PostgreSQL sem reescrever o domínio ou a UI; nenhum backend ou PostgreSQL faz parte desta versão.
+O banco Room está na **versão 3** e possui as migrations explícitas **1 → 2** e **2 → 3**; não usa `fallbackToDestructiveMigration`. A versão 3 adiciona o contexto persistente do projeto. Futuras versões devem adicionar migrations explícitas sem apagar dados do usuário. A separação de repositories permite acrescentar posteriormente `RemoteDataSource` e sincronização com uma API/PostgreSQL sem reescrever o domínio ou a UI; nenhum backend ou PostgreSQL faz parte desta versão.
 
 ## Modelo local e recursos pesados
 
