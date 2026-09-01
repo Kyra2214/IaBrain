@@ -47,6 +47,12 @@ jobs:
             **/build/reports/**
             **/build/test-results/**
 
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-brain-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
