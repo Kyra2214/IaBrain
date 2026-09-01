@@ -141,3 +141,7 @@ O roteador usa compatibilidade direta de comando, capacidades, especialidades, q
 ## IA Capability Registry v1
 
 O catálogo de IAs pode alimentar o roteamento por meio do `IACapabilityRegistry`: `Room` → capacidades, especialidades e comandos persistidos → `RoutingCandidate` → `LocalAIRouter` → `RoutingDecision`. O Registry acessa o Room; o `LocalAIRouter` permanece puro, determinístico e sem rede, APIs ou execução de providers. A migration atual é a **6**, com a migration explícita `5 → 6` criando `ia_capacidades`. Métricas de qualidade, velocidade e custo usam defaults locais documentados (`0.5`, `0.5`, `0.0`) enquanto não houver medições reais.
+
+## IA Routing Profile v1
+
+Cada IA pode possuir um `IARoutingProfileEntity` persistido no Room com `qualityScore`, `speedScore`, `costScore`, `reliabilityScore`, `contextScore`, `enabled` e `updatedAt`. O `IACapabilityRegistry` transforma esse perfil, as capacidades, especialidades e comandos suportados em `RoutingCandidate`; o `LocalAIRouter` continua puro e determinístico. Scores fora de `0.0..1.0` falham explicitamente. IAs sem perfil recebem defaults identificáveis por `isDefaultProfile`, sem transformar categorias em métricas.
