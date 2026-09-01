@@ -54,7 +54,7 @@ object ProjetoIntentParser {
     fun parse(texto: String): ProjetoIntent {
         val t = texto.trim()
         val normalizado = t.lowercase().normalizar()
-        val areas = RecomendadorIA.detectarCategorias(t, 5)
+        val areas = detectarCategorias(t, 5)
         val plataforma = when {
             "android" in normalizado -> "android"
             "ios" in normalizado || "iphone" in normalizado -> "ios"
