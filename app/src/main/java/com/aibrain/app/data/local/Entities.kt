@@ -129,6 +129,9 @@ data class ComandoParametroEntity(val comandoId: String, val nome: String, val t
 @Entity(tableName = "comando_ias", primaryKeys = ["comandoId", "iaId"], indices = [Index("iaId")])
 data class ComandoIAEntity(val comandoId: String, val iaId: String, val prioridade: Int, val motivo: String)
 
+@Entity(tableName = "ia_capacidades", primaryKeys = ["iaId", "capacidade"], indices = [Index("capacidade")])
+data class IACapabilityEntity(val iaId: String, val capacidade: String, val especialidade: Boolean = false, val nivel: Int = 1)
+
 @Entity(tableName = "workflows", indices = [Index("atualizadoEm")])
 data class WorkflowEntity(@androidx.room.PrimaryKey val id: String, val nome: String, val estrategia: String, val estado: String, val criadoEm: Long, val atualizadoEm: Long)
 

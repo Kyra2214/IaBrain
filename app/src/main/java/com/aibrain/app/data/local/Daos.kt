@@ -60,9 +60,11 @@ data class ComandoResumo(val id: String, val nome: String, val comando: String, 
     @Query("SELECT * FROM comando_capacidades WHERE comandoId=:comandoId ORDER BY obrigatoria DESC, peso DESC") suspend fun capacidades(comandoId: String): List<ComandoCapacidadeEntity>
     @Query("SELECT * FROM comando_relacionamentos WHERE origemId=:comandoId ORDER BY ordem") suspend fun relacionamentos(comandoId: String): List<ComandoRelacionamentoEntity>
     @Query("SELECT * FROM comando_parametros WHERE comandoId=:comandoId") suspend fun parametros(comandoId: String): List<ComandoParametroEntity>
+    @Query("SELECT comandoId FROM comando_ias WHERE iaId=:iaId") suspend fun comandosDaIA(iaId: String): List<String>
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarCapacidades(itens: List<ComandoCapacidadeEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarRelacionamentos(itens: List<ComandoRelacionamentoEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarParametros(itens: List<ComandoParametroEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarComandosIA(itens: List<ComandoIAEntity>)
 }
 
 @Dao interface WorkflowDao {
@@ -74,4 +76,9 @@ data class ComandoResumo(val id: String, val nome: String, val comando: String, 
 
 @Dao interface ComandoExecucaoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun registrar(execucao: ComandoExecucaoEntity)
+}
+
+@Dao interface IACapabilityDao {
+    @Query("SELECT * FROM ia_capacidades WHERE iaId=:iaId") suspend fun porIA(iaId: String): List<IACapabilityEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarTodos(itens: List<IACapabilityEntity>)
 }
