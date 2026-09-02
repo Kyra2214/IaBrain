@@ -30,11 +30,7 @@
         <activity android:name=".view.DetalhePromptActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.CriadorPromptsActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.AssistenteIAActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
-        <activity
-            android:name=".browser.BrowserActivity"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity android:name=".browser.BrowserActivity" android:exported="false" android:launchMode="singleTask" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.IA18Activity" android:exported="false" android:label="IA +18" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.IA18VerificacaoActivity" android:exported="false" android:label="Verificação de Idade" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ColecoesActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
@@ -45,6 +41,7 @@
         <activity android:name=".view.ProjetoDetalheActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ProjetoIntegracaoActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.WorkspaceVNextActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity android:name=".view.ProjetoMemoriaActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.TaskCenterActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ComandoDetalheActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
 
