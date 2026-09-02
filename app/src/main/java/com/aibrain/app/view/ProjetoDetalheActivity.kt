@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.aibrain.app.R
-import com.aibrain.app.brain.AnalisadorWorkspace
 import com.aibrain.app.brain.ContribuicaoWorkspace
 import com.aibrain.app.brain.FonteContribuicao
 import com.aibrain.app.brain.StatusContribuicao
@@ -62,7 +61,7 @@ class ProjetoDetalheActivity : AppCompatActivity() {
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "${projeto.descricao}\nStack: ${projeto.plataforma ?: "não definida"} · ${projeto.complexidade}"; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_github) + "\n" + getString(R.string.projeto_github_desconectado); setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
             conteudo.addView(Button(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_validar); setOnClickListener { validar(arquivos) } })
-            if (contribuicoes.isNotEmpty()) {
+            if (contribuicoes.any { it.status != StatusContribuicao.INTEGRADA }) {
                 conteudo.addView(Button(this@ProjetoDetalheActivity).apply { text = "🔀 Integrar contribuições"; setOnClickListener { startActivity(ProjetoIntegracaoActivity.criarIntent(this@ProjetoDetalheActivity, projetoId)) } })
             }
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_contribuicoes); textSize = 18f; setTextColor(getColor(R.color.on_background)); setPadding(0, 18, 0, 6) })
@@ -92,10 +91,8 @@ class ProjetoDetalheActivity : AppCompatActivity() {
                 workspaceRepository.importarContribuicao(contribuicao)
                 if (!fileStore.workspaceExiste(projetoId)) {
                     fileStore.inicializarWorkspace(projetoId, contribuicao.id)
-                } else {
-                    val base = fileStore.snapshotWorkspace(projetoId)
-                    val analise = com.aibrain.app.brain.ProjetoIntegracaoEngine.analisar(base, resultado.arquivos)
-                    workspaceRepository.salvarIntegracao(projetoId, listOf(contribuicao.nomeFonte), "ANALISADA", analise.conflitos)
+                    workspaceRepository.atualizarStatusContribuicao(contribuicao.id, StatusContribuicao.INTEGRADA)
+                    workspaceRepository.salvarIntegracao(projetoId, listOf(contribuicao.nomeFonte), "BASE_INICIALIZADA", emptyList())
                 }
                 Snackbar.make(conteudo, getString(R.string.projeto_importado), Snackbar.LENGTH_LONG).show()
                 carregar()
