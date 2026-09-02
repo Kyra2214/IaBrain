@@ -12,5 +12,8 @@ data class ProjetoTarefaEntity(
     val status: String,
     val prioridade: String,
     val criadoEm: Long,
-    val atualizadoEm: Long
+    val atualizadoEm: Long,
+    val githubIssueNumber: Int? = null,
+    val githubPrNumber: Int? = null,
+    val githubBranch: String? = null
 )
