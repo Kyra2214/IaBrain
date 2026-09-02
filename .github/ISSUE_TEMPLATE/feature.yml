@@ -1,0 +1,31 @@
+name: Feature / Melhoria
+description: Planejar uma melhoria rastreável do IaBrain
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Qual problema esta mudança resolve?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceitação
+      description: Defina o que precisa estar verdadeiro para considerar a Issue concluída.
+      value: |
+        - [ ] Implementação
+        - [ ] Testes
+        - [ ] Validação arquitetural
+        - [ ] Segurança revisada
+        - [ ] Build validado
+        - [ ] Revisão humana
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Segurança e riscos
+      description: Dados sensíveis, permissões, rede, execução de código e rollback.
