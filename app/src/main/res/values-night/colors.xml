@@ -33,4 +33,14 @@
     <color name="success">#6DD6A8</color>
     <color name="warning">#F4BC55</color>
     <color name="info">#8FC7FF</color>
+
+    <!-- Identidade IaBrain: loading/splash premium -->
+    <color name="brand_background">#060B18</color>
+    <color name="brand_background_end">#111B35</color>
+    <color name="brand_glow">#263E72</color>
+    <color name="brand_blue">#3A9CFF</color>
+    <color name="brand_blue_soft">#86C8FF</color>
+    <color name="brand_cyan">#28D9FF</color>
+    <color name="brand_on_dark">#F5FAFF</color>
+    <color name="brand_on_dark_muted">#A8BBD5</color>
 </resources>
