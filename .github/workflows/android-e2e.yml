@@ -97,11 +97,18 @@ jobs:
         run: |
           set +e
           mkdir -p artifacts/emulator-fullflow
-          adb devices -l > artifacts/emulator-fullflow/adb-devices.txt 2>&1
-          adb shell getprop > artifacts/emulator-fullflow/getprop.txt 2>&1
-          adb logcat -d > artifacts/emulator-fullflow/logcat.txt 2>&1
-          adb exec-out screencap -p > artifacts/emulator-fullflow/screenshot.png 2> artifacts/emulator-fullflow/screenshot-error.txt
-          printf 'diagnostic_collection_exit_code=%s\n' "$?" > artifacts/emulator-fullflow/collection-status.txt
+          run_diag() {
+            local name="$1"
+            shift
+            timeout 20s "$@" > "artifacts/emulator-fullflow/${name}.txt" 2> "artifacts/emulator-fullflow/${name}.stderr.txt"
+            printf '%s\n' "$?" > "artifacts/emulator-fullflow/${name}.exit-code"
+          }
+          run_diag adb-devices adb devices -l
+          run_diag getprop adb shell getprop
+          run_diag logcat adb logcat -d
+          timeout 20s adb exec-out screencap -p > artifacts/emulator-fullflow/screenshot.png 2> artifacts/emulator-fullflow/screenshot-error.txt
+          printf '%s\n' "$?" > artifacts/emulator-fullflow/screenshot.exit-code
+          printf 'diagnostics_completed_at=%s\n' "$(date -u +%FT%TZ)" > artifacts/emulator-fullflow/collection-status.txt
 
       - name: Upload FullFlow diagnostics
         if: always()
@@ -164,11 +171,18 @@ jobs:
         run: |
           set +e
           mkdir -p artifacts/emulator-navigation
-          adb devices -l > artifacts/emulator-navigation/adb-devices.txt 2>&1
-          adb shell getprop > artifacts/emulator-navigation/getprop.txt 2>&1
-          adb logcat -d > artifacts/emulator-navigation/logcat.txt 2>&1
-          adb exec-out screencap -p > artifacts/emulator-navigation/screenshot.png 2> artifacts/emulator-navigation/screenshot-error.txt
-          printf 'diagnostic_collection_exit_code=%s\n' "$?" > artifacts/emulator-navigation/collection-status.txt
+          run_diag() {
+            local name="$1"
+            shift
+            timeout 20s "$@" > "artifacts/emulator-navigation/${name}.txt" 2> "artifacts/emulator-navigation/${name}.stderr.txt"
+            printf '%s\n' "$?" > "artifacts/emulator-navigation/${name}.exit-code"
+          }
+          run_diag adb-devices adb devices -l
+          run_diag getprop adb shell getprop
+          run_diag logcat adb logcat -d
+          timeout 20s adb exec-out screencap -p > artifacts/emulator-navigation/screenshot.png 2> artifacts/emulator-navigation/screenshot-error.txt
+          printf '%s\n' "$?" > artifacts/emulator-navigation/screenshot.exit-code
+          printf 'diagnostics_completed_at=%s\n' "$(date -u +%FT%TZ)" > artifacts/emulator-navigation/collection-status.txt
 
       - name: Upload navigation diagnostics
         if: always()
@@ -232,11 +246,18 @@ jobs:
         run: |
           set +e
           mkdir -p artifacts/emulator-smoke-database
-          adb devices -l > artifacts/emulator-smoke-database/adb-devices.txt 2>&1
-          adb shell getprop > artifacts/emulator-smoke-database/getprop.txt 2>&1
-          adb logcat -d > artifacts/emulator-smoke-database/logcat.txt 2>&1
-          adb exec-out screencap -p > artifacts/emulator-smoke-database/screenshot.png 2> artifacts/emulator-smoke-database/screenshot-error.txt
-          printf 'diagnostic_collection_exit_code=%s\n' "$?" > artifacts/emulator-smoke-database/collection-status.txt
+          run_diag() {
+            local name="$1"
+            shift
+            timeout 20s "$@" > "artifacts/emulator-smoke-database/${name}.txt" 2> "artifacts/emulator-smoke-database/${name}.stderr.txt"
+            printf '%s\n' "$?" > "artifacts/emulator-smoke-database/${name}.exit-code"
+          }
+          run_diag adb-devices adb devices -l
+          run_diag getprop adb shell getprop
+          run_diag logcat adb logcat -d
+          timeout 20s adb exec-out screencap -p > artifacts/emulator-smoke-database/screenshot.png 2> artifacts/emulator-smoke-database/screenshot-error.txt
+          printf '%s\n' "$?" > artifacts/emulator-smoke-database/screenshot.exit-code
+          printf 'diagnostics_completed_at=%s\n' "$(date -u +%FT%TZ)" > artifacts/emulator-smoke-database/collection-status.txt
 
       - name: Upload smoke/database diagnostics
         if: always()
