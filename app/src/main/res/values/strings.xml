@@ -114,6 +114,32 @@
     <string name="criador_prompts_sem_api_key">Configure a API key da Groq no Assistente de IA para gerar com a IA</string>
     <string name="criador_prompts_gerando_ia">Gerando prompt com a IA…</string>
     <string name="criador_prompts_falha_ia">Não foi possível gerar com a IA: %1$s</string>
+    <string name="prompt_builder_modo_editor">Editor profissional</string>
+    <string name="prompt_builder_novo">+ Novo prompt</string>
+    <string name="prompt_builder_titulo_hint">Título do prompt</string>
+    <string name="prompt_builder_objetivo_hint">Objetivo</string>
+    <string name="prompt_builder_contexto_hint">Contexto</string>
+    <string name="prompt_builder_tarefa_hint">Tarefa</string>
+    <string name="prompt_builder_restricoes_hint">Restrições</string>
+    <string name="prompt_builder_formato_hint">Formato de saída</string>
+    <string name="prompt_builder_livre_hint">Prompt livre (opcional)</string>
+    <string name="prompt_builder_variaveis_hint">Variáveis e valores: NOME=valor, uma por linha</string>
+    <string name="prompt_builder_detectar">Detectar variáveis</string>
+    <string name="prompt_builder_preview">Prévia do prompt</string>
+    <string name="prompt_builder_ia_destino">IA de destino (opcional)</string>
+    <string name="prompt_builder_salvar">Salvar</string>
+    <string name="prompt_builder_copiar">Copiar</string>
+    <string name="prompt_builder_abrir_ia">Abrir IA</string>
+    <string name="prompt_builder_salvando">Salvando…</string>
+    <string name="prompt_builder_salvo">Prompt salvo</string>
+    <string name="prompt_builder_erro_salvar">Não foi possível salvar o prompt. Tente novamente.</string>
+    <string name="prompt_builder_variaveis_pendentes">Variáveis pendentes: %1$s</string>
+    <string name="prompt_builder_sem_ia">IA não disponível; você ainda pode editar e salvar.</string>
+    <string name="prompt_builder_preview_vazio">Ainda não há conteúdo. Comece escrevendo seu prompt.</string>
+    <string name="prompt_builder_editar">Editar prompt</string>
+    <string name="prompt_builder_duplicar">Duplicar prompt</string>
+    <string name="prompt_builder_categoria">Categoria</string>
+    <string name="prompt_builder_comando">Comando relacionado (opcional)</string>
 
     <!-- Assistente de IA / Groq (Fase 18.1/18.2) -->
     <string name="assistente_ia_titulo">Assistente de IA</string>

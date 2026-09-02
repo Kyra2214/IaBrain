@@ -28,6 +28,33 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditarPrompt"
+                style="@style/Widget.AIBrain.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/prompt_builder_editar" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDuplicarPrompt"
+                style="@style/Widget.AIBrain.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/prompt_builder_duplicar" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAbrirIaPrompt"
+                style="@style/Widget.AIBrain.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/prompt_builder_abrir_ia" />
+        </LinearLayout>
+
         <!-- Categoria · Subcaso -->
         <TextView
             android:id="@+id/txtCategoriaSubcaso"

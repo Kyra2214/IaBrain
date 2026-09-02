@@ -135,6 +135,16 @@ class PromptDadosLocaisRepository(context: Context) {
         prefs.edit().putString(CHAVE_PROMPTS_GERADOS, serializarPrompts(atuais)).apply()
     }
 
+    /** Cria ou atualiza pelo mesmo ID, sem duplicar um prompt editado. */
+    fun salvarOuAtualizarPrompt(prompt: Prompt) {
+        val atuais = obterPromptsGerados().toMutableList()
+        val indice = atuais.indexOfFirst { it.id == prompt.id }
+        if (indice >= 0) atuais[indice] = prompt else atuais.add(0, prompt)
+        prefs.edit().putString(CHAVE_PROMPTS_GERADOS, serializarPrompts(atuais)).apply()
+    }
+
+    fun promptGerado(id: String): Prompt? = obterPromptsGerados().firstOrNull { it.id == id }
+
     /** Todos os prompts gerados e salvos localmente, do mais recente para o mais antigo. */
     fun obterPromptsGerados(): List<Prompt> {
         val bruto = prefs.getString(CHAVE_PROMPTS_GERADOS, null) ?: return emptyList()
@@ -162,6 +172,13 @@ class PromptDadosLocaisRepository(context: Context) {
             }))
             obj.put("tags", JSONArray(prompt.tags))
             obj.put("data_criacao", prompt.dataCriacao)
+            obj.put("contexto", prompt.contexto)
+            obj.put("tarefa", prompt.tarefa)
+            obj.put("restricoes", prompt.restricoes)
+            obj.put("formato_saida", prompt.formatoSaida)
+            prompt.iaDestinoId?.let { obj.put("ia_destino_id", it) }
+            prompt.iaDestinoNome?.let { obj.put("ia_destino_nome", it) }
+            prompt.comandoRelacionado?.let { obj.put("comando_relacionado", it) }
             array.put(obj)
         }
         return array.toString()
@@ -205,7 +222,14 @@ class PromptDadosLocaisRepository(context: Context) {
                     template = obj.getString("template"),
                     variaveis = variaveis,
                     tags = tags,
-                    dataCriacao = obj.getString("data_criacao")
+                    dataCriacao = obj.getString("data_criacao"),
+                    contexto = obj.optString("contexto"),
+                    tarefa = obj.optString("tarefa"),
+                    restricoes = obj.optString("restricoes"),
+                    formatoSaida = obj.optString("formato_saida"),
+                    iaDestinoId = obj.optString("ia_destino_id").takeIf { it.isNotBlank() },
+                    iaDestinoNome = obj.optString("ia_destino_nome").takeIf { it.isNotBlank() },
+                    comandoRelacionado = obj.optString("comando_relacionado").takeIf { it.isNotBlank() }
                 )
             )
         }

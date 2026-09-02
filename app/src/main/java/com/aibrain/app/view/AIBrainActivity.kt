@@ -103,7 +103,7 @@ class AIBrainActivity : AppCompatActivity() {
         binding.btnCopiarPrompt.setOnClickListener { copiarPromptAtual() }
         binding.btnAbrirIA.setOnClickListener { abrirIASelecionada() }
         binding.btnAbrirIARecomendacao.setOnClickListener { abrirIASelecionada() }
-        binding.btnCriarPromptChat.setOnClickListener { criarPromptPendente() }
+        binding.btnCriarPromptChat.setOnClickListener { abrirPromptBuilderComContexto() }
         binding.btnEscolherOutraIA.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
         }
@@ -384,6 +384,17 @@ class AIBrainActivity : AppCompatActivity() {
             binding.containerPromptGerado.visibility = View.VISIBLE
             binding.btnAbrirIARecomendacao.visibility = View.VISIBLE
         }
+    }
+
+    private fun abrirPromptBuilderComContexto() {
+        val spec = promptPendente ?: return
+        startActivity(Intent(this, CriadorPromptsActivity::class.java).apply {
+            putExtra(CriadorPromptsActivity.EXTRA_TEXTO_INICIAL, ContextualPromptGenerator.generate(spec))
+            putExtra(CriadorPromptsActivity.EXTRA_OBJETIVO, spec.objetivo)
+            putExtra(CriadorPromptsActivity.EXTRA_IA_ID, spec.iaId)
+            putExtra(CriadorPromptsActivity.EXTRA_IA_NOME, spec.iaNome)
+            putExtra(CriadorPromptsActivity.EXTRA_COMANDO, spec.comando)
+        })
     }
 
     private fun nivelCompatibilidade(confidence: Double): String = when {

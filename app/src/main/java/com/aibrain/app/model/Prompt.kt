@@ -39,5 +39,12 @@ data class Prompt(
     val template: String,
     val variaveis: List<VariavelPrompt> = emptyList(),
     val tags: List<String> = emptyList(),
-    val dataCriacao: String
+    val dataCriacao: String,
+    val contexto: String = "",
+    val tarefa: String = "",
+    val restricoes: String = "",
+    val formatoSaida: String = "",
+    val iaDestinoId: String? = null,
+    val iaDestinoNome: String? = null,
+    val comandoRelacionado: String? = null
 ) : Parcelable
