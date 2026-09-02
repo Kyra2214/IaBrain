@@ -8,6 +8,9 @@ interface ProjetoTarefaDao {
     @Query("SELECT * FROM projeto_tarefas WHERE projetoId = :projetoId OR projetoId IS NULL ORDER BY prioridade DESC, atualizadoEm DESC")
     fun observar(projetoId: String): Flow<List<ProjetoTarefaEntity>>
 
+    @Query("SELECT * FROM projeto_tarefas ORDER BY prioridade DESC, atualizadoEm DESC")
+    fun observarTodas(): Flow<List<ProjetoTarefaEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun salvar(item: ProjetoTarefaEntity)
 
