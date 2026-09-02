@@ -80,6 +80,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Scan for obvious secret material
         shell: bash
         run: |
@@ -88,7 +90,14 @@ jobs:
             exit 1
           fi
       - name: Ensure E2E workflow was not modified by this gate
-        run: git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- .github/workflows/android-e2e.yml | grep -q . && { echo 'android-e2e.yml must not be modified'; exit 1; } || true
+        shell: bash
+        run: |
+          if git diff --quiet "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- .github/workflows/android-e2e.yml; then
+            echo 'Protected E2E workflow unchanged.'
+          else
+            echo 'android-e2e.yml must not be modified.'
+            exit 1
+          fi
 
   gate:
     name: Quality Gate / all required checks
