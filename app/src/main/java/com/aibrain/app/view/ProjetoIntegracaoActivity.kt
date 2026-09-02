@@ -49,7 +49,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
     private fun carregar() {
         lifecycleScope.launch {
             val contribuicoes = workspaceRepository.observarContribuicoes(projetoId).first()
-            val pendentes = contribuicoes.filter { it.status != StatusContribuicao.INTEGRADA }
+            val pendentes = contribuicoes.filter { it.status != StatusContribuicao.INTEGRADA.name }
             if (pendentes.isEmpty()) { mostrarMensagem("Nenhuma contribuição pendente para integração."); return@launch }
             val ultima = pendentes.first()
             if (!store.workspaceExiste(projetoId)) {
