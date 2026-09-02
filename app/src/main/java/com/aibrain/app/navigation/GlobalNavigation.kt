@@ -27,9 +27,12 @@ object GlobalNavigation {
             itemIconTintList = null
             itemTextColor = activity.getColorStateList(R.color.nav_item_colors)
             itemRippleColor = ColorStateList.valueOf(activity.getColor(R.color.secondary_container))
-            backgroundTintList = ColorStateList.valueOf(activity.getColor(R.color.surface_container))
+            background = activity.getDrawable(R.drawable.bg_bottom_navigation)
+            backgroundTintList = null
             elevation = activity.resources.getDimension(R.dimen.space_sm)
             minimumHeight = activity.resources.getDimensionPixelSize(R.dimen.global_navigation_height)
+            itemPaddingTop = activity.resources.getDimensionPixelSize(R.dimen.space_sm)
+            itemPaddingBottom = activity.resources.getDimensionPixelSize(R.dimen.space_sm)
             setOnItemSelectedListener { item ->
                 val destination = when (item.itemId) {
                     R.id.nav_chat -> CHAT

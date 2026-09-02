@@ -16,20 +16,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="24dp">
+        android:paddingBottom="@dimen/space_lg">
 
         <!-- Cabeçalho -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="16dp">
+            android:paddingHorizontal="@dimen/space_md"
+            android:paddingVertical="@dimen/space_md">
 
             <ImageButton
                 android:id="@+id/btnVoltarAssistenteIA"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/icon_button_size"
+                android:layout_height="@dimen/icon_button_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/assistente_ia_voltar_desc"
                 android:src="@drawable/ic_back" />
@@ -37,11 +37,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:fontFamily="sans-serif-medium"
+                android:layout_marginStart="@dimen/space_sm"
                 android:text="@string/assistente_ia_titulo"
-                android:textColor="@color/on_background"
-                android:textSize="22sp" />
+                style="@style/TextAppearance.AIBrain.TituloTela"
+                android:textColor="@color/on_background" />
 
         </LinearLayout>
 
@@ -52,10 +51,10 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="4dp"
             android:background="@drawable/bg_search_rounded"
-            android:padding="14dp"
+            android:padding="@dimen/space_md"
             android:text="@string/assistente_ia_aviso"
-            android:textColor="@color/on_background_muted"
-            android:textSize="13sp" />
+            style="@style/TextAppearance.AIBrain.Legenda"
+            android:textColor="@color/on_background_muted" />
 
         <!-- Card: API key da Groq -->
         <androidx.cardview.widget.CardView
@@ -63,22 +62,21 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             app:cardBackgroundColor="@color/surface"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="@dimen/shape_medium"
             app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="@dimen/space_lg">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="@string/assistente_ia_campo_label"
-                    android:textColor="@color/on_background"
-                    android:textSize="16sp" />
+                    style="@style/TextAppearance.AIBrain.TituloSecao"
+                    android:textColor="@color/on_background" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnIrConsoleGroq"
@@ -146,6 +144,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSalvarApiKey"
+                        style="@style/Widget.AIBrain.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
@@ -156,7 +155,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRemoverApiKey"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        style="@style/Widget.AIBrain.Button.Outlined"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -178,14 +177,14 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
             app:cardBackgroundColor="@color/surface"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="@dimen/shape_medium"
             app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="@dimen/space_lg">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -268,14 +267,14 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
             app:cardBackgroundColor="@color/surface"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="@dimen/shape_medium"
             app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="@dimen/space_lg">
 
                 <TextView
                     android:layout_width="wrap_content"

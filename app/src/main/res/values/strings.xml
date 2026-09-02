@@ -143,6 +143,7 @@
     <string name="criar_com_ia_ver_ia">Ver IA</string>
     <string name="brain_hint_pergunta">O que você quer fazer? Ex: quero criar vídeo</string>
     <string name="brain_botao_perguntar">Perguntar</string>
+    <string name="brain_prompt_titulo">Prompt contextualizado</string>
     <string name="brain_categoria_detectada">Categoria detectada: %1$s</string>
     <string name="brain_sem_resultado">Não entendi o que você precisa. Tente descrever a tarefa de outra forma.</string>
     <string name="brain_sugestao_termos">Experimente termos como: %1$s</string>

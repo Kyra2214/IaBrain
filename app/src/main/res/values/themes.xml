@@ -21,6 +21,30 @@
         <item name="android:textColor">@color/on_background_muted</item>
     </style>
 
+    <style name="TextAppearance.AIBrain.Display" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/on_background</item>
+    </style>
+
+    <style name="TextAppearance.AIBrain.TituloTela" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.005</item>
+        <item name="android:textColor">@color/on_background</item>
+    </style>
+
+    <style name="TextAppearance.AIBrain.Label" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/on_surface_variant</item>
+    </style>
+
+    <style name="TextAppearance.AIBrain.Status" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="android:textColor">@color/secondary</item>
+    </style>
+
     <!-- Cantos suavizados e consistentes para cards, botões e campos. -->
     <style name="ShapeAppearance.AIBrain.Small" parent="ShapeAppearance.Material3.Corner.Small">
         <item name="cornerSize">10dp</item>
@@ -45,6 +69,13 @@
     <style name="Widget.AIBrain.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
         <item name="cornerRadius">28dp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="strokeColor">@color/outline_variant</item>
+    </style>
+
+    <style name="Widget.AIBrain.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="cornerRadius">28dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
 
     <style name="Theme.AIBrain" parent="Theme.Material3.DayNight">
@@ -58,7 +89,10 @@
         <item name="colorOutline">@color/outline</item>
         <item name="colorOnPrimary">@color/on_primary</item>
         <item name="colorOnBackground">@color/on_background</item>
-        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
 
         <!-- Tipografia suavizada aplicada ao app inteiro -->
         <item name="android:fontFamily">sans-serif</item>

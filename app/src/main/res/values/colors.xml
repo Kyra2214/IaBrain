@@ -1,42 +1,49 @@
 <resources>
-    <!-- Fase 12.8 — paleta modo claro. A paleta escura fica em values-night/colors.xml.
-         Cores de marca (primary/secondary) permanecem iguais nos dois temas para
-         manter a identidade visual; o que muda é fundo/superfície/texto. -->
-    <color name="primary">#0B0B19</color>
-    <color name="primary_variant">#1A1A2E</color>
-    <color name="secondary">#00C2A8</color>
-    <color name="secondary_soft">#3DD9C4</color>
-    <color name="background">#F5F6FA</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="surface_variant">#ECEEF5</color>
+    <!-- Design System IaBrain — Light Theme. Os nomes legados abaixo permanecem para compatibilidade. -->
+    <color name="primary">#0B1B36</color>
     <color name="on_primary">#FFFFFF</color>
-    <color name="on_background">#14141F</color>
-    <!-- Fase 12.7 — contraste ajustado para AA sobre @color/surface. -->
-    <color name="on_background_muted">#5B5B72</color>
-    <color name="divider">#E1E3EC</color>
-    <!-- Fase 18.2 — cor de alerta/remoção, usada no botão "Remover API key". -->
-    <color name="error">#D64545</color>
-    <color name="primary_container">#D8F7F2</color>
-    <color name="on_primary_container">#003731</color>
-    <color name="on_secondary">#FFFFFF</color>
-    <color name="secondary_container">#B8F1E8</color>
-    <color name="on_secondary_container">#003731</color>
-    <color name="tertiary">#6750A4</color>
-    <color name="on_tertiary">#FFFFFF</color>
-    <color name="tertiary_container">#EADDFF</color>
-    <color name="on_tertiary_container">#21005D</color>
-    <color name="on_surface">#14141F</color>
-    <color name="surface_container">#F0F1F7</color>
-    <color name="surface_container_high">#E8E9F0</color>
-    <color name="surface_container_low">#F8F8FC</color>
-    <color name="outline">#777780</color>
-    <color name="outline_variant">#C7C7D0</color>
-    <color name="on_surface_variant">#454650</color>
-    <color name="success">#197A5A</color>
-    <color name="warning">#8A5A00</color>
-    <color name="info">#2969A8</color>
+    <color name="primary_variant">#17345F</color>
+    <color name="primary_container">#DCE8FF</color>
+    <color name="on_primary_container">#08285C</color>
 
-    <!-- Identidade IaBrain: loading/splash premium -->
+    <color name="secondary">#007F9F</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_soft">#4CC5D8</color>
+    <color name="secondary_container">#B9EDF4</color>
+    <color name="on_secondary_container">#003640</color>
+
+    <color name="tertiary">#66558F</color>
+    <color name="on_tertiary">#FFFFFF</color>
+    <color name="tertiary_container">#EBDDFF</color>
+    <color name="on_tertiary_container">#25144C</color>
+
+    <color name="background">#F7F9FC</color>
+    <color name="on_background">#121A2A</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#121A2A</color>
+    <color name="surface_variant">#E9EFF8</color>
+    <color name="on_surface_variant">#475468</color>
+    <color name="surface_container">#F0F4FA</color>
+    <color name="surface_container_high">#E7EDF6</color>
+    <color name="surface_container_low">#FBFCFE</color>
+
+    <color name="outline">#77869A</color>
+    <color name="outline_variant">#CBD5E2</color>
+    <color name="divider">#DDE5EF</color>
+
+    <color name="success">#16794D</color>
+    <color name="on_success">#FFFFFF</color>
+    <color name="warning">#875B00</color>
+    <color name="on_warning">#FFFFFF</color>
+    <color name="error">#BA1A1A</color>
+    <color name="on_error">#FFFFFF</color>
+    <color name="info">#1769AA</color>
+    <color name="on_info">#FFFFFF</color>
+
+    <color name="on_background_muted">#59677A</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Identidade IaBrain: azul profundo, cyan controlado e brilho discreto. -->
     <color name="brand_background">#060B18</color>
     <color name="brand_background_end">#111B35</color>
     <color name="brand_glow">#263E72</color>

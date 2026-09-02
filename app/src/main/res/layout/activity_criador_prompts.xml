@@ -21,13 +21,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="16dp">
+        android:paddingHorizontal="@dimen/space_md"
+        android:paddingVertical="@dimen/space_md">
 
         <ImageButton
             android:id="@+id/btnVoltarCriadorPrompts"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="@dimen/icon_button_size"
+            android:layout_height="@dimen/icon_button_size"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/criador_prompts_voltar_desc"
             android:src="@drawable/ic_back" />
@@ -36,13 +36,12 @@
             android:id="@+id/txtTituloCriadorPrompts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+                        android:layout_marginStart="@dimen/space_sm"
             android:layout_weight="1"
-            android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.01"
             android:text="@string/criador_prompts_titulo"
+            style="@style/TextAppearance.AIBrain.TituloTela"
             android:textColor="@color/on_background"
-            android:textSize="22sp" />
+ />
 
         <!-- Fase 25 — modo "Gerar com IA": envia o texto digitado para a
              Groq (API key configurada no Assistente de IA) e a IA monta o
@@ -97,14 +96,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="4dp"
+        android:paddingHorizontal="@dimen/space_md"
+        android:paddingVertical="@dimen/space_xs"
         android:visibility="gone"
         tools:visibility="visible">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnVerSalvarPrompt"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.AIBrain.Button.Outlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -115,7 +114,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAbrirIARecomendada"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.AIBrain.Button.Outlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -136,8 +135,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="12dp">
+        android:paddingHorizontal="@dimen/space_md"
+        android:paddingVertical="@dimen/space_md">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
@@ -168,6 +167,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGerarPrompt"
+            style="@style/Widget.AIBrain.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

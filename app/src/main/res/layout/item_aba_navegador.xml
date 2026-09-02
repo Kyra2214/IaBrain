@@ -5,11 +5,11 @@
     android:id="@+id/cardAbaItem"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="6dp"
-    android:layout_marginTop="6dp"
-    android:layout_marginBottom="6dp"
+    android:layout_marginStart="@dimen/space_xs"
+    android:layout_marginTop="@dimen/space_xs"
+    android:layout_marginBottom="@dimen/space_xs"
     app:cardBackgroundColor="@color/primary_variant"
-    app:cardCornerRadius="10dp"
+    app:cardCornerRadius="@dimen/shape_small"
     app:cardElevation="0dp">
 
     <LinearLayout
@@ -17,10 +17,10 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingTop="6dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="6dp">
+        android:paddingStart="@dimen/space_sm"
+        android:paddingTop="@dimen/space_xs"
+        android:paddingEnd="@dimen/space_xs"
+        android:paddingBottom="@dimen/space_xs">
 
         <ImageView
             android:id="@+id/imgAbaItem"
@@ -53,8 +53,8 @@
 
         <ImageButton
             android:id="@+id/btnFecharAbaItem"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="@dimen/icon_button_size"
+            android:layout_height="@dimen/icon_button_size"
             android:layout_marginStart="2dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/browser_fechar_aba_desc"
