@@ -15,11 +15,13 @@ import com.aibrain.app.brain.ContribuicaoWorkspace
 import com.aibrain.app.brain.FonteContribuicao
 import com.aibrain.app.brain.StatusContribuicao
 import com.aibrain.app.brain.ValidadorProjeto
+import com.aibrain.app.brain.WorkspaceFileStore
 import com.aibrain.app.brain.ZipWorkspaceImporter
 import com.aibrain.app.data.local.ProjetoRepository
 import com.aibrain.app.data.local.ProjetoWorkspaceRepository
 import com.aibrain.app.navigation.GlobalNavigation
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -28,6 +30,7 @@ class ProjetoDetalheActivity : AppCompatActivity() {
     private lateinit var conteudo: LinearLayout
     private lateinit var workspaceRepository: ProjetoWorkspaceRepository
     private lateinit var projetoRepository: ProjetoRepository
+    private lateinit var fileStore: WorkspaceFileStore
     private val escolherZip = 9001
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +38,7 @@ class ProjetoDetalheActivity : AppCompatActivity() {
         projetoId = intent.getStringExtra(EXTRA_PROJETO_ID) ?: run { finish(); return }
         workspaceRepository = ProjetoWorkspaceRepository(applicationContext)
         projetoRepository = ProjetoRepository(applicationContext)
+        fileStore = WorkspaceFileStore(applicationContext)
         val raiz = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(getColor(R.color.background)); setPadding(20, 20, 20, 84) }
         val topo = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         topo.addView(TextView(this).apply { text = getString(R.string.projeto_workspace); textSize = 25f; setTextColor(getColor(R.color.on_background)); setTypeface(null, android.graphics.Typeface.BOLD) }, LinearLayout.LayoutParams(0, -2, 1f))
@@ -52,11 +56,15 @@ class ProjetoDetalheActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val projeto = projetoRepository.buscar(projetoId) ?: return@launch
             val arquivos = workspaceRepository.arquivos(projetoId)
+            val contribuicoes = workspaceRepository.observarContribuicoes(projetoId).first()
             conteudo.removeAllViews()
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = projeto.nome; textSize = 21f; setTextColor(getColor(R.color.on_background)); setTypeface(null, android.graphics.Typeface.BOLD) })
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "${projeto.descricao}\nStack: ${projeto.plataforma ?: "não definida"} · ${projeto.complexidade}"; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_github) + "\n" + getString(R.string.projeto_github_desconectado); setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
             conteudo.addView(Button(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_validar); setOnClickListener { validar(arquivos) } })
+            if (contribuicoes.isNotEmpty()) {
+                conteudo.addView(Button(this@ProjetoDetalheActivity).apply { text = "🔀 Integrar contribuições"; setOnClickListener { startActivity(ProjetoIntegracaoActivity.criarIntent(this@ProjetoDetalheActivity, projetoId)) } })
+            }
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_contribuicoes); textSize = 18f; setTextColor(getColor(R.color.on_background)); setPadding(0, 18, 0, 6) })
             if (arquivos.isEmpty()) conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "Nenhum arquivo recebido no workspace."; setTextColor(getColor(R.color.on_background_muted)) })
             arquivos.groupBy { it.origem }.forEach { (origem, itens) -> conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "$origem · ${itens.size} arquivo(s)"; setTextColor(getColor(R.color.on_background)); setPadding(0, 4, 0, 4) }) }
@@ -76,16 +84,22 @@ class ProjetoDetalheActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val arquivo = File(cacheDir, "contribuicao-${System.currentTimeMillis()}.zip")
-                contentResolver.openInputStream(uri)?.use { input -> arquivo.outputStream().use(input::copyTo) }
+                contentResolver.openInputStream(uri)?.use { input -> arquivo.outputStream().use(input::copyTo) } ?: throw IllegalStateException("Não foi possível ler o ZIP")
                 val nomeFonte = uri.lastPathSegment ?: "arquivo ZIP"
                 val resultado = ZipWorkspaceImporter.importar(arquivo, nomeFonte)
                 val contribuicao = ContribuicaoWorkspace(projetoId = projetoId, fonte = FonteContribuicao.ZIP, nomeFonte = nomeFonte, arquivos = resultado.arquivos, status = if (resultado.rejeitados.isEmpty()) StatusContribuicao.ANALISADA else StatusContribuicao.CONFLITO)
+                fileStore.persistirContribuicao(arquivo, projetoId, contribuicao.id)
                 workspaceRepository.importarContribuicao(contribuicao)
-                val analise = AnalisadorWorkspace.comparar(emptyList(), listOf(contribuicao))
-                workspaceRepository.salvarIntegracao(projetoId, listOf(contribuicao.nomeFonte), if (analise.conflitos.isEmpty()) "ANALISADA" else "CONFLITO", analise.conflitos)
+                if (!fileStore.workspaceExiste(projetoId)) {
+                    fileStore.inicializarWorkspace(projetoId, contribuicao.id)
+                } else {
+                    val base = fileStore.snapshotWorkspace(projetoId)
+                    val analise = com.aibrain.app.brain.ProjetoIntegracaoEngine.analisar(base, resultado.arquivos)
+                    workspaceRepository.salvarIntegracao(projetoId, listOf(contribuicao.nomeFonte), "ANALISADA", analise.conflitos)
+                }
                 Snackbar.make(conteudo, getString(R.string.projeto_importado), Snackbar.LENGTH_LONG).show()
                 carregar()
-            } catch (_: Exception) { Snackbar.make(conteudo, getString(R.string.projeto_zip_invalido), Snackbar.LENGTH_LONG).show() }
+            } catch (e: Exception) { Snackbar.make(conteudo, getString(R.string.projeto_zip_invalido) + ": ${e.message ?: "erro"}", Snackbar.LENGTH_LONG).show() }
         }
     }
 
