@@ -1,0 +1,349 @@
+package com.aibrain.app.view
+
+import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.aibrain.app.R
+import com.aibrain.app.brain.*
+import com.aibrain.app.browser.BrowserActivity
+import com.aibrain.app.browser.BrowserHistoryManager
+import com.aibrain.app.data.local.AppDatabase
+import com.aibrain.app.data.local.BrowserContextoEntity
+import com.aibrain.app.data.local.ProjetoMemoriaEntity
+import com.aibrain.app.data.local.ProjetoSkillEntity
+import com.aibrain.app.data.local.ProjetoTarefaEntity
+import com.aibrain.app.data.local.PromptAcaoHistoricoEntity
+import com.aibrain.app.data.local.WorkspaceVNextRepository
+import com.aibrain.app.navigation.GlobalNavigation
+import com.aibrain.app.repository.CatalogoRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.util.UUID
+
+/** Central operacional dos 12 blocos VNext, com persistência Room como fonte única. */
+class WorkspaceVNextActivity : AppCompatActivity() {
+    private lateinit var repository: WorkspaceVNextRepository
+    private lateinit var content: LinearLayout
+    private lateinit var browserHistoryManager: BrowserHistoryManager
+    private var projectId: String? = null
+    private var catalogo = emptyList<com.aibrain.app.model.IA>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        repository = WorkspaceVNextRepository(AppDatabase.getInstance(applicationContext))
+        browserHistoryManager = BrowserHistoryManager(applicationContext)
+        projectId = intent.getStringExtra(EXTRA_PROJECT_ID)
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 20, 20, 84)
+            setBackgroundColor(getColor(R.color.background))
+        }
+        root.addView(TextView(this).apply {
+            text = "🧠 Workspace 2.0"
+            textSize = 25f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(getColor(R.color.on_background))
+            setPadding(0, 0, 0, 12)
+        })
+        content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        root.addView(ScrollView(this).apply { addView(content) }, LinearLayout.LayoutParams(-1, 0, 1f))
+        setContentView(root)
+        GlobalNavigation.attach(this, root, GlobalNavigation.PROJETOS)
+        carregarEstado()
+    }
+
+    private fun carregarEstado() {
+        lifecycleScope.launch {
+            catalogo = runCatching { CatalogoRepository(applicationContext).carregarCatalogo() }.getOrDefault(emptyList())
+            render()
+        }
+    }
+
+    private fun render() {
+        content.removeAllViews()
+        val pid = projectId
+        section("1 · Integração de contribuições", "Revisão por arquivo, decisão explícita e rollback.")
+        section("2 · Prompt Actions unificado", "Ações seguem o contrato central e ficam registradas no histórico do prompt.")
+        button("📋 Copiar prompt de teste") {
+            val prompt = "Prompt preparado pelo IaBrain — revisão manual obrigatória."
+            copiar(prompt)
+            lifecycleScope.launch {
+                repository.registrarAcao(
+                    PromptAcaoHistoricoEntity(
+                        id = UUID.randomUUID().toString(),
+                        promptId = "workspace",
+                        acao = PromptActionType.COPY.name,
+                        criadoEm = System.currentTimeMillis()
+                    )
+                )
+            }
+        }
+        section("3 · Prefill assistido", "Só adapters com capacidade CONFIRMED podem tentar prefill; caso contrário, copiar/abrir.")
+        section("4 · Workspace 2.0", "Contexto ${pid?.let { "do projeto $it" } ?: "global"} persistido localmente.")
+        section("5 · CI Standard 2.0", "Validação local explícita; estados remotos não são inventados.")
+        section("6 · GitHub Workspace", "Estado remoto permanece NOT_VERIFIED até existir evidência real.")
+        section("7 · Chat contextual", "Memórias e contexto do projeto são carregados antes de abrir o Chat.")
+        button("💬 Abrir Chat contextual do projeto") {
+            lifecycleScope.launch {
+                val contexto = buildProjectPrompt()
+                startActivity(
+                    Intent(this@WorkspaceVNextActivity, AIBrainActivity::class.java)
+                        .putExtra(BrainChatContext.EXTRA_TEXTO_INICIAL, contexto)
+                )
+            }
+        }
+        section("8 · Orquestração Multi-IA", "O usuário escolhe as IAs, cria o plano e pode abrir cada IA no Browser. Nenhum prompt é enviado automaticamente.")
+        button("🧩 Selecionar IAs e abrir plano") { escolherIAs() }
+        section("9 · Skills / Workflows", "Skills persistidas no Room viram workflows executáveis por etapas, sempre com aprovação/avanço manual.")
+        button("⚙️ Registrar skill padrão") {
+            if (pid == null) toast("Abra pelo detalhe de um projeto")
+            else lifecycleScope.launch {
+                val now = System.currentTimeMillis()
+                repository.salvarSkill(
+                    ProjetoSkillEntity(
+                        UUID.randomUUID().toString(),
+                        pid,
+                        "Revisão local",
+                        "Revisão segura do workspace",
+                        listOf("Ler contexto", "Analisar alterações", "Gerar relatório", "Aguardar aprovação"),
+                        true,
+                        now,
+                        now
+                    )
+                )
+                toast("Skill registrada no Room")
+                render()
+            }
+        }
+        button("▶ Iniciar workflow da skill") { iniciarWorkflowSkill() }
+        button("📋 Ver workflows no Task Center") { startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java)) }
+        section("10 · Memória de projeto", "Memórias ficam persistidas no Room e entram no contexto do Chat.")
+        button("🧠 Registrar memória") {
+            if (pid == null) toast("Abra pelo detalhe de um projeto")
+            else dialog("Título da memória") { title ->
+                dialog("Conteúdo") { body ->
+                    lifecycleScope.launch {
+                        val now = System.currentTimeMillis()
+                        repository.salvarMemoria(ProjetoMemoriaEntity(UUID.randomUUID().toString(), pid, MemoryType.NOTE.name, title, body, now, now))
+                        render()
+                    }
+                }
+            }
+        }
+        section("11 · Contexto entre abas", "O snapshot é lido do histórico real do Browser: abas, IA, URL, título, ordem, pin e aba ativa.")
+        button("🌐 Sincronizar contexto real do navegador") { sincronizarContextoBrowser() }
+        section("12 · Task Center", "Tarefas persistidas no Room aguardam ações explícitas do usuário.")
+        button("📋 Abrir Task Center") { startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java)) }
+        button("➕ Nova tarefa") {
+            dialog("Nova tarefa") { title ->
+                lifecycleScope.launch {
+                    val now = System.currentTimeMillis()
+                    repository.salvarTarefa(ProjetoTarefaEntity(UUID.randomUUID().toString(), pid, title, "Criada pelo Workspace 2.0", TaskStatus.PENDING.name, TaskPriority.NORMAL.name, now, now))
+                    render()
+                }
+            }
+        }
+    }
+
+    /** Cria um workflow real e auditável: cada passo vira uma tarefa WAITING_USER no Room. */
+    private fun iniciarWorkflowSkill() {
+        val pid = projectId
+        if (pid == null) {
+            toast("Abra pelo detalhe de um projeto")
+            return
+        }
+        lifecycleScope.launch {
+            val skills = repository.skillsAtivas(pid).first()
+            if (skills.isEmpty()) {
+                toast("Registre uma skill primeiro")
+                return@launch
+            }
+            val nomes = skills.map { it.nome }.toTypedArray()
+            AlertDialog.Builder(this@WorkspaceVNextActivity)
+                .setTitle("Escolha a skill")
+                .setItems(nomes) { _, which ->
+                    lifecycleScope.launch {
+                        val skill = skills[which]
+                        val contexto = buildProjectPrompt()
+                        val run = IaBrainWorkspaceOrchestrator.runSkill(
+                            SkillDefinition(skill.id, skill.nome, skill.passos),
+                            contexto
+                        )
+                        val runId = UUID.randomUUID().toString()
+                        val now = System.currentTimeMillis()
+                        run.steps.forEachIndexed { index, step ->
+                            val status = if (index == 0) TaskStatus.WAITING_USER else TaskStatus.PENDING
+                            repository.salvarTarefa(
+                                ProjetoTarefaEntity(
+                                    id = UUID.randomUUID().toString(),
+                                    projetoId = pid,
+                                    titulo = "Workflow $runId · ${index + 1}/${run.steps.size}: $step",
+                                    detalhe = "Skill: ${skill.nome}. Contexto preparado localmente. Avance esta etapa manualmente no Task Center. Execução automática/envio de prompt está desabilitado.",
+                                    status = status.name,
+                                    prioridade = if (index == 0) TaskPriority.HIGH.name else TaskPriority.NORMAL.name,
+                                    criadoEm = now,
+                                    atualizadoEm = now
+                                )
+                            )
+                        }
+                        toast("Workflow criado com ${run.steps.size} etapa(s)")
+                        startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java))
+                    }
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+        }
+    }
+
+    /** Constrói o contexto real do projeto a partir das memórias e do snapshot de abas persistidos no Room. */
+    private suspend fun buildProjectPrompt(): String {
+        val pid = projectId ?: return "Quero trabalhar em um projeto. Mostre o contexto necessário antes de continuar."
+        val memorias = repository.memorias(pid).first()
+        val contextoAbas = repository.contextosRecentes().first().firstOrNull()
+        val memoriaTexto = memorias
+            .sortedByDescending { it.atualizadoEm }
+            .take(12)
+            .joinToString("\n") { "- [${it.tipo}] ${it.titulo}: ${it.conteudo}" }
+            .ifBlank { "- Nenhuma memória de projeto registrada." }
+        val abasTexto = contextoAbas?.let { contexto ->
+            val abas = contexto.abas.take(12).joinToString(" | ")
+            "Origem: ${contexto.origem}; aba selecionada: ${contexto.abaSelecionadaId ?: "nenhuma"}; abas: ${abas.ifBlank { "nenhuma" }}; prompt associado: ${contexto.prompt ?: "nenhum"}."
+        } ?: "Nenhum snapshot de abas registrado."
+        return """
+            Projeto: $pid
+            Quero trabalhar neste projeto pelo Chat contextual do IaBrain.
+
+            MEMÓRIAS DO PROJETO:
+            $memoriaTexto
+
+            CONTEXTO RECENTE DO NAVEGADOR:
+            $abasTexto
+
+            Use essas informações apenas como contexto local para orientar a conversa.
+            Não execute código nem envie prompts automaticamente.
+        """.trimIndent()
+    }
+
+    /** Captura a sessão real persistida pelo BrowserHistoryManager e transforma somente metadados em contexto Room. */
+    private fun sincronizarContextoBrowser() {
+        lifecycleScope.launch {
+            val (abas, ativa) = browserHistoryManager.lerSessao()
+            if (abas.isEmpty()) {
+                toast("Nenhuma aba salva no navegador")
+                return@launch
+            }
+            val metadados = abas.mapIndexed { index, aba ->
+                val titulo = aba.tituloPagina ?: "sem título"
+                "${index + 1}. ${aba.nomeIA.ifBlank { "Navegador" }} — $titulo — ${aba.urlAtual} — ${if (aba.fixada) "fixada" else "normal"}"
+            }
+            val promptAssociado = abas.firstOrNull { it.id == ativa }?.urlAtual
+            repository.salvarContexto(
+                BrowserContextoEntity(
+                    id = UUID.randomUUID().toString(),
+                    origem = "BrowserHistoryManager",
+                    abaSelecionadaId = ativa,
+                    abas = metadados,
+                    prompt = promptAssociado,
+                    criadoEm = System.currentTimeMillis()
+                )
+            )
+            toast("Contexto sincronizado: ${abas.size} aba(s)")
+        }
+    }
+
+    private fun escolherIAs() {
+        if (catalogo.isEmpty()) { toast("Catálogo indisponível"); return }
+        val candidatos = catalogo.take(8)
+        val nomes = candidatos.map { it.nome }.toTypedArray()
+        val marcados = BooleanArray(nomes.size)
+        AlertDialog.Builder(this)
+            .setTitle("Escolha as IAs")
+            .setMultiChoiceItems(nomes, marcados) { _, which, checked -> marcados[which] = checked }
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Criar plano e abrir") { _, _ ->
+                val selecionadas = candidatos.filterIndexed { index, _ -> marcados[index] }
+                if (selecionadas.isEmpty()) { toast("Nenhuma IA selecionada"); return@setPositiveButton }
+                val plano = IaBrainWorkspaceOrchestrator.buildMultiAiPlan(
+                    "Tarefa do Workspace", selecionadas.mapIndexed { index, ia -> AiCandidate(ia.id, ia.nome, 1.0 - index * 0.01, "selecionada pelo usuário") }
+                )
+                lifecycleScope.launch {
+                    val now = System.currentTimeMillis()
+                    plano.candidates.forEach { ai ->
+                        repository.salvarTarefa(ProjetoTarefaEntity(UUID.randomUUID().toString(), projectId, "Plano Multi-IA: ${ai.name}", "Aguardando aprovação explícita", TaskStatus.WAITING_USER.name, TaskPriority.NORMAL.name, now, now))
+                    }
+                    toast("Plano criado — abrindo ${plano.candidates.size} IA(s)")
+                    abrirIAsSelecionadas(plano.candidates)
+                }
+            }
+            .show()
+    }
+
+    /** Abre cada IA explicitamente no Browser usando o contrato/resolver central; não envia o prompt. */
+    private suspend fun abrirIAsSelecionadas(candidates: List<AiCandidate>) {
+        val resolver = IAUrlResolver(applicationContext)
+        candidates.forEach { candidate ->
+            val ia = catalogo.firstOrNull { it.id == candidate.id } ?: return@forEach
+            val contrato = resolver.resolve(
+                IAOpenContract(
+                    selectedAIId = ia.id,
+                    selectedAIName = ia.nome,
+                    officialResolvedUrl = ia.site,
+                    urlStatus = UrlResolutionStatus.RESOLVED,
+                    generatedPrompt = "",
+                    prefillCapability = PrefillCapability.UNKNOWN,
+                    canPrefillPrompt = false,
+                    openMode = BrowserOpenMode.OPEN_ONLY
+                )
+            )
+            if (contrato.urlStatus == UrlResolutionStatus.RESOLVED && !contrato.officialResolvedUrl.isNullOrBlank()) {
+                startActivity(BrowserActivity.criarIntent(this@WorkspaceVNextActivity, contrato))
+            }
+        }
+    }
+
+    private fun section(title: String, body: String) {
+        content.addView(TextView(this).apply {
+            text = "$title\n$body"
+            textSize = 16f
+            setTextColor(getColor(R.color.on_background))
+            setPadding(0, 10, 0, 12)
+        })
+    }
+
+    private fun button(text: String, onClick: () -> Unit) {
+        content.addView(Button(this).apply {
+            this.text = text
+            setOnClickListener { onClick() }
+            layoutParams = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = 6 }
+        })
+    }
+
+    private fun copiar(text: String) {
+        (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("IaBrain", text))
+        toast("Copiado — envio continua manual")
+    }
+
+    private fun dialog(title: String, onDone: (String) -> Unit) {
+        val input = EditText(this)
+        input.hint = title
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setView(input)
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Salvar") { _, _ -> input.text.toString().trim().takeIf { it.isNotEmpty() }?.let(onDone) }
+            .show()
+    }
+
+    private fun toast(s: String) = Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
+
+    companion object {
+        private const val EXTRA_PROJECT_ID = "project_id"
+        fun criarIntent(context: Context, projectId: String? = null) = Intent(context, WorkspaceVNextActivity::class.java).putExtra(EXTRA_PROJECT_ID, projectId)
+    }
+}

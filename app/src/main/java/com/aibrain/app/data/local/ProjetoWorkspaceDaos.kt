@@ -11,6 +11,7 @@ interface ProjetoWorkspaceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarContribuicao(item: ProjetoContribuicaoEntity)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarArquivos(itens: List<ProjetoArquivoWorkspaceEntity>)
     @Query("SELECT * FROM projeto_contribuicoes WHERE projetoId=:projetoId ORDER BY recebidoEm DESC") fun contribuicoes(projetoId: String): Flow<List<ProjetoContribuicaoEntity>>
+    @Query("UPDATE projeto_contribuicoes SET status=:status WHERE id=:contribuicaoId") suspend fun atualizarStatus(contribuicaoId: String, status: String)
     @Query("SELECT * FROM projeto_arquivos_workspace WHERE projetoId=:projetoId ORDER BY caminho") suspend fun arquivos(projetoId: String): List<ProjetoArquivoWorkspaceEntity>
     @Query("SELECT * FROM projeto_arquivos_workspace WHERE contribuicaoId=:contribuicaoId ORDER BY caminho") suspend fun arquivosDaContribuicao(contribuicaoId: String): List<ProjetoArquivoWorkspaceEntity>
 }
