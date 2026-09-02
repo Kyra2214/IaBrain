@@ -18,7 +18,7 @@ class RoomConverters {
     }.getOrDefault(emptyMap())
 }
 
-@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class, ComandoEntity::class, ComandoCapacidadeEntity::class, ComandoRelacionamentoEntity::class, ComandoParametroEntity::class, ComandoIAEntity::class, WorkflowEntity::class, WorkflowComandoEntity::class, ComandoExecucaoEntity::class, IACapabilityEntity::class, IARoutingProfileEntity::class, ProjetoContribuicaoEntity::class, ProjetoArquivoWorkspaceEntity::class, ProjetoIntegracaoEntity::class, ProjetoValidacaoEntity::class, ProjetoHistoricoEntity::class, ProjetoCiProfileEntity::class, ProjetoGithubEntity::class, ProjetoTarefaEntity::class, ProjetoMemoriaEntity::class, ProjetoSkillEntity::class, BrowserContextoEntity::class, PromptAcaoHistoricoEntity::class], version = 9, exportSchema = true)
+@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class, ComandoEntity::class, ComandoCapacidadeEntity::class, ComandoRelacionamentoEntity::class, ComandoParametroEntity::class, ComandoIAEntity::class, WorkflowEntity::class, WorkflowComandoEntity::class, ComandoExecucaoEntity::class, IACapabilityEntity::class, IARoutingProfileEntity::class, ProjetoContribuicaoEntity::class, ProjetoArquivoWorkspaceEntity::class, ProjetoIntegracaoEntity::class, ProjetoValidacaoEntity::class, ProjetoHistoricoEntity::class, ProjetoCiProfileEntity::class, ProjetoGithubEntity::class, ProjetoTarefaEntity::class, ProjetoMemoriaEntity::class, ProjetoSkillEntity::class, BrowserContextoEntity::class, PromptAcaoHistoricoEntity::class], version = 10, exportSchema = true)
 @TypeConverters(RoomConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun iaDao(): IADao
@@ -132,10 +132,17 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_prompt_acoes_historico_criadoEm ON prompt_acoes_historico(criadoEm)")
             }
         }
+        private val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE projeto_tarefas ADD COLUMN githubIssueNumber INTEGER")
+                db.execSQL("ALTER TABLE projeto_tarefas ADD COLUMN githubPrNumber INTEGER")
+                db.execSQL("ALTER TABLE projeto_tarefas ADD COLUMN githubBranch TEXT")
+            }
+        }
 
         fun getInstance(context: Context): AppDatabase = INSTANCE ?: synchronized(this) {
             INSTANCE ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "iabrain.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9).build().also { INSTANCE = it }
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10).build().also { INSTANCE = it }
         }
     }
 }
