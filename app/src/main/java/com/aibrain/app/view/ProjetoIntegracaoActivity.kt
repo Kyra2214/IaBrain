@@ -15,7 +15,6 @@ import com.aibrain.app.R
 import com.aibrain.app.brain.DecisaoArquivo
 import com.aibrain.app.brain.DecisaoIntegracao
 import com.aibrain.app.brain.ProjetoIntegracaoEngine
-import com.aibrain.app.brain.ProjetoIntegracaoEngine.analisar
 import com.aibrain.app.brain.WorkspaceFileStore
 import com.aibrain.app.data.local.ProjetoWorkspaceRepository
 import com.aibrain.app.navigation.GlobalNavigation
@@ -29,6 +28,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
     private lateinit var workspaceRepository: ProjetoWorkspaceRepository
     private lateinit var store: WorkspaceFileStore
     private val decisoes = linkedMapOf<String, DecisaoIntegracao>()
+    private var nextViewId = 10000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,10 +47,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
     private fun carregar() {
         lifecycleScope.launch {
             val contribuicoes = workspaceRepository.observarContribuicoes(projetoId).first()
-            if (contribuicoes.isEmpty()) {
-                mostrarMensagem("Nenhuma contribuição disponível.")
-                return@launch
-            }
+            if (contribuicoes.isEmpty()) { mostrarMensagem("Nenhuma contribuição disponível."); return@launch }
             val ultima = contribuicoes.first()
             if (!store.workspaceExiste(projetoId)) {
                 store.inicializarWorkspace(projetoId, ultima.id)
@@ -59,43 +56,46 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
             }
             val base = store.snapshotWorkspace(projetoId)
             val candidata = store.snapshotContribuicao(projetoId, ultima.id, ultima.nomeFonte)
-            val analise = analisar(base, candidata)
+            val analise = ProjetoIntegracaoEngine.analisar(base, candidata)
             conteudo.removeAllViews()
+            decisoes.clear()
             conteudo.addView(TextView(this@ProjetoIntegracaoActivity).apply {
                 text = "Fonte: ${ultima.nomeFonte}\n${analise.mudancas.size} arquivo(s) analisado(s)"
                 textSize = 16f; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 18)
             })
-            analise.mudancas.forEach { mudanca -> adicionarMudanca(mudanca.caminho, mudanca.tipo.name, mudanca.tipo.name) }
-            if (analise.mudancas.isEmpty()) mostrarMensagem("Nenhuma diferença encontrada.")
-            val aplicar = Button(this@ProjetoIntegracaoActivity).apply {
-                text = "Aplicar integração"
-                setOnClickListener { aplicarIntegracao(ultima.id) }
+            analise.mudancas.forEach { mudanca -> adicionarMudanca(mudanca.caminho, mudanca.tipo) }
+            if (analise.mudancas.isEmpty()) mostrarMensagem("Nenhuma diferença encontrada.") else {
+                conteudo.addView(Button(this@ProjetoIntegracaoActivity).apply {
+                    text = "Aplicar integração"
+                    setOnClickListener { aplicarIntegracao(ultima.id) }
+                }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = 24 })
             }
-            conteudo.addView(aplicar, LinearLayout.LayoutParams(-1, -2).apply { topMargin = 24 })
         }
     }
 
-    private fun adicionarMudanca(caminho: String, tipo: String, chave: String) {
+    private fun adicionarMudanca(caminho: String, tipo: com.aibrain.app.brain.TipoMudanca) {
         val bloco = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, 8, 0, 8) }
-        bloco.addView(TextView(this).apply {
-            text = "$tipo · $caminho"; textSize = 15f; setTextColor(getColor(R.color.on_background)); setTypeface(null, Typeface.BOLD)
-        })
+        bloco.addView(TextView(this).apply { text = "${tipo.name} · $caminho"; textSize = 15f; setTextColor(getColor(R.color.on_background)); setTypeface(null, Typeface.BOLD) })
         val grupo = RadioGroup(this).apply { orientation = RadioGroup.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        val aceitar = RadioButton(this).apply { text = "Aceitar" }
-        val manter = RadioButton(this).apply { text = "Manter" }
-        val remover = RadioButton(this).apply { text = "Remover" }
+        val aceitar = RadioButton(this).apply { id = nextViewId++; text = "Aceitar" }
+        val manter = RadioButton(this).apply { id = nextViewId++; text = "Manter" }
+        val remover = RadioButton(this).apply { id = nextViewId++; text = "Remover" }
         grupo.addView(aceitar); grupo.addView(manter); grupo.addView(remover)
-        val tipoMudanca = runCatching { com.aibrain.app.brain.TipoMudanca.valueOf(tipo) }.getOrNull()
-        when (tipoMudanca) {
-            com.aibrain.app.brain.TipoMudanca.NOVO, com.aibrain.app.brain.TipoMudanca.MODIFICADO -> { aceitar.isChecked = true; decisoes[caminho] = DecisaoIntegracao.ACEITAR_CONTRIBUICAO }
-            else -> { manter.isChecked = true; decisoes[caminho] = DecisaoIntegracao.MANTER_ATUAL }
+        val decisaoInicial = when (tipo) {
+            com.aibrain.app.brain.TipoMudanca.NOVO, com.aibrain.app.brain.TipoMudanca.MODIFICADO -> DecisaoIntegracao.ACEITAR_CONTRIBUICAO
+            else -> DecisaoIntegracao.MANTER_ATUAL
         }
+        decisoes[caminho] = decisaoInicial
         grupo.setOnCheckedChangeListener { _, id -> decisoes[caminho] = when (id) {
             aceitar.id -> DecisaoIntegracao.ACEITAR_CONTRIBUICAO
             remover.id -> DecisaoIntegracao.REMOVER
             else -> DecisaoIntegracao.MANTER_ATUAL
         } }
-        if (aceitar.id == -1) { aceitar.id = 100000 + decisoes.size; manter.id = 200000 + decisoes.size; remover.id = 300000 + decisoes.size }
+        when (decisaoInicial) {
+            DecisaoIntegracao.ACEITAR_CONTRIBUICAO -> aceitar.isChecked = true
+            DecisaoIntegracao.MANTER_ATUAL -> manter.isChecked = true
+            DecisaoIntegracao.REMOVER -> remover.isChecked = true
+        }
         bloco.addView(grupo)
         conteudo.addView(bloco)
     }
@@ -108,9 +108,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
                 workspaceRepository.registrarHistorico(projetoId, "INTEGRACAO_APLICADA", "${resultado.arquivosAplicados.size} aceito(s), ${resultado.arquivosRemovidos.size} removido(s)")
                 Snackbar.make(conteudo, "Integração aplicada com sucesso.", Snackbar.LENGTH_LONG).show()
                 finish()
-            } else {
-                Snackbar.make(conteudo, "Integração não aplicada: ${resultado.erros.joinToString()}", Snackbar.LENGTH_LONG).show()
-            }
+            } else Snackbar.make(conteudo, "Integração não aplicada: ${resultado.erros.joinToString()}", Snackbar.LENGTH_LONG).show()
         }
     }
 
