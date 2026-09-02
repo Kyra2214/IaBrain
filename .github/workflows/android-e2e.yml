@@ -71,8 +71,9 @@ jobs:
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "emulator"
 
       # connectedDebugAndroidTest executes every class in app/src/androidTest,
-      # including GlobalNavigationE2ETest, MainActivitySmokeTest, and the
-      # local Room/routing coverage in AppDatabaseTest.
+      # including AIBrainFullFlowE2ETest, GlobalNavigationE2ETest,
+      # MainActivitySmokeTest, and the local Room/routing coverage in
+      # AppDatabaseTest.
       - name: Run both instrumentation E2E suites
         uses: reactivecircus/android-emulator-runner@v2
         with:
