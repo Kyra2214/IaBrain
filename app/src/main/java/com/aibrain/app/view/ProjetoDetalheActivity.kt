@@ -61,7 +61,7 @@ class ProjetoDetalheActivity : AppCompatActivity() {
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "${projeto.descricao}\nStack: ${projeto.plataforma ?: "não definida"} · ${projeto.complexidade}"; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_github) + "\n" + getString(R.string.projeto_github_desconectado); setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
             conteudo.addView(Button(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_validar); setOnClickListener { validar(arquivos) } })
-            if (contribuicoes.any { it.status != StatusContribuicao.INTEGRADA }) {
+            if (contribuicoes.any { it.status != StatusContribuicao.INTEGRADA.name }) {
                 conteudo.addView(Button(this@ProjetoDetalheActivity).apply { text = "🔀 Integrar contribuições"; setOnClickListener { startActivity(ProjetoIntegracaoActivity.criarIntent(this@ProjetoDetalheActivity, projetoId)) } })
             }
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_contribuicoes); textSize = 18f; setTextColor(getColor(R.color.on_background)); setPadding(0, 18, 0, 6) })
