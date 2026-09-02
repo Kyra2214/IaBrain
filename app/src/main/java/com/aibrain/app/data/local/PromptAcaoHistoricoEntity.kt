@@ -8,7 +8,7 @@ data class PromptAcaoHistoricoEntity(
     @androidx.room.PrimaryKey val id: String,
     val promptId: String?,
     val acao: String,
-    val iaId: String?,
-    val detalhe: String,
+    val iaId: String? = null,
+    val detalhe: String = "",
     val criadoEm: Long
 )
