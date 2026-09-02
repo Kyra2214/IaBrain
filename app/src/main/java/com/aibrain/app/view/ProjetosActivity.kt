@@ -57,6 +57,10 @@ class ProjetosActivity : AppCompatActivity() {
             text = "📋 Task Center"
             setOnClickListener { startActivity(Intent(this@ProjetosActivity, TaskCenterActivity::class.java)) }
         })
+        raiz.addView(Button(this).apply {
+            text = "🔐 Prompt de Segurança · GitHub"
+            setOnClickListener { startActivity(Intent(this@ProjetosActivity, GitHubSecurityPromptActivity::class.java)) }
+        })
         vazio = TextView(this).apply {
             text = getString(R.string.projetos_vazio)
             setTextColor(getColor(R.color.on_background_muted))
