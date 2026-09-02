@@ -15,6 +15,8 @@ import com.aibrain.app.R
 import com.aibrain.app.brain.DecisaoArquivo
 import com.aibrain.app.brain.DecisaoIntegracao
 import com.aibrain.app.brain.ProjetoIntegracaoEngine
+import com.aibrain.app.brain.StatusContribuicao
+import com.aibrain.app.brain.TipoMudanca
 import com.aibrain.app.brain.WorkspaceFileStore
 import com.aibrain.app.data.local.ProjetoWorkspaceRepository
 import com.aibrain.app.navigation.GlobalNavigation
@@ -47,10 +49,12 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
     private fun carregar() {
         lifecycleScope.launch {
             val contribuicoes = workspaceRepository.observarContribuicoes(projetoId).first()
-            if (contribuicoes.isEmpty()) { mostrarMensagem("Nenhuma contribuição disponível."); return@launch }
-            val ultima = contribuicoes.first()
+            val pendentes = contribuicoes.filter { it.status != StatusContribuicao.INTEGRADA }
+            if (pendentes.isEmpty()) { mostrarMensagem("Nenhuma contribuição pendente para integração."); return@launch }
+            val ultima = pendentes.first()
             if (!store.workspaceExiste(projetoId)) {
                 store.inicializarWorkspace(projetoId, ultima.id)
+                workspaceRepository.atualizarStatusContribuicao(ultima.id, StatusContribuicao.INTEGRADA)
                 mostrarMensagem("A primeira contribuição foi definida como workspace base.")
                 return@launch
             }
@@ -73,7 +77,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
         }
     }
 
-    private fun adicionarMudanca(caminho: String, tipo: com.aibrain.app.brain.TipoMudanca) {
+    private fun adicionarMudanca(caminho: String, tipo: TipoMudanca) {
         val bloco = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, 8, 0, 8) }
         bloco.addView(TextView(this).apply { text = "${tipo.name} · $caminho"; textSize = 15f; setTextColor(getColor(R.color.on_background)); setTypeface(null, Typeface.BOLD) })
         val grupo = RadioGroup(this).apply { orientation = RadioGroup.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
@@ -82,7 +86,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
         val remover = RadioButton(this).apply { id = nextViewId++; text = "Remover" }
         grupo.addView(aceitar); grupo.addView(manter); grupo.addView(remover)
         val decisaoInicial = when (tipo) {
-            com.aibrain.app.brain.TipoMudanca.NOVO, com.aibrain.app.brain.TipoMudanca.MODIFICADO -> DecisaoIntegracao.ACEITAR_CONTRIBUICAO
+            TipoMudanca.NOVO, TipoMudanca.MODIFICADO -> DecisaoIntegracao.ACEITAR_CONTRIBUICAO
             else -> DecisaoIntegracao.MANTER_ATUAL
         }
         decisoes[caminho] = decisaoInicial
@@ -104,6 +108,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val resultado = store.aplicar(projetoId, contribuicaoId, decisoes.map { (caminho, decisao) -> DecisaoArquivo(caminho, decisao) })
             if (resultado.sucesso) {
+                workspaceRepository.atualizarStatusContribuicao(contribuicaoId, StatusContribuicao.INTEGRADA)
                 workspaceRepository.salvarIntegracao(projetoId, listOf(contribuicaoId), "CONCLUIDA", emptyList())
                 workspaceRepository.registrarHistorico(projetoId, "INTEGRACAO_APLICADA", "${resultado.arquivosAplicados.size} aceito(s), ${resultado.arquivosRemovidos.size} removido(s)")
                 Snackbar.make(conteudo, "Integração aplicada com sucesso.", Snackbar.LENGTH_LONG).show()
