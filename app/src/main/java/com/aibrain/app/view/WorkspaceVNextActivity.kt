@@ -18,6 +18,7 @@ import com.aibrain.app.data.local.BrowserContextoEntity
 import com.aibrain.app.data.local.ProjetoMemoriaEntity
 import com.aibrain.app.data.local.ProjetoSkillEntity
 import com.aibrain.app.data.local.ProjetoTarefaEntity
+import com.aibrain.app.data.local.PromptAcaoHistoricoEntity
 import com.aibrain.app.data.local.WorkspaceVNextRepository
 import com.aibrain.app.navigation.GlobalNavigation
 import com.aibrain.app.repository.CatalogoRepository
@@ -74,7 +75,7 @@ class WorkspaceVNextActivity : AppCompatActivity() {
             copiar(prompt)
             lifecycleScope.launch {
                 repository.registrarAcao(
-                    com.aibrain.app.data.local.PromptAcaoHistoricoEntity(
+                    PromptAcaoHistoricoEntity(
                         id = UUID.randomUUID().toString(),
                         promptId = "workspace",
                         acao = PromptActionType.COPY.name,
@@ -99,29 +100,29 @@ class WorkspaceVNextActivity : AppCompatActivity() {
         }
         section("8 · Orquestração Multi-IA", "O usuário escolhe as IAs, cria o plano e pode abrir cada IA no Browser. Nenhum prompt é enviado automaticamente.")
         button("🧩 Selecionar IAs e abrir plano") { escolherIAs() }
-        section("9 · Skills / Workflows", "Skills ficam persistidas no Room e execução gera uma tarefa auditável.")
+        section("9 · Skills / Workflows", "Skills persistidas no Room viram workflows executáveis por etapas, sempre com aprovação/avanço manual.")
         button("⚙️ Registrar skill padrão") {
             if (pid == null) toast("Abra pelo detalhe de um projeto")
             else lifecycleScope.launch {
                 val now = System.currentTimeMillis()
-                repository.salvarSkill(ProjetoSkillEntity(UUID.randomUUID().toString(), pid, "Revisão local", "Revisão segura do workspace", listOf("Ler contexto", "Analisar alterações", "Gerar relatório", "Aguardar aprovação"), true, now, now))
+                repository.salvarSkill(
+                    ProjetoSkillEntity(
+                        UUID.randomUUID().toString(),
+                        pid,
+                        "Revisão local",
+                        "Revisão segura do workspace",
+                        listOf("Ler contexto", "Analisar alterações", "Gerar relatório", "Aguardar aprovação"),
+                        true,
+                        now,
+                        now
+                    )
+                )
                 toast("Skill registrada no Room")
                 render()
             }
         }
-        button("▶ Preparar execução da skill") {
-            if (pid == null) toast("Abra pelo detalhe de um projeto")
-            else lifecycleScope.launch {
-                val skill = repository.skillsAtivas(pid).first().firstOrNull()
-                if (skill == null) toast("Registre uma skill primeiro")
-                else {
-                    val now = System.currentTimeMillis()
-                    repository.salvarTarefa(ProjetoTarefaEntity(UUID.randomUUID().toString(), pid, "Executar skill: ${skill.nome}", skill.descricao, TaskStatus.WAITING_USER.name, TaskPriority.NORMAL.name, now, now))
-                    toast("Skill preparada; aprovação continua manual")
-                    render()
-                }
-            }
-        }
+        button("▶ Iniciar workflow da skill") { iniciarWorkflowSkill() }
+        button("📋 Ver workflows no Task Center") { startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java)) }
         section("10 · Memória de projeto", "Memórias ficam persistidas no Room e entram no contexto do Chat.")
         button("🧠 Registrar memória") {
             if (pid == null) toast("Abra pelo detalhe de um projeto")
@@ -147,6 +148,56 @@ class WorkspaceVNextActivity : AppCompatActivity() {
                     render()
                 }
             }
+        }
+    }
+
+    /** Cria um workflow real e auditável: cada passo vira uma tarefa WAITING_USER no Room. */
+    private fun iniciarWorkflowSkill() {
+        val pid = projectId
+        if (pid == null) {
+            toast("Abra pelo detalhe de um projeto")
+            return
+        }
+        lifecycleScope.launch {
+            val skills = repository.skillsAtivas(pid).first()
+            if (skills.isEmpty()) {
+                toast("Registre uma skill primeiro")
+                return@launch
+            }
+            val nomes = skills.map { it.nome }.toTypedArray()
+            AlertDialog.Builder(this@WorkspaceVNextActivity)
+                .setTitle("Escolha a skill")
+                .setItems(nomes) { _, which ->
+                    lifecycleScope.launch {
+                        val skill = skills[which]
+                        val contexto = buildProjectPrompt()
+                        val run = IaBrainWorkspaceOrchestrator.runSkill(
+                            SkillDefinition(skill.id, skill.nome, skill.passos),
+                            contexto
+                        )
+                        val runId = UUID.randomUUID().toString()
+                        val now = System.currentTimeMillis()
+                        run.steps.forEachIndexed { index, step ->
+                            val status = if (index == 0) TaskStatus.WAITING_USER else TaskStatus.PENDING
+                            repository.salvarTarefa(
+                                ProjetoTarefaEntity(
+                                    id = UUID.randomUUID().toString(),
+                                    projetoId = pid,
+                                    titulo = "Workflow $runId · ${index + 1}/${run.steps.size}: $step",
+                                    detalhe = "Skill: ${skill.nome}. Contexto preparado localmente. Avance esta etapa manualmente no Task Center. Execução automática/envio de prompt está desabilitado.",
+                                    status = status.name,
+                                    prioridade = if (index == 0) TaskPriority.HIGH.name else TaskPriority.NORMAL.name,
+                                    criadoEm = now,
+                                    atualizadoEm = now
+                                )
+                            )
+                        }
+                        toast("Workflow criado com ${run.steps.size} etapa(s)")
+                        startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java))
+                    }
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
     }
 
