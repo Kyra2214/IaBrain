@@ -6,11 +6,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.aibrain.app.brain.BrowserOpenMode
+import com.aibrain.app.brain.IAOpenContract
+import com.aibrain.app.brain.IAUrlResolver
+import com.aibrain.app.brain.PrefillCapability
+import com.aibrain.app.brain.UrlResolutionStatus
+import com.aibrain.app.browser.BrowserActivity
 import com.aibrain.app.R
 import com.aibrain.app.data.PromptDadosLocaisRepository
 import com.aibrain.app.databinding.ActivityDetalhePromptBinding
 import com.aibrain.app.model.Prompt
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 /**
  * Tela de detalhes de UM prompt da Biblioteca (Fase 16.5).
@@ -87,6 +95,18 @@ class DetalhePromptActivity : AppCompatActivity() {
         binding.btnCompartilharPrompt.setOnClickListener {
             compartilharPrompt(prompt)
         }
+        binding.btnEditarPrompt.setOnClickListener {
+            startActivity(Intent(this, CriadorPromptsActivity::class.java).apply {
+                putExtra(CriadorPromptsActivity.EXTRA_PROMPT, prompt)
+            })
+        }
+        binding.btnDuplicarPrompt.setOnClickListener {
+            startActivity(Intent(this, CriadorPromptsActivity::class.java).apply {
+                putExtra(CriadorPromptsActivity.EXTRA_PROMPT, prompt)
+                putExtra(CriadorPromptsActivity.EXTRA_DUPLICAR, true)
+            })
+        }
+        binding.btnAbrirIaPrompt.setOnClickListener { abrirIa(prompt) }
     }
 
     /** Fase 16.15 — Alternar/exibir estado de favorito deste prompt. */
@@ -108,6 +128,25 @@ class DetalhePromptActivity : AppCompatActivity() {
         binding.btnFavoritoPrompt.setImageResource(
             if (favorito) R.drawable.ic_star_filled else R.drawable.ic_star_outline
         )
+    }
+
+    private fun abrirIa(prompt: Prompt) {
+        val id = prompt.iaDestinoId
+        val nome = prompt.iaDestinoNome
+        if (id.isNullOrBlank() || nome.isNullOrBlank()) {
+            Snackbar.make(binding.root, getString(R.string.prompt_builder_sem_ia), Snackbar.LENGTH_LONG).show()
+            return
+        }
+        lifecycleScope.launch {
+            val contrato = IAUrlResolver(applicationContext).resolve(
+                IAOpenContract(id, nome, null, UrlResolutionStatus.NOT_FOUND, binding.edtTemplate.text.toString(), PrefillCapability.UNKNOWN, false, BrowserOpenMode.OPEN_ONLY)
+            )
+            if (contrato.urlStatus == UrlResolutionStatus.RESOLVED) {
+                startActivity(BrowserActivity.criarIntent(this@DetalhePromptActivity, contrato))
+            } else {
+                Snackbar.make(binding.root, getString(R.string.prompt_builder_sem_ia), Snackbar.LENGTH_LONG).show()
+            }
+        }
     }
 
     /**

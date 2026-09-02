@@ -91,7 +91,8 @@ class BrowserAdapter(
 
     private fun bindAba(holder: AbaViewHolder, item: ItemBarra.Aba) {
         val aba = item.aba
-        holder.binding.txtAbaItem.text = aba.nomeIA
+        holder.binding.txtAbaItem.text = aba.tituloPagina ?: aba.nomeIA.ifBlank { "Nova aba" }
+        holder.binding.progressAbaItem.visibility = if (aba.carregando) android.view.View.VISIBLE else android.view.View.GONE
         holder.binding.imgAbaFixada.visibility = if (aba.fixada) android.view.View.VISIBLE else android.view.View.GONE
         holder.binding.cardAbaItem.setCardBackgroundColor(
             ContextCompat.getColor(

@@ -1,5 +1,6 @@
 package com.aibrain.app.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -9,6 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aibrain.app.R
+import com.aibrain.app.MainActivity
+import com.aibrain.app.brain.BrainChatContext
 import com.aibrain.app.brain.recomendar
 import com.aibrain.app.brain.ContextualPromptGenerator
 import com.aibrain.app.brain.PromptGenerationSpecBuilder
@@ -67,6 +70,7 @@ class AIBrainActivity : AppCompatActivity() {
     private var promptAtual: String = ""
     private var iaSelecionadaId: String? = null
     private var contratoIA: IAOpenContract? = null
+    private var promptPendente: com.aibrain.app.brain.PromptGenerationSpec? = null
 
     private var catalogoCompleto: List<IA> = emptyList()
 
@@ -98,6 +102,16 @@ class AIBrainActivity : AppCompatActivity() {
         binding.btnPerguntar.setOnClickListener { processarPergunta() }
         binding.btnCopiarPrompt.setOnClickListener { copiarPromptAtual() }
         binding.btnAbrirIA.setOnClickListener { abrirIASelecionada() }
+        binding.btnAbrirIARecomendacao.setOnClickListener { abrirIASelecionada() }
+        binding.btnCriarPromptChat.setOnClickListener { abrirPromptBuilderComContexto() }
+        binding.btnEscolherOutraIA.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        intent.getStringExtra(BrainChatContext.EXTRA_TEXTO_INICIAL)?.let { texto ->
+            binding.editPergunta.setText(texto)
+            binding.editPergunta.setSelection(texto.length)
+        }
 
         carregarCatalogo()
     }
@@ -274,62 +288,119 @@ class AIBrainActivity : AppCompatActivity() {
         }
     }
 
-    /** Fase 9.1 + 9.2 — processa o texto livre e exibe a recomendação estruturada. */
+    /** Orquestra texto livre → comando → capacidades → ranking → recomendação. */
     private fun processarPergunta() {
-        val texto = binding.editPergunta.text?.toString().orEmpty()
-        gerarPromptContextual(texto)
-        binding.containerResultadoFiltros.visibility = View.GONE
-        val recomendacao = catalogoCompleto.recomendar(texto)
-        val categorias = recomendacao.categoriasDetectadas
-
-        if (categorias.isEmpty()) {
-            binding.containerResultado.visibility = View.GONE
-            binding.txtCategoriaDetectada.visibility = View.GONE
-            binding.txtSemResultado.visibility = View.VISIBLE
-            // Fase 13.4 — sugere termos reconhecidos para ajudar o usuário a reformular a pergunta.
-            binding.txtSemResultado.text = if (recomendacao.sugestaoTermos.isNotEmpty()) {
-                getString(R.string.brain_sem_resultado) + "\n\n" +
-                    getString(R.string.brain_sugestao_termos, recomendacao.sugestaoTermos.joinToString(", "))
-            } else {
-                getString(R.string.brain_sem_resultado)
-            }
-            return
-        }
-
-        binding.txtSemResultado.visibility = View.GONE
-        binding.txtCategoriaDetectada.visibility = View.VISIBLE
-        // Fase 13.3 — quando há 2 categorias detectadas, mostra as duas (ex: "🎥 Vídeo, 🎙️ Voz").
-        val rotuloCategorias = categorias.joinToString(", ") { "${it.emoji} ${it.rotulo}" }
-        binding.txtCategoriaDetectada.text =
-            getString(R.string.brain_categoria_detectada, rotuloCategorias)
-        binding.containerResultado.visibility = View.VISIBLE
-
-        exibirResultado(binding.recyclerMelhor, binding.txtMelhorVazio, adapterMelhor, listOfNotNull(recomendacao.melhorOpcao))
-        exibirResultado(binding.recyclerSegunda, binding.txtSegundaVazio, adapterSegunda, listOfNotNull(recomendacao.segundaOpcao))
-        exibirResultado(binding.recyclerGratuitas, binding.txtGratuitasVazio, adapterGratuitas, recomendacao.alternativasGratuitas)
-
-        atualizarFavoritosNasListas()
-    }
-
-    private fun gerarPromptContextual(texto: String) {
+        val texto = binding.editPergunta.text?.toString()?.trim().orEmpty()
+        if (texto.isBlank()) return
+        binding.txtProcessamentoChat.visibility = View.VISIBLE
+        binding.txtProcessamentoChat.text = getString(R.string.chat_processando)
+        binding.btnPerguntar.isEnabled = false
+        binding.containerRespostaChat.visibility = View.GONE
+        binding.containerResultado.visibility = View.GONE
         binding.containerPromptGerado.visibility = View.GONE
+        binding.txtSemResultado.visibility = View.GONE
+        binding.containerResultadoFiltros.visibility = View.GONE
         lifecycleScope.launch {
             try {
-                val request = commandResolver.resolve(texto) ?: return@launch
+                binding.txtProcessamentoChat.text = getString(R.string.chat_encontrando)
+                val request = commandResolver.resolve(texto)
+                val categorias = catalogoCompleto.recomendar(texto).categoriasDetectadas
+                if (request == null) {
+                    mostrarPedidoAmbiguo(texto, categorias)
+                    return@launch
+                }
+
                 val decision = com.aibrain.app.brain.LocalAIRouter.route(request, commandResolver.candidates())
-                val spec = PromptGenerationSpecBuilder.from(request, decision)
-                val prompt = ContextualPromptGenerator.generate(spec)
-                promptRepository.salvar(spec.toEntity(prompt))
-                promptAtual = prompt
-                iaSelecionadaId = spec.iaId
-                contratoIA = IAOpenContract(spec.iaId, spec.iaNome, null, UrlResolutionStatus.NOT_FOUND, prompt)
-                binding.txtPromptMeta.text = "IA: ${spec.iaNome} · Comando: ${spec.comando} · Capacidades: ${spec.capacidades.joinToString() }"
-                binding.txtPromptGerado.text = prompt
-                binding.containerPromptGerado.visibility = View.VISIBLE
+                val selecionada = decision.selectedAI?.let { candidata -> catalogoCompleto.firstOrNull { it.id == candidata.iaId } }
+                val possuiCorrespondencia = decision.status == com.aibrain.app.brain.RoutingStatus.SELECTED &&
+                    decision.score?.let { it.capabilityCompatibility > 0 || it.commandCompatibility > 0 } == true &&
+                    selecionada != null
+                if (!possuiCorrespondencia) {
+                    mostrarFalhaRecomendacao(texto)
+                    return@launch
+                }
+                val ia = requireNotNull(selecionada)
+
+                promptPendente = PromptGenerationSpecBuilder.from(request, decision)
+                promptAtual = ""
+                iaSelecionadaId = ia.id
+                contratoIA = IAOpenContract(ia.id, ia.nome, null, UrlResolutionStatus.NOT_FOUND, "")
+                binding.containerRespostaChat.visibility = View.VISIBLE
+                binding.txtMensagemUsuario.text = getString(R.string.chat_pedido_usuario, texto)
+                binding.txtRespostaIaBrain.text = getString(R.string.chat_resposta_recomendacao, ia.nome)
+                binding.txtComandoResolvido.visibility = View.VISIBLE
+                binding.txtComandoResolvido.text = getString(
+                    R.string.chat_comando_resolvido,
+                    categorias.joinToString(", ") { it.rotulo }.ifBlank { request.canonicalCommand.orEmpty() },
+                    request.canonicalCommand.orEmpty()
+                )
+                binding.txtCompatibilidade.visibility = View.VISIBLE
+                binding.txtCompatibilidade.text = getString(R.string.chat_compatibilidade, nivelCompatibilidade(decision.confidence))
+                binding.txtCategoriaDetectada.visibility = View.VISIBLE
+                binding.txtCategoriaDetectada.text = decision.reasons.joinToString("\n") { "✓ $it" }
+                val alternativas = decision.alternatives.mapNotNull { score -> catalogoCompleto.firstOrNull { it.id == score.candidate.iaId } }.take(3)
+                exibirResultado(binding.recyclerMelhor, binding.txtMelhorVazio, adapterMelhor, listOf(ia))
+                exibirResultado(binding.recyclerSegunda, binding.txtSegundaVazio, adapterSegunda, alternativas)
+                exibirResultado(binding.recyclerGratuitas, binding.txtGratuitasVazio, adapterGratuitas, alternativas.filter { it.gratuita })
+                binding.containerResultado.visibility = View.VISIBLE
+                atualizarFavoritosNasListas()
             } catch (_: Exception) {
-                binding.containerPromptGerado.visibility = View.GONE
+                mostrarFalhaRecomendacao(texto)
+            } finally {
+                binding.txtProcessamentoChat.visibility = View.GONE
+                binding.btnPerguntar.isEnabled = catalogoCompleto.isNotEmpty()
             }
         }
+    }
+
+    private fun mostrarPedidoAmbiguo(texto: String, categorias: List<Categoria>) {
+        binding.containerRespostaChat.visibility = View.VISIBLE
+        binding.txtMensagemUsuario.text = getString(R.string.chat_pedido_usuario, texto)
+        binding.txtRespostaIaBrain.text = getString(R.string.chat_sem_comando)
+        binding.txtComandoResolvido.visibility = View.GONE
+        binding.txtCompatibilidade.visibility = View.GONE
+        binding.txtCategoriaDetectada.visibility = if (categorias.isEmpty()) View.GONE else View.VISIBLE
+        binding.txtCategoriaDetectada.text = categorias.joinToString(", ") { it.rotulo }
+    }
+
+    private fun mostrarFalhaRecomendacao(texto: String) {
+        binding.containerRespostaChat.visibility = View.VISIBLE
+        binding.txtMensagemUsuario.text = getString(R.string.chat_pedido_usuario, texto)
+        binding.txtRespostaIaBrain.text = if (catalogoCompleto.isEmpty()) getString(R.string.chat_catalogo_indisponivel) else getString(R.string.chat_sem_ia)
+        binding.txtComandoResolvido.visibility = View.GONE
+        binding.txtCompatibilidade.visibility = View.GONE
+        binding.txtCategoriaDetectada.visibility = View.GONE
+    }
+
+    private fun criarPromptPendente() {
+        val spec = promptPendente ?: return
+        lifecycleScope.launch {
+            val prompt = ContextualPromptGenerator.generate(spec)
+            promptRepository.salvar(spec.toEntity(prompt))
+            promptAtual = prompt
+            contratoIA = contratoIA?.copy(generatedPrompt = prompt)
+            binding.txtPromptMeta.text = getString(R.string.chat_prompt_preparado) + " · ${spec.iaNome} · ${spec.comando}"
+            binding.txtPromptGerado.text = prompt
+            binding.containerPromptGerado.visibility = View.VISIBLE
+            binding.btnAbrirIARecomendacao.visibility = View.VISIBLE
+        }
+    }
+
+    private fun abrirPromptBuilderComContexto() {
+        val spec = promptPendente ?: return
+        startActivity(Intent(this, CriadorPromptsActivity::class.java).apply {
+            putExtra(CriadorPromptsActivity.EXTRA_TEXTO_INICIAL, ContextualPromptGenerator.generate(spec))
+            putExtra(CriadorPromptsActivity.EXTRA_OBJETIVO, spec.objetivo)
+            putExtra(CriadorPromptsActivity.EXTRA_IA_ID, spec.iaId)
+            putExtra(CriadorPromptsActivity.EXTRA_IA_NOME, spec.iaNome)
+            putExtra(CriadorPromptsActivity.EXTRA_COMANDO, spec.comando)
+        })
+    }
+
+    private fun nivelCompatibilidade(confidence: Double): String = when {
+        confidence >= 0.35 -> "Alta"
+        confidence >= 0.1 -> "Boa"
+        else -> "Compatível"
     }
 
     private fun abrirIASelecionada() {
@@ -364,4 +435,5 @@ class AIBrainActivity : AppCompatActivity() {
         recycler.visibility = if (lista.isEmpty()) View.GONE else View.VISIBLE
         adapter.submitList(lista)
     }
+
 }

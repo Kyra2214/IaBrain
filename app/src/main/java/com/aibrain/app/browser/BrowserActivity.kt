@@ -10,6 +10,10 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.content.Context
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -70,7 +74,7 @@ class BrowserActivity : AppCompatActivity() {
     private lateinit var tabManager: BrowserTabManager
     private lateinit var adapter: BrowserAdapter
 	private lateinit var historyManager: BrowserHistoryManager
-	private var prefillTentado = false
+	private val prefillTentado = mutableSetOf<String>()
 
     private var callbackUploadArquivo: ValueCallback<Array<Uri>>? = null
     private val launcherUploadArquivo: ActivityResultLauncher<String> =
@@ -121,7 +125,7 @@ class BrowserActivity : AppCompatActivity() {
             imagemCache = ImagemCache(applicationContext),
             aoSelecionarAba = { aba -> selecionarAba(aba.id) },
             aoFecharAba = { aba -> fecharAba(aba.id) },
-            aoNovaAba = { finish() }, // ASSUMINDO: volta ao catálogo para escolher a próxima IA (cadastro de aba sem IA é Fase 21.9)
+            aoNovaAba = { criarNovaAbaManual() },
             aoFixarAba = { aba ->
                 tabManager.alternarFixada(aba.id)
                 adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
@@ -135,6 +139,19 @@ class BrowserActivity : AppCompatActivity() {
         binding.recyclerAbasBrowser.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerAbasBrowser.adapter = adapter
+        binding.btnBrowserVoltar.setOnClickListener { navegarVoltar() }
+        binding.btnBrowserAvancar.setOnClickListener { tabManager.webViewAtiva()?.goForward() }
+        binding.btnBrowserRecarregar.setOnClickListener { tabManager.webViewAtiva()?.reload() }
+        binding.editBrowserEndereco.setOnEditorActionListener { _, _, _ -> carregarEnderecoDigitado(); true }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!navegarVoltar()) {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                    isEnabled = true
+                }
+            }
+        })
 
         restaurarSessaoSalva()
         if (intent.getStringExtra(EXTRA_URL) != null) {
@@ -181,27 +198,64 @@ class BrowserActivity : AppCompatActivity() {
 
         val aba = tabManager.criarAba(nomeIA, url, iconeIA)
         configurarWebView(tabManager.obterWebView(aba.id) ?: return, aba.id)
-        prefillTentado = false
+        prefillTentado.remove(aba.id)
         tabManager.obterWebView(aba.id)?.tag = request
         tabManager.obterWebView(aba.id)?.loadUrl(url)
         selecionarAba(aba.id)
+    }
+
+    private fun criarNovaAbaManual() {
+        val aba = tabManager.criarAba("Nova aba", "about:blank", "")
+        val webView = tabManager.obterWebView(aba.id) ?: return
+        configurarWebView(webView, aba.id)
+        selecionarAba(aba.id)
+        binding.editBrowserEndereco.setText("")
+    }
+
+    private fun carregarEnderecoDigitado(): Boolean {
+        val texto = binding.editBrowserEndereco.text?.toString()?.trim().orEmpty()
+        val endereco = if (texto.startsWith("https://") || texto.startsWith("http://")) texto else "https://$texto"
+        val uri = runCatching { Uri.parse(endereco) }.getOrNull()
+        if (uri?.let { it.scheme in setOf("http", "https") && !it.host.isNullOrBlank() } != true) {
+            Snackbar.make(binding.root, com.aibrain.app.R.string.browser_endereco_invalido, Snackbar.LENGTH_SHORT).show()
+            return false
+        }
+        tabManager.webViewAtiva()?.loadUrl(uri.toString())
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
+            ?.hideSoftInputFromWindow(binding.editBrowserEndereco.windowToken, 0)
+        return true
+    }
+
+    private fun navegarVoltar(): Boolean {
+        val webView = tabManager.webViewAtiva() ?: return false
+        if (!webView.canGoBack()) return false
+        webView.goBack()
+        return true
     }
 
     private fun selecionarAba(id: String) {
         tabManager.ativarNaTela(id, binding.containerWebViewBrowser) { webView ->
             configurarWebView(webView, id)
         } ?: return
-        // Fase 24 — a barra superior foi removida; a seleção da aba só precisa
-        // atualizar a barra de abas. Voltar/avançar no histórico é feito pelos
-        // gestos de navegação do próprio Android.
         adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
+        atualizarControlesNavegacao()
+    }
+
+    private fun atualizarControlesNavegacao() {
+        val webView = tabManager.webViewAtiva()
+        binding.btnBrowserVoltar.isEnabled = webView?.canGoBack() == true
+        binding.btnBrowserAvancar.isEnabled = webView?.canGoForward() == true
+        val url = webView?.url.orEmpty()
+        if (binding.editBrowserEndereco.text?.toString() != url && !binding.editBrowserEndereco.hasFocus()) {
+            binding.editBrowserEndereco.setText(url.takeUnless { it == "about:blank" }.orEmpty())
+        }
     }
 
     private fun fecharAba(id: String) {
         tabManager.removerAba(id)
         val proximaAtiva = tabManager.idAbaAtiva()
         if (proximaAtiva == null) {
-            finish()
+            criarNovaAbaManual()
             return
         }
         selecionarAba(proximaAtiva)
@@ -268,6 +322,13 @@ class BrowserActivity : AppCompatActivity() {
         WebViewSecurityPolicy.apply(webView)
 
         webView.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                tabManager.atualizarAba(idAba) { it.copy(carregando = true, urlAtual = url ?: it.urlAtual) }
+                if (tabManager.idAbaAtiva() == idAba) binding.progressBrowserAba.visibility = View.VISIBLE
+                adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
+            }
+
             override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
                 val uri = request?.url ?: return true
                 // O navegador interno só renderiza páginas HTTPS. Esquemas como
@@ -278,11 +339,12 @@ class BrowserActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                tabManager.atualizarAba(idAba) { it.copy(carregando = false) }
                 tentarPrefillUmaVez(view, idAba)
                 tabManager.sincronizarEstadoNavegacao(idAba)
                 if (tabManager.idAbaAtiva() == idAba) {
-                    // Fase 24 — barra superior removida; nada a atualizar além
-                    // da barra de abas abaixo do WebView.
+                    binding.progressBrowserAba.visibility = View.GONE
+                    atualizarControlesNavegacao()
                 }
                 adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
             }
@@ -313,6 +375,33 @@ class BrowserActivity : AppCompatActivity() {
         }
 
         webView.webChromeClient = object : WebChromeClient() {
+            override fun onReceivedTitle(view: WebView?, title: String?) {
+                super.onReceivedTitle(view, title)
+                title?.trim()?.takeIf { it.isNotBlank() && it != "about:blank" }?.let { titulo ->
+                    tabManager.atualizarAba(idAba) { it.copy(tituloPagina = titulo.take(60)) }
+                }
+                adapter.atualizar(tabManager.obterAbas(), tabManager.idAbaAtiva())
+            }
+
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                if (tabManager.idAbaAtiva() == idAba) {
+                    binding.progressBrowserAba.visibility = if (newProgress < 100) View.VISIBLE else View.GONE
+                }
+            }
+
+            override fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: android.os.Message?): Boolean {
+                if (!isUserGesture || resultMsg == null) return false
+                val aba = tabManager.criarAba("Nova aba", "about:blank", "")
+                val novaWebView = tabManager.obterWebView(aba.id) ?: return false
+                configurarWebView(novaWebView, aba.id)
+                val transport = resultMsg.obj as? WebView.WebViewTransport ?: return false
+                transport.webView = novaWebView
+                resultMsg.sendToTarget()
+                selecionarAba(aba.id)
+                return true
+            }
+
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -346,9 +435,9 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     private fun tentarPrefillUmaVez(view: WebView?, idAba: String) {
-        if (prefillTentado || view == null || tabManager.idAbaAtiva() != idAba) return
+        if (view == null || tabManager.idAbaAtiva() != idAba || idAba in prefillTentado) return
         val request = view.tag as? PrefillRequest ?: return
-        prefillTentado = true
+        prefillTentado += idAba
         if (request.capability != PrefillCapability.CONFIRMED || request.mode != BrowserOpenMode.PREFILL_ONLY) return
         PrefillAdapterRegistry.tryPrefill(view, request.prompt)
     }

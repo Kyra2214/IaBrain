@@ -53,6 +53,8 @@ class BrowserHistoryManager(context: Context) {
             obj.put("url_atual", aba.urlAtual)
             obj.put("icone_ia", aba.iconeIA)
             obj.put("url_inicial", aba.urlInicial)
+            obj.put("titulo_pagina", aba.tituloPagina)
+            obj.put("carregando", aba.carregando)
             obj.put("historico", JSONArray(aba.historico))
             obj.put("pode_voltar", aba.podeVoltar)
             obj.put("pode_avancar", aba.podeAvancar)
@@ -92,6 +94,8 @@ class BrowserHistoryManager(context: Context) {
                 urlAtual = urlAtual,
                 iconeIA = obj.optString("icone_ia"),
                 urlInicial = obj.optString("url_inicial", urlAtual),
+                tituloPagina = obj.optString("titulo_pagina").takeIf { it.isNotBlank() },
+                carregando = obj.optBoolean("carregando", false),
                 historico = (0 until historicoArray.length()).map { historicoArray.getString(it) },
                 podeVoltar = obj.optBoolean("pode_voltar", false),
                 podeAvancar = obj.optBoolean("pode_avancar", false),

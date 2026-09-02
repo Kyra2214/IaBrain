@@ -1,5 +1,8 @@
 package com.aibrain.app.view
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +10,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aibrain.app.brain.EstagioConstrutorPrompt
+import com.aibrain.app.brain.IAUrlResolver
+import com.aibrain.app.brain.BrowserOpenMode
+import com.aibrain.app.brain.IAOpenContract
+import com.aibrain.app.brain.PrefillCapability
+import com.aibrain.app.brain.PromptBuilderDraft
 import com.aibrain.app.brain.SessaoConstrutorPrompt
 import com.aibrain.app.data.AssistenteIARepository
 import com.aibrain.app.groq.GroqClient
@@ -30,11 +38,15 @@ import com.aibrain.app.databinding.ActivityCriadorPromptsBinding
 import com.aibrain.app.model.IA
 import com.aibrain.app.model.MensagemChat
 import com.aibrain.app.model.Prompt
+import com.aibrain.app.model.CategoriaPrompt
+import com.aibrain.app.browser.BrowserActivity
+import com.google.android.material.snackbar.Snackbar
 import com.aibrain.app.repository.CatalogoRepository
 import com.aibrain.app.repository.PromptRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 /**
  * Aba "🤖 Criador de Prompts" (Fase 17.1/17.2) — Assistente Inteligente de
@@ -64,6 +76,8 @@ class CriadorPromptsActivity : AppCompatActivity() {
     private lateinit var assistenteIARepositorio: AssistenteIARepository
     /** Fase 25 — evita enviar duas vezes enquanto a Groq ainda está respondendo. */
     private var gerandoComIA = false
+    private var draft = PromptBuilderDraft()
+    private var sincronizandoEditor = false
 
     /** Fase 25 — o modo "Gerar com IA" fica ligado/desligado pelo chip do cabeçalho. */
     private val modoIAAtivo: Boolean
@@ -84,11 +98,161 @@ class CriadorPromptsActivity : AppCompatActivity() {
 
         configurarConversa()
         configurarEntrada()
+        configurarEditorProfissional()
         configurarAcoesResultado()
         binding.btnVoltarCriadorPrompts.setOnClickListener { finish() }
         intent.getStringExtra(EXTRA_COMANDO)?.let { binding.editMensagemConversa.setText(it); binding.editMensagemConversa.setSelection(it.length) }
 
         carregarDados()
+    }
+
+    private fun configurarEditorProfissional() {
+        binding.spinnerCategoriaPrompt.adapter = android.widget.ArrayAdapter(
+            this, android.R.layout.simple_spinner_dropdown_item,
+            CategoriaPrompt.entries.map { "${it.emoji} ${it.rotulo}" }
+        )
+        binding.editPromptTitulo.addTextChangedListener { atualizarDraft() }
+        binding.editPromptObjetivo.addTextChangedListener { atualizarDraft() }
+        binding.editPromptContexto.addTextChangedListener { atualizarDraft() }
+        binding.editPromptTarefa.addTextChangedListener { atualizarDraft() }
+        binding.editPromptRestricoes.addTextChangedListener { atualizarDraft() }
+        binding.editPromptFormato.addTextChangedListener { atualizarDraft() }
+        binding.editPromptLivre.addTextChangedListener { atualizarDraft() }
+        binding.editPromptVariaveis.addTextChangedListener { atualizarDraft() }
+        binding.editPromptComando.addTextChangedListener { atualizarDraft() }
+        binding.spinnerCategoriaPrompt.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) = Unit
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                draft = draft.copy(categoria = CategoriaPrompt.entries.getOrNull(position) ?: CategoriaPrompt.ENGENHARIA_DE_PROMPT)
+            }
+        }
+        binding.spinnerIaDestino.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) = Unit
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val ia = catalogoIA.getOrNull(position - 1)
+                draft = draft.copy(iaDestinoId = ia?.id, iaDestinoNome = ia?.nome)
+            }
+        }
+        binding.btnDetectarVariaveis.setOnClickListener { draft = draft.detectarVariaveis(); renderEditor() }
+        binding.btnSalvarPromptEditor.setOnClickListener { salvarPromptEditor() }
+        binding.btnCopiarPromptEditor.setOnClickListener { copiarPreview() }
+        binding.btnAbrirIaPromptEditor.setOnClickListener { abrirIaDoEditor() }
+
+        val prompt = obterPromptDoIntent()
+        draft = if (prompt != null) {
+            PromptBuilderDraft.fromPrompt(prompt, intent.getBooleanExtra(EXTRA_DUPLICAR, false))
+        } else {
+            PromptBuilderDraft(
+                textoLivre = intent.getStringExtra(EXTRA_TEXTO_INICIAL).orEmpty(),
+                objetivo = intent.getStringExtra(EXTRA_OBJETIVO).orEmpty(),
+                iaDestinoId = intent.getStringExtra(EXTRA_IA_ID),
+                iaDestinoNome = intent.getStringExtra(EXTRA_IA_NOME),
+                comandoRelacionado = intent.getStringExtra(EXTRA_COMANDO)
+            ).detectarVariaveis()
+        }
+        renderEditor()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun obterPromptDoIntent(): Prompt? = if (android.os.Build.VERSION.SDK_INT >= 33) {
+        intent.getParcelableExtra(EXTRA_PROMPT, Prompt::class.java)
+    } else intent.getParcelableExtra(EXTRA_PROMPT)
+
+    private fun atualizarDraft() {
+        if (sincronizandoEditor) return
+        draft = draft.copy(
+            titulo = binding.editPromptTitulo.text?.toString().orEmpty(),
+            objetivo = binding.editPromptObjetivo.text?.toString().orEmpty(),
+            contexto = binding.editPromptContexto.text?.toString().orEmpty(),
+            tarefa = binding.editPromptTarefa.text?.toString().orEmpty(),
+            restricoes = binding.editPromptRestricoes.text?.toString().orEmpty(),
+            formatoSaida = binding.editPromptFormato.text?.toString().orEmpty(),
+            textoLivre = binding.editPromptLivre.text?.toString().orEmpty(),
+            comandoRelacionado = binding.editPromptComando.text?.toString()?.trim()?.takeIf { it.isNotBlank() }
+        ).detectarVariaveis()
+        renderEditor()
+    }
+
+    private fun renderEditor() {
+        sincronizandoEditor = true
+        binding.editPromptTitulo.setText(draft.titulo)
+        val categoriaIndex = CategoriaPrompt.entries.indexOf(draft.categoria)
+        if (categoriaIndex >= 0) binding.spinnerCategoriaPrompt.setSelection(categoriaIndex)
+        binding.editPromptObjetivo.setText(draft.objetivo)
+        binding.editPromptContexto.setText(draft.contexto)
+        binding.editPromptTarefa.setText(draft.tarefa)
+        binding.editPromptRestricoes.setText(draft.restricoes)
+        binding.editPromptFormato.setText(draft.formatoSaida)
+        binding.editPromptLivre.setText(draft.textoLivre)
+        binding.editPromptVariaveis.setText(draft.valoresVariaveis.entries.joinToString("\n") { "${it.key}=${it.value}" })
+        binding.editPromptComando.setText(draft.comandoRelacionado.orEmpty())
+        binding.txtVariaveisDetectadas.text = if (draft.variaveis.isEmpty()) "" else draft.variaveis.joinToString(" · ") { "{{${it.nome}}}" }
+        binding.txtPreviewPrompt.text = draft.preview().ifBlank { getString(R.string.prompt_builder_preview_vazio) }
+        sincronizandoEditor = false
+    }
+
+    private fun valoresDigitados(): Map<String, String> = binding.editPromptVariaveis.text?.toString().orEmpty().lines()
+        .mapNotNull { linha -> linha.split("=", limit = 2).takeIf { it.size == 2 }?.let { PromptBuilderDraft.normalizarNome(it[0]) to it[1].trim() } }
+        .toMap()
+
+    private fun draftAtualizadoComValores(): PromptBuilderDraft {
+        draft = draft.copy(valoresVariaveis = valoresDigitados()).detectarVariaveis()
+        return draft
+    }
+
+    private fun salvarPromptEditor() {
+        val atual = draftAtualizadoComValores()
+        if (atual.preview().isBlank()) {
+            Snackbar.make(binding.root, getString(R.string.prompt_builder_preview_vazio), Snackbar.LENGTH_SHORT).show()
+            return
+        }
+        binding.btnSalvarPromptEditor.isEnabled = false
+        binding.btnSalvarPromptEditor.text = getString(R.string.prompt_builder_salvando)
+        lifecycleScope.launch {
+            try {
+                dadosLocaisRepositorio.salvarOuAtualizarPrompt(atual.toPrompt())
+                Snackbar.make(binding.root, getString(R.string.prompt_builder_salvo), Snackbar.LENGTH_SHORT).show()
+            } catch (_: Exception) {
+                Snackbar.make(binding.root, getString(R.string.prompt_builder_erro_salvar), Snackbar.LENGTH_LONG).show()
+            } finally {
+                binding.btnSalvarPromptEditor.isEnabled = true
+                binding.btnSalvarPromptEditor.text = getString(R.string.prompt_builder_salvar)
+            }
+        }
+    }
+
+    private fun copiarPreview() {
+        val atual = draftAtualizadoComValores()
+        val texto = atual.preview()
+        if (texto.isBlank()) return
+        val prompt = atual.toPrompt()
+        getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText(prompt.titulo, texto))
+        dadosLocaisRepositorio.registrarUtilizacao(prompt.id)
+        Snackbar.make(binding.root, getString(R.string.detalhe_prompt_copiado), Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun abrirIaDoEditor() {
+        val atual = draftAtualizadoComValores()
+        val id = atual.iaDestinoId
+        val nome = atual.iaDestinoNome
+        if (id.isNullOrBlank() || nome.isNullOrBlank()) {
+            Snackbar.make(binding.root, getString(R.string.prompt_builder_sem_ia), Snackbar.LENGTH_LONG).show()
+            return
+        }
+        lifecycleScope.launch {
+            val contrato = IAUrlResolver(applicationContext).resolve(
+                IAOpenContract(
+                    id, nome, null,
+                    com.aibrain.app.brain.UrlResolutionStatus.NOT_FOUND,
+                    atual.preview(), PrefillCapability.UNKNOWN, false, BrowserOpenMode.OPEN_ONLY
+                )
+            )
+            if (contrato.urlStatus != com.aibrain.app.brain.UrlResolutionStatus.RESOLVED) {
+                Snackbar.make(binding.root, getString(R.string.prompt_builder_sem_ia), Snackbar.LENGTH_LONG).show()
+            } else {
+                startActivity(BrowserActivity.criarIntent(this@CriadorPromptsActivity, contrato))
+            }
+        }
     }
 
     private fun carregarDados() {
@@ -102,6 +266,16 @@ class CriadorPromptsActivity : AppCompatActivity() {
                 promptRepositorio.carregarBiblioteca()
             } catch (e: Exception) {
                 emptyList()
+            }
+            val nomes = listOf("Nenhuma IA selecionada") + catalogoIA.map { it.nome }
+            binding.spinnerIaDestino.adapter = android.widget.ArrayAdapter(
+                this@CriadorPromptsActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                nomes
+            )
+            draft.iaDestinoId?.let { id ->
+                val indice = catalogoIA.indexOfFirst { it.id == id }
+                if (indice >= 0) binding.spinnerIaDestino.setSelection(indice + 1)
             }
         }
     }
@@ -169,7 +343,7 @@ class CriadorPromptsActivity : AppCompatActivity() {
     private fun configurarAcoesResultado() {
         binding.btnVerSalvarPrompt.setOnClickListener { salvarEAbrirDetalhePrompt() }
         binding.btnAbrirIARecomendada.setOnClickListener {
-            abrirIARecomendadaNoNavegador(this, sessao)
+            lifecycleScope.launch { abrirIARecomendadaNoNavegador(this@CriadorPromptsActivity, sessao) }
         }
     }
 
@@ -270,5 +444,13 @@ class CriadorPromptsActivity : AppCompatActivity() {
         val intent = intentParaDetalhePromptGerado(this, sessao) ?: return
         startActivity(intent)
     }
-    companion object { const val EXTRA_COMANDO = "comando_inicial" }
+    companion object {
+        const val EXTRA_COMANDO = "comando_inicial"
+        const val EXTRA_PROMPT = "prompt_editor"
+        const val EXTRA_DUPLICAR = "prompt_duplicar"
+        const val EXTRA_TEXTO_INICIAL = "prompt_texto_inicial"
+        const val EXTRA_OBJETIVO = "prompt_objetivo"
+        const val EXTRA_IA_ID = "prompt_ia_id"
+        const val EXTRA_IA_NOME = "prompt_ia_nome"
+    }
 }

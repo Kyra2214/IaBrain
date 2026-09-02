@@ -55,10 +55,12 @@ class IAAdapter(
         holder.binding.txtCategoriasItem.text = ia.categorias
             .take(3)
             .joinToString(" · ") { CategoriaDinamica.rotulo(it) }
+        holder.binding.txtAcessoItem.text = "${ia.acesso.emoji} ${ia.acesso.rotulo}"
 
-        holder.binding.btnFavoritoItem.setImageResource(
-            if (favoritos.contains(ia.id)) com.aibrain.app.R.drawable.ic_star_filled
-            else com.aibrain.app.R.drawable.ic_star_outline
+        val favorita = favoritos.contains(ia.id)
+        holder.binding.btnFavoritoItem.setImageResource(if (favorita) com.aibrain.app.R.drawable.ic_star_filled else com.aibrain.app.R.drawable.ic_star_outline)
+        holder.binding.btnFavoritoItem.contentDescription = holder.itemView.context.getString(
+            if (favorita) com.aibrain.app.R.string.detalhe_desfavoritar_desc else com.aibrain.app.R.string.detalhe_favoritar_desc
         )
         holder.binding.btnFavoritoItem.setOnClickListener { aoAlternarFavorito(ia) }
 

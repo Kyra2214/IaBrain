@@ -6,291 +6,461 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <TextView
-        android:id="@+id/txtTituloApp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/app_name"
-        style="@style/TextAppearance.AIBrain.TituloTela"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/btnAbrirAssistenteIA"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/assistente_ia_abrir_desc"
-        android:src="@drawable/ic_assistente_ia"
-        app:layout_constraintEnd_toStartOf="@id/btnAbrirCriadorPrompts"
-        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
-        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
-
-    <ImageButton
-        android:id="@+id/btnAbrirCriadorPrompts"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/criador_prompts_abrir_desc"
-        android:src="@drawable/ic_criador_prompts"
-        app:layout_constraintEnd_toStartOf="@id/btnAbrirBiblioteca"
-        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
-        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
-
-    <ImageButton
-        android:id="@+id/btnAbrirBiblioteca"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/biblioteca_abrir_desc"
-        android:src="@drawable/ic_biblioteca"
-        app:layout_constraintEnd_toStartOf="@id/btnAbrirAIBrain"
-        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
-        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
-
-    <ImageButton
-        android:id="@+id/btnAbrirAIBrain"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/brain_abrir_desc"
-        android:src="@drawable/ic_ai_brain"
-        app:layout_constraintEnd_toStartOf="@id/btnAbrirIA18"
-        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
-        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
-
-    <ImageButton
-        android:id="@+id/btnAbrirIA18"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/ia18_abrir_desc"
-        android:src="@drawable/ic_ia18"
-        app:layout_constraintEnd_toStartOf="@id/btnAbrirFavoritos"
-        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
-        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp"
-        app:tint="#FF4081" />
-
-    <ImageButton
-        android:id="@+id/btnAbrirFavoritos"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/favoritos_abrir_desc"
-        android:src="@drawable/ic_star_outline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/txtTituloApp"
-        app:layout_constraintBottom_toBottomOf="@id/txtTituloApp" />
-
-    <ProgressBar
-        android:id="@+id/progressSincronizandoCatalogo"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="4dp"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/secondary"
-        android:progressTint="@color/secondary"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/txtTituloApp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/rowDescoberta"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/progressSincronizandoCatalogo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAbrirColecoes"
-            style="@style/Widget.AIBrain.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/atalho_colecoes"
-            android:textSize="12sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAbrirGuias"
-            style="@style/Widget.AIBrain.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="@string/atalho_guias"
-            android:textSize="12sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAbrirComandos"
-            style="@style/Widget.AIBrain.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="@string/atalho_comandos"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchIAs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_search_rounded"
-        android:iconifiedByDefault="false"
-        android:queryHint="@string/lista_pesquisar_hint"
-        app:layout_constraintTop_toBottomOf="@id/rowDescoberta"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <HorizontalScrollView
-        android:id="@+id/scrollCategorias"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/searchIAs"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupCategorias"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            app:singleSelection="true"
-            app:selectionRequired="false" />
-
-    </HorizontalScrollView>
-
-    <HorizontalScrollView
-        android:id="@+id/scrollOrdenacao"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollBrainHome"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/scrollCategorias"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnAtualizarIAs">
-
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/toggleOrdenacao"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:singleSelection="true"
-            app:selectionRequired="false">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnOrdenarRanking"
-                style="@style/Widget.AIBrain.Button.Outlined"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ordenar_ranking"
-                android:textSize="12sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnOrdenarPopulares"
-                style="@style/Widget.AIBrain.Button.Outlined"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ordenar_populares"
-                android:textSize="12sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnOrdenarNovidades"
-                style="@style/Widget.AIBrain.Button.Outlined"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ordenar_novidades"
-                android:textSize="12sp" />
-
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
-    </HorizontalScrollView>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnAtualizarIAs"
-        style="@style/Widget.AIBrain.Button.Tonal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="12dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="4dp"
-        android:text="@string/atualizar_ias_botao"
-        android:textColor="@color/on_secondary_container"
-        android:textSize="11sp"
-        android:maxLines="1"
-        app:backgroundTint="@color/secondary_container"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/scrollOrdenacao"
-        app:layout_constraintBottom_toBottomOf="@id/scrollOrdenacao" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerIAs"
-        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
+        android:fillViewport="true"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/global_navigation_height"
-        app:layout_constraintTop_toBottomOf="@id/scrollOrdenacao"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_ia" />
-
-    <LinearLayout
-        android:id="@+id/containerVazioOuErro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
+        android:paddingBottom="@dimen/content_bottom_padding"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Fase 13.7 — ilustração do estado vazio/erro, reaproveitando o vetor da Fase 11/12. -->
-        <ImageView
-            android:id="@+id/imgVazioOuErro"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginBottom="12dp"
-            android:alpha="0.6"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_image_placeholder"
-            app:tint="@color/on_background_muted" />
-
-        <TextView
-            android:id="@+id/txtVazioOuErro"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/lista_carregando"
-            android:textColor="@color/on_background" />
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/content_bottom_padding">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/space_md"
+                android:paddingTop="@dimen/space_md"
+                android:paddingEnd="@dimen/space_md"
+                android:paddingBottom="@dimen/space_xs">
 
+                <TextView
+                    android:id="@+id/txtTituloApp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/brain_home_titulo"
+                    style="@style/TextAppearance.AIBrain.TituloTela" />
+
+                <ImageButton
+                    android:id="@+id/btnAbrirAssistenteIA"
+                    android:layout_width="@dimen/icon_button_size"
+                    android:layout_height="@dimen/icon_button_size"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/assistente_ia_abrir_desc"
+                    android:src="@drawable/ic_assistente_ia" />
+
+                <ImageButton
+                    android:id="@+id/btnAbrirCriadorPrompts"
+                    android:layout_width="@dimen/icon_button_size"
+                    android:layout_height="@dimen/icon_button_size"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/criador_prompts_abrir_desc"
+                    android:src="@drawable/ic_criador_prompts" />
+
+                <ImageButton
+                    android:id="@+id/btnAbrirBiblioteca"
+                    android:layout_width="@dimen/icon_button_size"
+                    android:layout_height="@dimen/icon_button_size"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/biblioteca_abrir_desc"
+                    android:src="@drawable/ic_biblioteca" />
+
+                <ImageButton
+                    android:id="@+id/btnAbrirAIBrain"
+                    android:layout_width="@dimen/icon_button_size"
+                    android:layout_height="@dimen/icon_button_size"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/brain_abrir_desc"
+                    android:src="@drawable/ic_ai_brain" />
+
+                <ImageButton
+                    android:id="@+id/btnAbrirIA18"
+                    android:layout_width="@dimen/icon_button_size"
+                    android:layout_height="@dimen/icon_button_size"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/ia18_abrir_desc"
+                    android:src="@drawable/ic_ia18"
+                    app:tint="@color/error" />
+
+                <ImageButton
+                    android:id="@+id/btnAbrirFavoritos"
+                    android:layout_width="@dimen/icon_button_size"
+                    android:layout_height="@dimen/icon_button_size"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/favoritos_abrir_desc"
+                    android:src="@drawable/ic_star_outline" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtBrainSubtitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/space_md"
+                android:text="@string/brain_home_subtitulo"
+                android:textColor="@color/on_background_muted"
+                style="@style/TextAppearance.AIBrain.Corpo" />
+
+            <ProgressBar
+                android:id="@+id/progressSincronizandoCatalogo"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="@dimen/space_sm"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/secondary"
+                android:progressTint="@color/secondary"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/rowDescoberta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_sm"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAbrirColecoes"
+                    style="@style/Widget.AIBrain.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/atalho_colecoes"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAbrirGuias"
+                    style="@style/Widget.AIBrain.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_sm"
+                    android:layout_weight="1"
+                    android:text="@string/atalho_guias"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAbrirComandos"
+                    style="@style/Widget.AIBrain.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_sm"
+                    android:layout_weight="1"
+                    android:text="@string/atalho_comandos"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchIAs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_sm"
+                android:background="@drawable/bg_search_rounded"
+                android:iconifiedByDefault="false"
+                android:queryHint="@string/brain_home_busca_hint" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/brain_objetivo_titulo"
+                style="@style/TextAppearance.AIBrain.TituloSecao" />
+
+            <HorizontalScrollView
+                android:id="@+id/scrollObjetivos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupObjetivos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/space_md"
+                    app:singleLine="true"
+                    app:singleSelection="false" />
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:id="@+id/containerResultadoObjetivo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_sm"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/txtObjetivoResultado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/on_background"
+                    style="@style/TextAppearance.AIBrain.TituloSecao" />
+
+                <TextView
+                    android:id="@+id/txtObjetivoJustificativa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:textColor="@color/on_background_muted"
+                    style="@style/TextAppearance.AIBrain.Legenda" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerObjetivo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_ia" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCompararObjetivo"
+                    style="@style/Widget.AIBrain.Button.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:text="@string/brain_comparar" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/brain_destaques_titulo"
+                style="@style/TextAppearance.AIBrain.TituloSecao" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerDestaques"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_ia" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/brain_favoritos_titulo"
+                style="@style/TextAppearance.AIBrain.TituloSecao" />
+
+            <TextView
+                android:id="@+id/txtFavoritosBrainVazio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_xs"
+                android:text="@string/brain_favoritos_vazio"
+                android:textColor="@color/on_background_muted"
+                android:visibility="gone"
+                style="@style/TextAppearance.AIBrain.Legenda" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerFavoritosBrain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_ia" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/brain_gratuitas_titulo"
+                style="@style/TextAppearance.AIBrain.TituloSecao" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerGratuitasBrain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_ia" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/brain_catalogo_titulo"
+                style="@style/TextAppearance.AIBrain.TituloSecao" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_xs"
+                android:text="@string/brain_filtros_ajuda"
+                android:textColor="@color/on_background_muted"
+                style="@style/TextAppearance.AIBrain.Legenda" />
+
+            <HorizontalScrollView
+                android:id="@+id/scrollCategorias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupCategorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/space_md"
+                    app:singleLine="true"
+                    app:singleSelection="true"
+                    app:selectionRequired="false" />
+            </HorizontalScrollView>
+
+            <HorizontalScrollView
+                android:id="@+id/scrollAcesso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupAcesso"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/space_md"
+                    app:singleLine="true"
+                    app:singleSelection="true"
+                    app:selectionRequired="false" />
+            </HorizontalScrollView>
+
+            <HorizontalScrollView
+                android:id="@+id/scrollCapacidades"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupCapacidades"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/space_md"
+                    app:singleLine="true"
+                    app:singleSelection="true"
+                    app:selectionRequired="false" />
+            </HorizontalScrollView>
+
+            <HorizontalScrollView
+                android:id="@+id/scrollPlataformas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupPlataformas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/space_md"
+                    app:singleLine="true"
+                    app:singleSelection="true"
+                    app:selectionRequired="false" />
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/space_md"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <HorizontalScrollView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggleOrdenacao"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true"
+                        app:selectionRequired="false">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnOrdenarRanking"
+                            style="@style/Widget.AIBrain.Button.Outlined"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ordenar_ranking"
+                            android:textSize="12sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnOrdenarPopulares"
+                            style="@style/Widget.AIBrain.Button.Outlined"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ordenar_populares"
+                            android:textSize="12sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnOrdenarNovidades"
+                            style="@style/Widget.AIBrain.Button.Outlined"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ordenar_novidades"
+                            android:textSize="12sp" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </HorizontalScrollView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAtualizarIAs"
+                    style="@style/Widget.AIBrain.Button.Tonal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingHorizontal="@dimen/space_sm"
+                    android:text="@string/atualizar_ias_botao"
+                    android:textColor="@color/on_secondary_container"
+                    android:textSize="11sp"
+                    app:backgroundTint="@color/secondary_container" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerVazioOuErro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/space_md"
+                android:paddingVertical="@dimen/space_xl"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/imgVazioOuErro"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="@dimen/space_sm"
+                    android:alpha="0.6"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_image_placeholder"
+                    app:tint="@color/on_background_muted" />
+
+                <TextView
+                    android:id="@+id/txtVazioOuErro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lista_carregando"
+                    android:textColor="@color/on_background"
+                    style="@style/TextAppearance.AIBrain.Corpo" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerIAs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="@dimen/content_bottom_padding"
+                tools:listitem="@layout/item_ia" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

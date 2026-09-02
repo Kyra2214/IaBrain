@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Fase 17 — Layout da tela "Criador de Prompts" (Prompt Builder).
-     Correção de renderização: no tema escuro do app, o campo de entrada usava
-     cores pensadas para fundo claro (@color/surface) e o bloco inferior ficava
-     ancorado a um container intermediário "gone" (containerAcoesResultado),
-     o que fazia a entrada e os botões ficarem invisíveis/fora da tela.
-     Nova estrutura: raiz em LinearLayout vertical dentro de um ConstraintLayout
-     simples, sem cadeia de constraints passando por views ocultas, e todas as
-     cores explicitamente compatíveis com o tema escuro (background escuro,
-     surface escuro, hint/texto claros). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -16,14 +7,12 @@
     android:background="@color/background"
     android:orientation="vertical">
 
-    <!-- Cabeçalho -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/space_md"
         android:paddingVertical="@dimen/space_md">
-
         <ImageButton
             android:id="@+id/btnVoltarCriadorPrompts"
             android:layout_width="@dimen/icon_button_size"
@@ -31,22 +20,15 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/criador_prompts_voltar_desc"
             android:src="@drawable/ic_back" />
-
         <TextView
             android:id="@+id/txtTituloCriadorPrompts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/space_sm"
+            android:layout_marginStart="@dimen/space_sm"
             android:layout_weight="1"
             android:text="@string/criador_prompts_titulo"
-            style="@style/TextAppearance.AIBrain.TituloTela"
             android:textColor="@color/on_background"
- />
-
-        <!-- Fase 25 — modo "Gerar com IA": envia o texto digitado para a
-             Groq (API key configurada no Assistente de IA) e a IA monta o
-             prompt completo; desligado, o fluxo clássico do Prompt Builder
-             (perguntas sequenciais) continua funcionando igual. -->
+            style="@style/TextAppearance.AIBrain.TituloTela" />
         <com.google.android.material.chip.Chip
             android:id="@+id/chipModoIA"
             style="@style/Widget.Material3.Chip.Filter"
@@ -55,17 +37,171 @@
             android:checkable="true"
             android:text="@string/criador_prompts_modo_ia"
             android:textSize="12sp" />
-
     </LinearLayout>
 
-    <!-- Histórico da sessão (Fase 17.2): lista ocupa todo o espaço livre,
-         ancorada diretamente ao fundo da tela — não depende de nenhum
-         container intermediário oculto para existir. -->
+    <ScrollView
+        android:id="@+id/scrollEditorPrompt"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:fillViewport="true"
+        android:paddingHorizontal="@dimen/space_md">
+        <LinearLayout
+            android:id="@+id/containerEditorPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_builder_modo_editor"
+                android:textColor="@color/on_background"
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/editPromptTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_titulo_hint"
+                android:singleLine="true"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <Spinner
+                android:id="@+id/spinnerCategoriaPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/prompt_builder_categoria" />
+            <Spinner
+                android:id="@+id/spinnerIaDestino"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/prompt_builder_ia_destino" />
+            <EditText
+                android:id="@+id/editPromptObjetivo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_objetivo_hint"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="2"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <EditText
+                android:id="@+id/editPromptContexto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_contexto_hint"
+                android:inputType="textMultiLine"
+                android:minLines="2"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <EditText
+                android:id="@+id/editPromptTarefa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_tarefa_hint"
+                android:inputType="textMultiLine"
+                android:minLines="2"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <EditText
+                android:id="@+id/editPromptRestricoes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_restricoes_hint"
+                android:inputType="textMultiLine"
+                android:minLines="2"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <EditText
+                android:id="@+id/editPromptFormato"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_formato_hint"
+                android:inputType="textMultiLine"
+                android:minLines="2"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <EditText
+                android:id="@+id/editPromptLivre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_livre_hint"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <EditText
+                android:id="@+id/editPromptVariaveis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_variaveis_hint"
+                android:inputType="textMultiLine"
+                android:minLines="2"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <EditText
+                android:id="@+id/editPromptComando"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_builder_comando"
+                android:singleLine="true"
+                android:textColor="@color/on_background"
+                android:background="@drawable/bg_search_rounded" />
+            <Button
+                android:id="@+id/btnDetectarVariaveis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_builder_detectar" />
+            <TextView
+                android:id="@+id/txtVariaveisDetectadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/on_background_muted" />
+            <TextView
+                android:id="@+id/txtPreviewTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:text="@string/prompt_builder_preview"
+                android:textColor="@color/on_background"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/txtPreviewPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/surface_variant"
+                android:padding="@dimen/space_sm"
+                android:textColor="@color/on_surface"
+                android:textIsSelectable="true"
+                tools:text="Prévia do prompt" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnSalvarPromptEditor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/prompt_builder_salvar" />
+                <Button
+                    android:id="@+id/btnCopiarPromptEditor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/prompt_builder_copiar" />
+                <Button
+                    android:id="@+id/btnAbrirIaPromptEditor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/prompt_builder_abrir_ia" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerConversa"
             android:layout_width="match_parent"
@@ -74,7 +210,6 @@
             android:paddingHorizontal="4dp"
             android:paddingVertical="8dp"
             tools:listitem="@layout/item_mensagem_assistente" />
-
         <TextView
             android:id="@+id/txtConversaVazia"
             android:layout_width="wrap_content"
@@ -84,60 +219,41 @@
             android:gravity="center"
             android:text="@string/criador_prompts_conversa_vazia"
             android:textColor="@color/on_background_muted" />
-
     </FrameLayout>
 
-    <!-- Ações do resultado final (Fase 17.18): visível só quando a sessão
-         chega a PROMPT_ENTREGUE. Como é irmão (não filho) da entrada,
-         escondê-la não afeta o posicionamento de nenhum outro elemento. -->
     <LinearLayout
         android:id="@+id/containerAcoesResultado"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center"
+        android:orientation="horizontal"
         android:paddingHorizontal="@dimen/space_md"
         android:paddingVertical="@dimen/space_xs"
-        android:visibility="gone"
-        tools:visibility="visible">
-
+        android:visibility="gone">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnVerSalvarPrompt"
             style="@style/Widget.AIBrain.Button.Outlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
-            android:text="@string/criador_prompts_botao_ver_salvar"
-            android:textColor="@color/on_background"
-            android:textSize="12sp" />
-
+            android:text="@string/criador_prompts_botao_ver_salvar" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAbrirIARecomendada"
             style="@style/Widget.AIBrain.Button.Outlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="4dp"
-            android:text="@string/criador_prompts_botao_abrir_ia"
-            android:textColor="@color/on_background"
-            android:textSize="12sp" />
-
+            android:text="@string/criador_prompts_botao_abrir_ia" />
     </LinearLayout>
 
-    <!-- Campo de mensagem + botão "Gerar prompt" (Fase 17.2).
-         Cores explícitas do tema escuro: fundo de caixa @color/surface,
-         hint @color/on_background_muted e texto @color/on_background,
-         garantindo visibilidade no modo escuro do dispositivo. -->
     <LinearLayout
         android:id="@+id/containerEntradaConversa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingHorizontal="@dimen/space_md"
         android:paddingVertical="@dimen/space_md">
-
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -145,7 +261,6 @@
             android:hint="@string/criador_prompts_hint_mensagem"
             app:boxBackgroundColor="@color/surface"
             app:hintTextColor="@color/on_background_muted">
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editMensagemConversa"
                 android:layout_width="match_parent"
@@ -153,29 +268,20 @@
                 android:inputType="text|textCapSentences|textMultiLine"
                 android:maxLines="4"
                 android:textColor="@color/on_background" />
-
         </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Fase 25 — indicador de envio ao gerar com a IA (Groq). -->
         <ProgressBar
             android:id="@+id/progressGerarIA"
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_marginStart="8dp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
+            android:visibility="gone" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGerarPrompt"
             style="@style/Widget.AIBrain.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:backgroundTint="@color/secondary"
             android:enabled="false"
-            android:text="@string/criador_prompts_botao_gerar"
-            android:textColor="@color/on_primary" />
-
+            android:text="@string/criador_prompts_botao_gerar" />
     </LinearLayout>
-
 </LinearLayout>

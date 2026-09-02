@@ -167,9 +167,12 @@ class BibliotecaActivity : AppCompatActivity() {
     private fun carregarPrompts() {
         lifecycleScope.launch {
             bibliotecaCompleta = try {
-                repositorioPrompts.carregarBiblioteca()
+                val embutidos = repositorioPrompts.carregarBiblioteca()
+                val locais = dadosLocaisRepositorio.obterPromptsGerados()
+                val locaisPorId = locais.associateBy { it.id }
+                (embutidos.map { locaisPorId[it.id] ?: it } + locais.filter { local -> embutidos.none { it.id == local.id } })
             } catch (e: Exception) {
-                emptyList()
+                dadosLocaisRepositorio.obterPromptsGerados()
             }
             adapterPrompts.atualizarFavoritos(dadosLocaisRepositorio.obterFavoritos())
             aplicarFiltros()

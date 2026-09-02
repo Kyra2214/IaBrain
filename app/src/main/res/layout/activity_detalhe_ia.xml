@@ -11,128 +11,227 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingBottom="@dimen/content_bottom_padding">
 
-        <!-- Favorito (Fase 7.1) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end">
+            android:gravity="center_vertical"
+            android:padding="@dimen/space_md">
+
+            <ImageButton
+                android:id="@+id/btnVoltarDetalhe"
+                android:layout_width="@dimen/icon_button_size"
+                android:layout_height="@dimen/icon_button_size"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/brain_voltar_desc"
+                android:src="@drawable/ic_back" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_sm"
+                android:layout_weight="1"
+                android:text="@string/brain_detalhe_titulo"
+                style="@style/TextAppearance.AIBrain.TituloTela" />
 
             <ImageButton
                 android:id="@+id/btnFavorito"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/icon_button_size"
+                android:layout_height="@dimen/icon_button_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/detalhe_favorito_desc"
                 android:src="@drawable/ic_star_outline" />
-
         </LinearLayout>
 
-        <!-- Logo -->
-        <ImageView
-            android:id="@+id/imgLogo"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/surface"
-            android:contentDescription="@string/detalhe_logo_desc"
-            android:padding="12dp"
-            android:src="@drawable/ic_image_placeholder" />
-
-        <!-- Nome -->
-        <TextView
-            android:id="@+id/txtNome"
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:textColor="@color/on_background"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            tools:text="ChatGPT" />
+            android:layout_marginHorizontal="@dimen/space_md"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="@dimen/shape_medium"
+            app:cardElevation="0dp">
 
-        <!-- Tipo de acesso -->
-        <TextView
-            android:id="@+id/txtTipoAcesso"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/secondary"
-            android:textSize="14sp"
-            tools:text="Gratuita" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="@dimen/space_lg">
 
-        <!-- Descrição -->
+                <ImageView
+                    android:id="@+id/imgLogo"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:background="@drawable/bg_logo_rounded"
+                    android:contentDescription="@string/detalhe_logo_desc"
+                    android:padding="@dimen/space_sm"
+                    android:src="@drawable/ic_image_placeholder" />
+
+                <TextView
+                    android:id="@+id/txtNome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:textColor="@color/on_surface"
+                    style="@style/TextAppearance.AIBrain.TituloTela"
+                    tools:text="Claude" />
+
+                <TextView
+                    android:id="@+id/txtTipoAcesso"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:textColor="@color/secondary"
+                    style="@style/TextAppearance.AIBrain.Status"
+                    tools:text="🟡 Freemium" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <TextView
             android:id="@+id/txtDescricao"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
             android:textColor="@color/on_background"
-            android:textSize="15sp"
-            tools:text="Assistente de IA conversacional. Ótimo para conversas, código e escrita." />
+            style="@style/TextAppearance.AIBrain.Corpo"
+            tools:text="Assistente de IA para programação e análise de documentos." />
 
-        <!-- Categorias -->
+        <TextView
+            android:id="@+id/txtPorqueUsar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
+            android:textColor="@color/on_background"
+            style="@style/TextAppearance.AIBrain.TituloSecao"
+            tools:text="Por que usar?" />
+
+        <TextView
+            android:id="@+id/txtPorqueUsarConteudo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/on_background_muted"
+            style="@style/TextAppearance.AIBrain.Corpo"
+            tools:text="Nota cadastrada em Código: 10/10" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/detalhe_categorias_titulo"
-            android:textColor="@color/on_background"
-            android:textStyle="bold" />
+            android:layout_marginStart="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/detalhe_especialidades_titulo"
+            style="@style/TextAppearance.AIBrain.TituloSecao" />
 
         <TextView
             android:id="@+id/txtCategorias"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/on_background"
-            tools:text="💬 Conversa · 💻 Código · ✍️ Escrita" />
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/secondary"
+            style="@style/TextAppearance.AIBrain.Corpo"
+            tools:text="💻 Código · ✍️ Escrita" />
 
-        <!-- Idiomas -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/detalhe_idiomas_titulo"
+            android:layout_marginStart="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/detalhe_capacidades_titulo"
+            style="@style/TextAppearance.AIBrain.TituloSecao" />
+
+        <TextView
+            android:id="@+id/txtCapacidades"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_xs"
             android:textColor="@color/on_background"
-            android:textStyle="bold" />
+            style="@style/TextAppearance.AIBrain.Corpo"
+            tools:text="✓ Código · ✓ Análise" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/detalhe_idiomas_titulo"
+            style="@style/TextAppearance.AIBrain.TituloSecao" />
 
         <TextView
             android:id="@+id/txtIdiomas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_xs"
             android:textColor="@color/on_background"
-            tools:text="Português · Inglês · Espanhol" />
+            style="@style/TextAppearance.AIBrain.Corpo"
+            tools:text="PT · EN · ES" />
 
-        <!-- Notas -->
+        <TextView
+            android:id="@+id/txtCasosDeUso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
+            android:textColor="@color/on_background_muted"
+            style="@style/TextAppearance.AIBrain.Legenda"
+            tools:text="Casos de uso: projetos técnicos" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
             android:text="@string/detalhe_notas_titulo"
-            android:textColor="@color/on_background"
-            android:textStyle="bold" />
+            style="@style/TextAppearance.AIBrain.TituloSecao" />
 
         <LinearLayout
             android:id="@+id/containerNotas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_xs"
             android:orientation="vertical" />
 
-        <!-- Botão Abrir IA (ação vem na Fase 5.2) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAbrirIA"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:backgroundTint="@color/secondary"
-            android:text="@string/detalhe_botao_abrir"
-            android:textColor="@color/on_primary" />
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_lg"
+            android:orientation="vertical">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAbrirIA"
+                style="@style/Widget.AIBrain.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/detalhe_botao_abrir" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnComparar"
+                style="@style/Widget.AIBrain.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/detalhe_botao_comparar" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCriarPrompt"
+                style="@style/Widget.AIBrain.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/detalhe_botao_prompt" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPerguntarChat"
+                style="@style/Widget.AIBrain.Button.Tonal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/detalhe_botao_chat" />
+        </LinearLayout>
     </LinearLayout>
-
 </ScrollView>

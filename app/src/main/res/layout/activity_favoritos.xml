@@ -35,6 +35,16 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOrdenarFavoritos"
+                style="@style/Widget.AIBrain.Button.Tonal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_sm"
+                android:contentDescription="@string/favoritos_ordenar_desc"
+                android:text="@string/favoritos_ordenar_ranking"
+                android:textSize="11sp" />
+
         </LinearLayout>
 
         <TextView

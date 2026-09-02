@@ -61,6 +61,15 @@
                 android:textSize="12sp"
                 tools:text="💬 Conversa · 💻 Código" />
 
+            <TextView
+                android:id="@+id/txtAcessoItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:textColor="@color/on_background_muted"
+                style="@style/TextAppearance.AIBrain.Legenda"
+                tools:text="🟡 Freemium" />
+
         </LinearLayout>
 
         <ImageButton

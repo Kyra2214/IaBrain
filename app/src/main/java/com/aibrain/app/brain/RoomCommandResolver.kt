@@ -22,8 +22,24 @@ class RoomCommandResolver(private val context: Context, private val database: co
 
     private suspend fun resolveComando(raw: String, command: String, parsed: com.aibrain.app.command.ParsedSlashCommand): RoutingRequest? {
         val definition = database.comandoDao().buscarPorComando(command, command.removePrefix("/")) ?: return null
-        val capabilities = database.comandoGrafoDao().capacidades(definition.id).map { it.capacidade }
+        val capabilities = CAPACIDADES_REAIS_POR_COMANDO[command]
+            ?: database.comandoGrafoDao().capacidades(definition.id).map { it.capacidade }.toSet()
         return LocalAIRouter.request(raw, parsed, capabilities.toSet(), emptySet())
     }
     suspend fun candidates(): List<RoutingCandidate> = registry.candidates()
+
+    /** Faz a ponte entre categorias operacionais do comando e chaves que existem nas IAs. */
+    companion object {
+        private val CAPACIDADES_REAIS_POR_COMANDO = mapOf(
+            "/implement" to setOf("CODIGO"),
+            "/debug" to setOf("CODIGO"),
+            "/test" to setOf("CODIGO"),
+            "/review" to setOf("CODIGO"),
+            "/research" to setOf("PESQUISA"),
+            "/creative" to setOf("IMAGEM"),
+            "/document" to setOf("ESCRITA"),
+            "/data" to setOf("ANALISE"),
+            "/analyzedata" to setOf("ANALISE")
+        )
+    }
 }

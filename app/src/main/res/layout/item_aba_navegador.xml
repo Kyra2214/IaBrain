@@ -51,6 +51,14 @@
             android:textSize="13sp"
             tools:text="ChatGPT" />
 
+        <ProgressBar
+            android:id="@+id/progressAbaItem"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="@dimen/space_xs"
+            android:indeterminateTint="@color/on_primary"
+            android:visibility="gone" />
+
         <ImageButton
             android:id="@+id/btnFecharAbaItem"
             android:layout_width="@dimen/icon_button_size"

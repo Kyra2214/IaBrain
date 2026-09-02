@@ -23,6 +23,8 @@ data class AbaNavegador(
     val urlAtual: String,
     val iconeIA: String,             // mesma fonte de IA.logo (URL ou asset)
     val urlInicial: String = urlAtual, // Fase 21.9 — URL oficial da IA, p/ botão "página inicial" (urlAtual muda com a navegação)
+    val tituloPagina: String? = null,
+    val carregando: Boolean = false,
     val historico: List<String> = emptyList(),
     val podeVoltar: Boolean = false, // estado de navegação (Fase 21.3/21.4)
     val podeAvancar: Boolean = false,
