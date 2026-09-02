@@ -58,22 +58,14 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
                 mostrarMensagem("A primeira contribuição foi definida como workspace base.")
                 return@launch
             }
-            val base = store.snapshotWorkspace(projetoId)
-            val candidata = store.snapshotContribuicao(projetoId, ultima.id, ultima.nomeFonte)
-            val analise = ProjetoIntegracaoEngine.analisar(base, candidata)
-            conteudo.removeAllViews()
-            decisoes.clear()
-            conteudo.addView(TextView(this@ProjetoIntegracaoActivity).apply {
-                text = "Fonte: ${ultima.nomeFonte}\n${analise.mudancas.size} arquivo(s) analisado(s)"
-                textSize = 16f; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 18)
-            })
-            analise.mudancas.forEach { mudanca -> adicionarMudanca(mudanca.caminho, mudanca.tipo) }
-            if (analise.mudancas.isEmpty()) mostrarMensagem("Nenhuma diferença encontrada.") else {
-                conteudo.addView(Button(this@ProjetoIntegracaoActivity).apply {
-                    text = "Aplicar integração"
-                    setOnClickListener { aplicarIntegracao(ultima.id) }
-                }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = 24 })
-            }
+            val analise = ProjetoIntegracaoEngine.analisar(store.snapshotWorkspace(projetoId), store.snapshotContribuicao(projetoId, ultima.id, ultima.nomeFonte))
+            conteudo.removeAllViews(); decisoes.clear()
+            conteudo.addView(TextView(this@ProjetoIntegracaoActivity).apply { text = "Fonte: ${ultima.nomeFonte}\n${analise.mudancas.size} arquivo(s) analisado(s)"; textSize = 16f; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 18) })
+            analise.mudancas.forEach { adicionarMudanca(it.caminho, it.tipo) }
+            if (analise.mudancas.isEmpty()) mostrarMensagem("Nenhuma diferença encontrada.") else conteudo.addView(Button(this@ProjetoIntegracaoActivity).apply {
+                text = "Aplicar integração"
+                setOnClickListener { aplicarIntegracao(ultima.id) }
+            }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = 24 })
         }
     }
 
@@ -81,7 +73,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
         val bloco = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, 8, 0, 8) }
         bloco.addView(TextView(this).apply { text = "${tipo.name} · $caminho"; textSize = 15f; setTextColor(getColor(R.color.on_background)); setTypeface(null, Typeface.BOLD) })
         val grupo = RadioGroup(this).apply { orientation = RadioGroup.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        val aceitar = RadioButton(this).apply { id = nextViewId++; text = "Aceitar" }
+        val aceitar = RadioButton(this).apply { id = nextViewId++; text = "Aceitar"; isEnabled = tipo != TipoMudanca.REMOVIDO }
         val manter = RadioButton(this).apply { id = nextViewId++; text = "Manter" }
         val remover = RadioButton(this).apply { id = nextViewId++; text = "Remover" }
         grupo.addView(aceitar); grupo.addView(manter); grupo.addView(remover)
@@ -100,8 +92,7 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
             DecisaoIntegracao.MANTER_ATUAL -> manter.isChecked = true
             DecisaoIntegracao.REMOVER -> remover.isChecked = true
         }
-        bloco.addView(grupo)
-        conteudo.addView(bloco)
+        bloco.addView(grupo); conteudo.addView(bloco)
     }
 
     private fun aplicarIntegracao(contribuicaoId: String) {
@@ -111,15 +102,13 @@ class ProjetoIntegracaoActivity : AppCompatActivity() {
                 workspaceRepository.atualizarStatusContribuicao(contribuicaoId, StatusContribuicao.INTEGRADA)
                 workspaceRepository.salvarIntegracao(projetoId, listOf(contribuicaoId), "CONCLUIDA", emptyList())
                 workspaceRepository.registrarHistorico(projetoId, "INTEGRACAO_APLICADA", "${resultado.arquivosAplicados.size} aceito(s), ${resultado.arquivosRemovidos.size} removido(s)")
-                Snackbar.make(conteudo, "Integração aplicada com sucesso.", Snackbar.LENGTH_LONG).show()
-                finish()
+                Snackbar.make(conteudo, "Integração aplicada com sucesso.", Snackbar.LENGTH_LONG).show(); finish()
             } else Snackbar.make(conteudo, "Integração não aplicada: ${resultado.erros.joinToString()}", Snackbar.LENGTH_LONG).show()
         }
     }
 
     private fun mostrarMensagem(texto: String) {
-        conteudo.removeAllViews()
-        conteudo.addView(TextView(this).apply { text = texto; textSize = 16f; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 20, 0, 20) })
+        conteudo.removeAllViews(); conteudo.addView(TextView(this).apply { text = texto; textSize = 16f; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 20, 0, 20) })
     }
 
     companion object {
