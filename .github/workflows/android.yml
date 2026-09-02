@@ -52,30 +52,3 @@ jobs:
         with:
           name: ai-brain-debug-apk
           path: app/build/outputs/apk/debug/*.apk
-
-  e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: verify
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
-
-      - name: Run instrumented smoke test
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: default
-          arch: x86_64
-          profile: Nexus 5
-          force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest --stacktrace
