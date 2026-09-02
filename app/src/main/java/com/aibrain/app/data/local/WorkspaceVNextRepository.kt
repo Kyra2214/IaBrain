@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 /** Repositório único para a camada persistente das evoluções do workspace. */
 class WorkspaceVNextRepository(private val db: AppDatabase) {
     fun tarefas(projetoId: String): Flow<List<ProjetoTarefaEntity>> = db.projetoTarefaDao().observar(projetoId)
+    fun todasTarefas(): Flow<List<ProjetoTarefaEntity>> = db.projetoTarefaDao().observarTodas()
     suspend fun salvarTarefa(item: ProjetoTarefaEntity) = db.projetoTarefaDao().salvar(item)
     suspend fun atualizarTarefa(item: ProjetoTarefaEntity) = db.projetoTarefaDao().atualizar(item)
     suspend fun removerTarefa(item: ProjetoTarefaEntity) = db.projetoTarefaDao().remover(item)
