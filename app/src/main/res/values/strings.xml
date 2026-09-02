@@ -140,6 +140,23 @@
     <string name="prompt_builder_duplicar">Duplicar prompt</string>
     <string name="prompt_builder_categoria">Categoria</string>
     <string name="prompt_builder_comando">Comando relacionado (opcional)</string>
+    <string name="projetos_titulo">📦 Projetos</string>
+    <string name="projetos_novo">+ Novo projeto</string>
+    <string name="projetos_descricao">Workspace local para organizar contribuições de IAs, integrar alterações e validar antes de qualquer envio remoto.</string>
+    <string name="projetos_vazio">Ainda não há projetos. Crie um projeto a partir de uma ideia e uma stack.</string>
+    <string name="projetos_abrir">Abrir workspace</string>
+    <string name="projeto_workspace">Workspace</string>
+    <string name="projeto_importar_zip">Importar contribuição ZIP</string>
+    <string name="projeto_validar">Validar localmente</string>
+    <string name="projeto_contribuicoes">Contribuições</string>
+    <string name="projeto_integracoes">Integrações</string>
+    <string name="projeto_testes">Testes e validações</string>
+    <string name="projeto_ci">IaBrain CI Standard</string>
+    <string name="projeto_github">GitHub opcional</string>
+    <string name="projeto_github_desconectado">Desconectado — o projeto funciona sem GitHub.</string>
+    <string name="projeto_zip_invalido">Não foi possível importar este ZIP.</string>
+    <string name="projeto_importado">Contribuição recebida e analisada.</string>
+    <string name="projeto_validado">Relatório de validação atualizado.</string>
 
     <!-- Assistente de IA / Groq (Fase 18.1/18.2) -->
     <string name="assistente_ia_titulo">Assistente de IA</string>

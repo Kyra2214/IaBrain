@@ -4,4 +4,5 @@
     <item android:id="@+id/nav_navegador" android:icon="@drawable/ic_open_external" android:title="Navegador" />
     <item android:id="@+id/nav_brain" android:icon="@drawable/ic_ai_brain" android:title="Brain" />
     <item android:id="@+id/nav_prompts" android:icon="@drawable/ic_criador_prompts" android:title="Prompts" />
+    <item android:id="@+id/nav_projects" android:icon="@drawable/ic_projects" android:title="Projetos" />
 </menu>

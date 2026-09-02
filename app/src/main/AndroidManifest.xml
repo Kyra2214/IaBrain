@@ -106,6 +106,14 @@
             android:exported="false"
             android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity
+            android:name=".view.ProjetosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity
+            android:name=".view.ProjetoDetalheActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity
             android:name=".view.ComandoDetalheActivity"
             android:exported="false"
             android:theme="@style/Theme.AIBrain.NoActionBar" />
