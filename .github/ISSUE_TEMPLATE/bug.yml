@@ -1,0 +1,29 @@
+name: Bug
+description: Registrar um defeito reproduzível
+title: "fix: "
+labels: [bug]
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento atual
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reprodução
+      description: Passos, logs sanitizados e versão.
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Impacto de segurança
+      description: Informe se há dados sensíveis, permissões, rede ou execução de código envolvidos.
