@@ -64,8 +64,8 @@ class ProjetoMemoriaActivity : AppCompatActivity() {
 
     private fun criarMemoria() {
         val pid = projetoId ?: run { toast("Abra pelo detalhe de um projeto"); return }
-        val tipos = MemoryType.entries.map { it.name }.toTypedArray()
-        var tipo = MemoryType.NOTE.name
+        val tipos = arrayOf("NOTE", "DECISION", "ARCHITECTURE", "PROBLEM", "SOLUTION")
+        var tipo = tipos[0]
         val titulo = EditText(this).apply { hint = "Título" }
         val conteudo = EditText(this).apply { hint = "Conteúdo"; minLines = 4; gravity = android.view.Gravity.TOP }
         val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(40, 0, 40, 0); addView(titulo); addView(conteudo) }
