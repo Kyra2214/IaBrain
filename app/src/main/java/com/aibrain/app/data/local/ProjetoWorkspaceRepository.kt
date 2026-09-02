@@ -4,13 +4,10 @@ import android.content.Context
 import com.aibrain.app.brain.ArquivoWorkspace
 import com.aibrain.app.brain.CiProfile
 import com.aibrain.app.brain.ContribuicaoWorkspace
-import com.aibrain.app.brain.FonteContribuicao
 import com.aibrain.app.brain.ItemValidacao
-import com.aibrain.app.brain.NivelValidacao
 import com.aibrain.app.brain.RelatorioValidacao
 import com.aibrain.app.brain.StatusContribuicao
 import com.aibrain.app.brain.StatusGithub
-import com.aibrain.app.brain.StatusValidacao
 import java.util.UUID
 
 class ProjetoWorkspaceRepository(context: Context) {
@@ -29,6 +26,10 @@ class ProjetoWorkspaceRepository(context: Context) {
             ProjetoArquivoWorkspaceEntity(contribuicao.projetoId, contribuicao.id, it.caminho, it.hash, it.tamanho, it.origem)
         })
         registrarHistorico(contribuicao.projetoId, "CONTRIBUICAO_RECEBIDA", "${contribuicao.fonte.name}: ${contribuicao.nomeFonte}")
+    }
+
+    suspend fun atualizarStatusContribuicao(contribuicaoId: String, status: StatusContribuicao) {
+        database.projetoWorkspaceDao().atualizarStatus(contribuicaoId, status.name)
     }
 
     suspend fun salvarIntegracao(projetoId: String, fontes: List<String>, status: String, conflitos: List<String>) {

@@ -18,7 +18,7 @@ class RoomConverters {
     }.getOrDefault(emptyMap())
 }
 
-@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class, ComandoEntity::class, ComandoCapacidadeEntity::class, ComandoRelacionamentoEntity::class, ComandoParametroEntity::class, ComandoIAEntity::class, WorkflowEntity::class, WorkflowComandoEntity::class, ComandoExecucaoEntity::class, IACapabilityEntity::class, IARoutingProfileEntity::class, ProjetoContribuicaoEntity::class, ProjetoArquivoWorkspaceEntity::class, ProjetoIntegracaoEntity::class, ProjetoValidacaoEntity::class, ProjetoHistoricoEntity::class, ProjetoCiProfileEntity::class, ProjetoGithubEntity::class], version = 8, exportSchema = true)
+@Database(entities = [IAEntity::class, ProjetoEntity::class, ProjetoFuncaoEntity::class, ProjetoIAEntity::class, PromptEntity::class, ProjetoContextoEntity::class, ComandoEntity::class, ComandoCapacidadeEntity::class, ComandoRelacionamentoEntity::class, ComandoParametroEntity::class, ComandoIAEntity::class, WorkflowEntity::class, WorkflowComandoEntity::class, ComandoExecucaoEntity::class, IACapabilityEntity::class, IARoutingProfileEntity::class, ProjetoContribuicaoEntity::class, ProjetoArquivoWorkspaceEntity::class, ProjetoIntegracaoEntity::class, ProjetoValidacaoEntity::class, ProjetoHistoricoEntity::class, ProjetoCiProfileEntity::class, ProjetoGithubEntity::class, ProjetoTarefaEntity::class, ProjetoMemoriaEntity::class, ProjetoSkillEntity::class, BrowserContextoEntity::class, PromptAcaoHistoricoEntity::class], version = 10, exportSchema = true)
 @TypeConverters(RoomConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun iaDao(): IADao
@@ -39,6 +39,11 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun projetoHistoricoDao(): ProjetoHistoricoDao
     abstract fun projetoCiDao(): ProjetoCiDao
     abstract fun projetoGithubDao(): ProjetoGithubDao
+    abstract fun projetoTarefaDao(): ProjetoTarefaDao
+    abstract fun projetoMemoriaDao(): ProjetoMemoriaDao
+    abstract fun projetoSkillDao(): ProjetoSkillDao
+    abstract fun browserContextoDao(): BrowserContextoDao
+    abstract fun promptAcaoHistoricoDao(): PromptAcaoHistoricoDao
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
         private val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -105,10 +110,39 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_projeto_github_projetoId ON projeto_github(projetoId)")
             }
         }
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS projeto_memorias (id TEXT NOT NULL, projetoId TEXT NOT NULL, tipo TEXT NOT NULL, titulo TEXT NOT NULL, conteudo TEXT NOT NULL, criadoEm INTEGER NOT NULL, atualizadoEm INTEGER NOT NULL, PRIMARY KEY(id))")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_memorias_projetoId ON projeto_memorias(projetoId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_memorias_criadoEm ON projeto_memorias(criadoEm)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS projeto_skills (id TEXT NOT NULL, projetoId TEXT, nome TEXT NOT NULL, descricao TEXT NOT NULL, passos TEXT NOT NULL, ativo INTEGER NOT NULL, criadoEm INTEGER NOT NULL, atualizadoEm INTEGER NOT NULL, PRIMARY KEY(id))")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_skills_projetoId ON projeto_skills(projetoId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_skills_ativo ON projeto_skills(ativo)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS projeto_tarefas (id TEXT NOT NULL, projetoId TEXT, titulo TEXT NOT NULL, detalhe TEXT NOT NULL, status TEXT NOT NULL, prioridade TEXT NOT NULL, criadoEm INTEGER NOT NULL, atualizadoEm INTEGER NOT NULL, PRIMARY KEY(id))")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_tarefas_projetoId ON projeto_tarefas(projetoId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_tarefas_status ON projeto_tarefas(status)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_tarefas_prioridade ON projeto_tarefas(prioridade)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_projeto_tarefas_atualizadoEm ON projeto_tarefas(atualizadoEm)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS browser_contextos (id TEXT NOT NULL, origem TEXT NOT NULL, abaSelecionadaId TEXT, abas TEXT NOT NULL, prompt TEXT, criadoEm INTEGER NOT NULL, PRIMARY KEY(id))")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_browser_contextos_criadoEm ON browser_contextos(criadoEm)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_browser_contextos_origem ON browser_contextos(origem)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS prompt_acoes_historico (id TEXT NOT NULL, promptId TEXT, acao TEXT NOT NULL, iaId TEXT, detalhe TEXT NOT NULL, criadoEm INTEGER NOT NULL, PRIMARY KEY(id))")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_prompt_acoes_historico_promptId ON prompt_acoes_historico(promptId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_prompt_acoes_historico_acao ON prompt_acoes_historico(acao)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_prompt_acoes_historico_criadoEm ON prompt_acoes_historico(criadoEm)")
+            }
+        }
+        private val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE projeto_tarefas ADD COLUMN githubIssueNumber INTEGER")
+                db.execSQL("ALTER TABLE projeto_tarefas ADD COLUMN githubPrNumber INTEGER")
+                db.execSQL("ALTER TABLE projeto_tarefas ADD COLUMN githubBranch TEXT")
+            }
+        }
 
         fun getInstance(context: Context): AppDatabase = INSTANCE ?: synchronized(this) {
             INSTANCE ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "iabrain.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8).build().also { INSTANCE = it }
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10).build().also { INSTANCE = it }
         }
     }
 }
