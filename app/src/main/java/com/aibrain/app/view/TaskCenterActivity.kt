@@ -1,10 +1,12 @@
 package com.aibrain.app.view
 
+import android.app.AlertDialog
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -32,13 +34,11 @@ class TaskCenterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         repository = WorkspaceVNextRepository(AppDatabase.getInstance(applicationContext))
-
         val raiz = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(getColor(R.color.background))
             setPadding(20, 20, 20, 84)
         }
-
         val cabecalho = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         cabecalho.addView(TextView(this).apply {
             text = "Task Center"
@@ -51,13 +51,11 @@ class TaskCenterActivity : AppCompatActivity() {
             setOnClickListener { finish() }
         })
         raiz.addView(cabecalho)
-
         raiz.addView(TextView(this).apply {
             text = "Tarefas locais · Issue/PR rastreáveis · persistentes · sem execução automática"
             setTextColor(getColor(R.color.on_background_muted))
             setPadding(0, 4, 0, 12)
         })
-
         vazio = TextView(this).apply {
             text = "Carregando tarefas…"
             textSize = 16f
@@ -67,12 +65,10 @@ class TaskCenterActivity : AppCompatActivity() {
             alpha = 0.7f
         }
         raiz.addView(vazio)
-
         val scroll = ScrollView(this)
         lista = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         scroll.addView(lista)
         raiz.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
-
         setContentView(raiz)
         GlobalNavigation.attach(this, raiz, GlobalNavigation.PROJETOS)
         observarTarefas()
@@ -120,8 +116,8 @@ class TaskCenterActivity : AppCompatActivity() {
                     setTextColor(getColor(R.color.on_background_muted))
                     setPadding(0, 6, 0, 8)
                 })
-
                 val acoes = LinearLayout(this).apply { gravity = Gravity.END }
+                acoes.addView(acao("GitHub") { vincularGitHub(tarefa) })
                 when (tarefa.status) {
                     "PENDING", "WAITING_USER" -> acoes.addView(acao("Iniciar") { atualizarStatus(tarefa, "IN_PROGRESS") })
                     "IN_PROGRESS" -> {
@@ -138,6 +134,43 @@ class TaskCenterActivity : AppCompatActivity() {
                 lista.addView(card, LinearLayout.LayoutParams(-1, -2).apply { setMargins(0, 0, 0, 12) })
                 card.animate().alpha(1f).translationY(0f).setStartDelay((index * 35L).coerceAtMost(350L)).setDuration(180L).start()
             }
+    }
+
+    private fun vincularGitHub(tarefa: ProjetoTarefaEntity) {
+        val box = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(24, 4, 24, 0)
+        }
+        val issue = campo("Issue # (opcional)")
+        val pr = campo("PR # (opcional)")
+        val branch = campo("Branch (opcional)")
+        box.addView(issue)
+        box.addView(pr)
+        box.addView(branch)
+        AlertDialog.Builder(this)
+            .setTitle("Vincular GitHub à tarefa")
+            .setView(box)
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Salvar") { _, _ ->
+                lifecycleScope.launch {
+                    repository.atualizarTarefa(
+                        tarefa.copy(
+                            githubIssueNumber = issue.text.toString().trim().toIntOrNull(),
+                            githubPrNumber = pr.text.toString().trim().toIntOrNull(),
+                            githubBranch = branch.text.toString().trim().takeIf { it.isNotEmpty() },
+                            atualizadoEm = System.currentTimeMillis()
+                        )
+                    )
+                }
+            }
+            .show()
+    }
+
+    private fun campo(hint: String) = EditText(this).apply {
+        this.hint = hint
+        setSingleLine(true)
+        setTextColor(getColor(R.color.on_background))
+        setHintTextColor(getColor(R.color.on_background_muted))
     }
 
     private fun acao(rotulo: String, clique: () -> Unit) = Button(this).apply {
