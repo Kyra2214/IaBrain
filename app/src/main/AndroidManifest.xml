@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
-    <application android:allowBackup="true" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:theme="@style/Theme.AIBrain" android:usesCleartextTraffic="false">
-        <activity android:name=".view.WelcomeActivity" android:exported="true" android:theme="@style/Theme.AIBrain.NoActionBar"><intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter></activity>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AIBrain"
+        android:usesCleartextTraffic="false">
+
+        <activity
+            android:name=".view.WelcomeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AIBrain.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".MainActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.DetalheIAActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.CompararIAsActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
@@ -13,7 +30,11 @@
         <activity android:name=".view.DetalhePromptActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.CriadorPromptsActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.AssistenteIAActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
-        <activity android:name=".browser.BrowserActivity" android:exported="false" android:launchMode="singleTask" android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity
+            android:name=".browser.BrowserActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.IA18Activity" android:exported="false" android:label="IA +18" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.IA18VerificacaoActivity" android:exported="false" android:label="Verificação de Idade" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ColecoesActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
@@ -24,6 +45,9 @@
         <activity android:name=".view.ProjetoDetalheActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ProjetoIntegracaoActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.WorkspaceVNextActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity android:name=".view.TaskCenterActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ComandoDetalheActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
+
     </application>
+
 </manifest>
