@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.aibrain.app.R
 import com.aibrain.app.brain.*
+import com.aibrain.app.browser.BrowserActivity
 import com.aibrain.app.browser.BrowserHistoryManager
 import com.aibrain.app.data.local.AppDatabase
 import com.aibrain.app.data.local.BrowserContextoEntity
@@ -96,8 +97,8 @@ class WorkspaceVNextActivity : AppCompatActivity() {
                 )
             }
         }
-        section("8 · Orquestração Multi-IA", "Seleção explícita de candidatos; nenhuma IA recebe envio automático.")
-        button("🧩 Selecionar IAs para plano") { escolherIAs() }
+        section("8 · Orquestração Multi-IA", "O usuário escolhe as IAs, cria o plano e pode abrir cada IA no Browser. Nenhum prompt é enviado automaticamente.")
+        button("🧩 Selecionar IAs e abrir plano") { escolherIAs() }
         section("9 · Skills / Workflows", "Skills ficam persistidas no Room e execução gera uma tarefa auditável.")
         button("⚙️ Registrar skill padrão") {
             if (pid == null) toast("Abra pelo detalhe de um projeto")
@@ -108,7 +109,7 @@ class WorkspaceVNextActivity : AppCompatActivity() {
                 render()
             }
         }
-        button("▶ Executar skill local") {
+        button("▶ Preparar execução da skill") {
             if (pid == null) toast("Abra pelo detalhe de um projeto")
             else lifecycleScope.launch {
                 val skill = repository.skillsAtivas(pid).first().firstOrNull()
@@ -134,7 +135,7 @@ class WorkspaceVNextActivity : AppCompatActivity() {
                 }
             }
         }
-        section("11 · Contexto entre abas", "O snapshot agora é lido do histórico real do Browser: abas, IA, URL, título, ordem, pin e aba ativa.")
+        section("11 · Contexto entre abas", "O snapshot é lido do histórico real do Browser: abas, IA, URL, título, ordem, pin e aba ativa.")
         button("🌐 Sincronizar contexto real do navegador") { sincronizarContextoBrowser() }
         section("12 · Task Center", "Tarefas persistidas no Room aguardam ações explícitas do usuário.")
         button("📋 Abrir Task Center") { startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java)) }
@@ -214,7 +215,7 @@ class WorkspaceVNextActivity : AppCompatActivity() {
             .setTitle("Escolha as IAs")
             .setMultiChoiceItems(nomes, marcados) { _, which, checked -> marcados[which] = checked }
             .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Criar plano") { _, _ ->
+            .setPositiveButton("Criar plano e abrir") { _, _ ->
                 val selecionadas = candidatos.filterIndexed { index, _ -> marcados[index] }
                 if (selecionadas.isEmpty()) { toast("Nenhuma IA selecionada"); return@setPositiveButton }
                 val plano = IaBrainWorkspaceOrchestrator.buildMultiAiPlan(
@@ -225,10 +226,34 @@ class WorkspaceVNextActivity : AppCompatActivity() {
                     plano.candidates.forEach { ai ->
                         repository.salvarTarefa(ProjetoTarefaEntity(UUID.randomUUID().toString(), projectId, "Plano Multi-IA: ${ai.name}", "Aguardando aprovação explícita", TaskStatus.WAITING_USER.name, TaskPriority.NORMAL.name, now, now))
                     }
-                    toast("Plano criado: ${plano.candidates.joinToString { it.name }}")
+                    toast("Plano criado — abrindo ${plano.candidates.size} IA(s)")
+                    abrirIAsSelecionadas(plano.candidates)
                 }
             }
             .show()
+    }
+
+    /** Abre cada IA explicitamente no Browser usando o contrato/resolver central; não envia o prompt. */
+    private suspend fun abrirIAsSelecionadas(candidates: List<AiCandidate>) {
+        val resolver = IAUrlResolver(applicationContext)
+        candidates.forEach { candidate ->
+            val ia = catalogo.firstOrNull { it.id == candidate.id } ?: return@forEach
+            val contrato = resolver.resolve(
+                IAOpenContract(
+                    selectedAIId = ia.id,
+                    selectedAIName = ia.nome,
+                    officialResolvedUrl = ia.site,
+                    urlStatus = UrlResolutionStatus.RESOLVED,
+                    generatedPrompt = "",
+                    prefillCapability = PrefillCapability.UNKNOWN,
+                    canPrefillPrompt = false,
+                    openMode = BrowserOpenMode.OPEN_ONLY
+                )
+            )
+            if (contrato.urlStatus == UrlResolutionStatus.RESOLVED && !contrato.officialResolvedUrl.isNullOrBlank()) {
+                startActivity(BrowserActivity.criarIntent(this@WorkspaceVNextActivity, contrato))
+            }
+        }
     }
 
     private fun section(title: String, body: String) {
