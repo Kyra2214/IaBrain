@@ -169,7 +169,7 @@ class CriadorPromptsActivity : AppCompatActivity() {
     private fun configurarAcoesResultado() {
         binding.btnVerSalvarPrompt.setOnClickListener { salvarEAbrirDetalhePrompt() }
         binding.btnAbrirIARecomendada.setOnClickListener {
-            abrirIARecomendadaNoNavegador(this, sessao)
+            lifecycleScope.launch { abrirIARecomendadaNoNavegador(this@CriadorPromptsActivity, sessao) }
         }
     }
 

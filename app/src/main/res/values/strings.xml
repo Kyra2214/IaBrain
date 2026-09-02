@@ -13,6 +13,23 @@
     <string name="detalhe_idiomas_titulo">Idiomas</string>
     <string name="detalhe_notas_titulo">Notas por categoria</string>
     <string name="detalhe_botao_abrir">ABRIR IA</string>
+    <string name="detalhe_botao_comparar">COMPARAR</string>
+    <string name="detalhe_botao_prompt">CRIAR PROMPT PARA ESTA IA</string>
+    <string name="detalhe_botao_chat">PERGUNTAR NO CHAT</string>
+    <string name="detalhe_especialidades_titulo">Especialidades</string>
+    <string name="detalhe_capacidades_titulo">Capacidades cadastradas</string>
+    <string name="detalhe_casos_de_uso">Casos de uso: %1$s</string>
+    <string name="detalhe_casos_de_uso_nao_informado">Casos de uso: não informado</string>
+    <string name="detalhe_sem_capacidades">Nenhuma capacidade cadastrada.</string>
+    <string name="detalhe_sem_notas">Nenhuma nota cadastrada.</string>
+    <string name="detalhe_sem_dados_recomendacao">Ainda não há dados suficientes para explicar uma recomendação.</string>
+    <string name="detalhe_nao_informado">Não informado</string>
+    <string name="detalhe_url_indisponivel">O endereço oficial desta IA não está disponível no catálogo.</string>
+    <string name="detalhe_comparacao_insuficiente">Não há IAs relacionadas suficientes para comparar.</string>
+    <string name="detalhe_objetivo_generico">a tarefa escolhida</string>
+    <string name="detalhe_favoritar_desc">Favoritar IA</string>
+    <string name="detalhe_desfavoritar_desc">Desfavoritar IA</string>
+    <string name="brain_detalhe_titulo">Detalhes da IA</string>
     <string name="detalhe_gratuita">Gratuita</string>
     <string name="detalhe_paga">Paga</string>
 
@@ -55,6 +72,9 @@
     <string name="favoritos_secao_historico">🕘 Histórico</string>
     <string name="favoritos_vazio">Nenhuma IA favoritada ainda.</string>
     <string name="historico_vazio">Nenhuma IA acessada ainda.</string>
+    <string name="favoritos_ordenar_desc">Alternar ordenação dos favoritos</string>
+    <string name="favoritos_ordenar_ranking">Ordenar: ranking</string>
+    <string name="favoritos_ordenar_nome">Ordenar: nome</string>
 
     <string name="brain_voltar_desc">Voltar</string>
     <string name="brain_abrir_desc">Criar com IA</string>
@@ -133,6 +153,27 @@
     <string name="assistente_ia_curadoria_adicionar_sucesso">%1$s foi adicionada ao catálogo</string>
     <string name="assistente_ia_curadoria_adicionar_ja_existe">Essa IA já está no catálogo</string>
     <string name="assistente_ia_curadoria_adicionar_falha">Não foi possível adicionar a IA: %1$s</string>
+    <string name="brain_home_titulo">Brain</string>
+    <string name="brain_home_subtitulo">Descubra a IA certa para cada tarefa</string>
+    <string name="brain_home_busca_hint">Buscar uma IA, categoria, capacidade ou caso de uso</string>
+    <string name="brain_objetivo_titulo">Escolha por objetivo</string>
+    <string name="brain_destaques_titulo">Destaques</string>
+    <string name="brain_favoritos_titulo">Seus favoritos</string>
+    <string name="brain_gratuitas_titulo">IAs gratuitas</string>
+    <string name="brain_catalogo_titulo">Explorar catálogo</string>
+    <string name="brain_filtros_ajuda">Combine categoria, acesso, capacidade e plataforma</string>
+    <string name="brain_favoritos_vazio">Você ainda não possui IAs favoritas.</string>
+    <string name="brain_filtro_acesso_desc">Filtrar por acesso %1$s</string>
+    <string name="brain_objetivo_desc">Encontrar IAs para %1$s</string>
+    <string name="brain_objetivo_resultado">Melhores opções para %1$s</string>
+    <string name="brain_objetivo_sem_resultado">Nenhuma IA possui dados suficientes para este objetivo.</string>
+    <string name="brain_comparar">Comparar opções</string>
+    <string name="brain_comparar_minimo">Selecione um objetivo com pelo menos duas IAs.</string>
+    <string name="brain_comparacao_titulo">Comparar IAs</string>
+    <string name="brain_comparacao_ajuda">Os valores vêm do catálogo. “—” significa que a informação não está cadastrada.</string>
+    <string name="brain_comparacao_sem_objetivo">Comparação do catálogo</string>
+    <string name="brain_comparacao_objetivo">Comparando para: %1$s</string>
+    <string name="brain_comparacao_criterio">Critério</string>
     <string name="brain_titulo">IaBrain</string>
     <string name="criar_com_ia_titulo">Criar com IA</string>
     <string name="criar_com_ia_descricao">Descreva sua ideia e encontre as IAs certas para cada etapa do projeto.</string>
@@ -155,6 +196,21 @@
     <string name="brain_gratuitas_vazio">Nenhuma alternativa gratuita encontrada.</string>
     <string name="brain_filtros_resultado_vazio">Nenhuma IA encontrada com esses filtros.</string>
     <string name="brain_filtros_contagem">%1$d filtro(s) ativo(s)</string>
+    <string name="chat_processando">Entendendo seu pedido…</string>
+    <string name="chat_encontrando">Encontrando a IA mais adequada…</string>
+    <string name="chat_resposta_padrao">Encontrei uma boa opção para essa tarefa.</string>
+    <string name="chat_resposta_recomendacao">Encontrei uma boa opção: %1$s.</string>
+    <string name="chat_pedido_usuario">Você pediu: %1$s</string>
+    <string name="chat_comando_resolvido">Tarefa identificada: %1$s · Comando: %2$s</string>
+    <string name="chat_compatibilidade">Compatibilidade: %1$s</string>
+    <string name="chat_criar_prompt">Criar prompt</string>
+    <string name="chat_abrir_ia">Abrir IA</string>
+    <string name="chat_escolher_outra">Escolher outra IA</string>
+    <string name="chat_sem_comando">Não consegui interpretar esse pedido. O que você quer criar, pesquisar, escrever ou analisar?</string>
+    <string name="chat_sem_ia">Não encontrei uma IA compatível no catálogo atual.</string>
+    <string name="chat_catalogo_indisponivel">O catálogo ainda não está disponível. Tente novamente em instantes.</string>
+    <string name="chat_erro_processamento">Não foi possível preparar uma recomendação agora.</string>
+    <string name="chat_prompt_preparado">Prompt preparado para revisão</string>
 
     <!-- Fase 21.4 — barra superior do navegador interno -->
     <string name="browser_voltar_desc">Voltar</string>

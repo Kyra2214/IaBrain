@@ -86,6 +86,60 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/txtProcessamentoChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/chat_processando"
+            android:textColor="@color/secondary"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/containerRespostaChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/space_md"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/txtMensagemUsuario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/surface_variant"
+                android:padding="@dimen/space_md"
+                android:textColor="@color/on_surface"
+                android:textIsSelectable="true" />
+
+            <TextView
+                android:id="@+id/txtRespostaIaBrain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/chat_resposta_padrao"
+                android:textColor="@color/on_background"
+                style="@style/TextAppearance.AIBrain.Corpo" />
+
+            <TextView
+                android:id="@+id/txtComandoResolvido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:textColor="@color/on_background_muted"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txtCompatibilidade"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:textColor="@color/secondary"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+
         <!-- Fase 15.4 — Filtros rápidos: 4 grupos de chips combináveis (Acesso, Categoria, Idioma, Avaliação),
              100% locais sobre o catálogo já carregado, sem chamada de rede. -->
         <HorizontalScrollView
@@ -247,6 +301,38 @@
                 android:layout_marginTop="4dp"
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_ia" />
+
+            <LinearLayout
+                android:id="@+id/rowAcoesRecomendacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/space_md"
+                android:layout_marginTop="@dimen/space_md"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCriarPromptChat"
+                    style="@style/Widget.AIBrain.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/chat_criar_prompt" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAbrirIARecomendacao"
+                    style="@style/Widget.AIBrain.Button.Tonal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_sm"
+                    android:text="@string/chat_abrir_ia" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEscolherOutraIA"
+                    style="@style/Widget.AIBrain.Button.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_sm"
+                    android:text="@string/chat_escolher_outra" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"

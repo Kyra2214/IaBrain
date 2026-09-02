@@ -10,6 +10,9 @@ object TextoLivreIntent {
             listOf("revisão técnica", "revisao tecnica", "code review", "revisar código", "revisar codigo").any(t::contains) -> "/review"
             listOf("pesquisar", "pesquisa", "fontes", "evidências", "evidencias").any(t::contains) -> "/research"
             listOf("criar aplicativo", "criar um aplicativo", "criar app", "criar um app", "desenvolver aplicativo", "desenvolver um aplicativo", "desenvolver app", "implementar", "programar", "código", "codigo").any(t::contains) -> "/implement"
+            listOf("criar uma imagem", "criar imagem", "gerar imagem", "imagem de", "ilustração", "ilustracao", "dragão medieval", "dragao medieval").any(t::contains) -> "/creative"
+            listOf("currículo", "curriculo", "escrever um currículo", "escrever um curriculo", "documento profissional", "escrever um texto").any(t::contains) -> "/document"
+            listOf("planilha", "analisar uma planilha", "analisar dados", "análise de dados", "analise de dados", "dataset").any(t::contains) -> "/analyzedata"
             else -> null
         }
     }
