@@ -43,6 +43,7 @@
         <activity android:name=".view.WorkspaceVNextActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ProjetoMemoriaActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.TaskCenterActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity android:name=".view.GitHubSecurityPromptActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ComandoDetalheActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
 
     </application>
