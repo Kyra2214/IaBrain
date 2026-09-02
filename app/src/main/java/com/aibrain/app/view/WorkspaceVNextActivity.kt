@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.aibrain.app.R
 import com.aibrain.app.brain.*
+import com.aibrain.app.browser.BrowserHistoryManager
 import com.aibrain.app.data.local.AppDatabase
 import com.aibrain.app.data.local.BrowserContextoEntity
 import com.aibrain.app.data.local.ProjetoMemoriaEntity
@@ -27,12 +28,14 @@ import java.util.UUID
 class WorkspaceVNextActivity : AppCompatActivity() {
     private lateinit var repository: WorkspaceVNextRepository
     private lateinit var content: LinearLayout
+    private lateinit var browserHistoryManager: BrowserHistoryManager
     private var projectId: String? = null
     private var catalogo = emptyList<com.aibrain.app.model.IA>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         repository = WorkspaceVNextRepository(AppDatabase.getInstance(applicationContext))
+        browserHistoryManager = BrowserHistoryManager(applicationContext)
         projectId = intent.getStringExtra(EXTRA_PROJECT_ID)
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -131,26 +134,16 @@ class WorkspaceVNextActivity : AppCompatActivity() {
                 }
             }
         }
-        section("11 · Contexto entre abas", "Metadados de abas são persistidos; conteúdo sensível não é copiado para a memória.")
-        button("🌐 Registrar snapshot do navegador") {
-            lifecycleScope.launch {
-                repository.salvarContexto(BrowserContextoEntity(UUID.randomUUID().toString(), "WorkspaceVNext", null, emptyList(), null, System.currentTimeMillis()))
-                toast("Snapshot de contexto registrado")
-            }
-        }
-        lifecycleScope.launch {
-            val tarefas = repository.todasTarefas().first()
-            val total = tarefas.count { it.projetoId == pid || pid == null }
-            val pendentes = tarefas.count { (it.projetoId == pid || pid == null) && it.status == TaskStatus.PENDING.name }
-            section("12 · Task Center", "$total tarefa(s) · pendentes $pendentes.")
-            button("📋 Abrir Task Center") { startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java)) }
-            button("➕ Nova tarefa") {
-                dialog("Nova tarefa") { title ->
-                    lifecycleScope.launch {
-                        val now = System.currentTimeMillis()
-                        repository.salvarTarefa(ProjetoTarefaEntity(UUID.randomUUID().toString(), pid, title, "Criada pelo Workspace 2.0", TaskStatus.PENDING.name, TaskPriority.NORMAL.name, now, now))
-                        render()
-                    }
+        section("11 · Contexto entre abas", "O snapshot agora é lido do histórico real do Browser: abas, IA, URL, título, ordem, pin e aba ativa.")
+        button("🌐 Sincronizar contexto real do navegador") { sincronizarContextoBrowser() }
+        section("12 · Task Center", "Tarefas persistidas no Room aguardam ações explícitas do usuário.")
+        button("📋 Abrir Task Center") { startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java)) }
+        button("➕ Nova tarefa") {
+            dialog("Nova tarefa") { title ->
+                lifecycleScope.launch {
+                    val now = System.currentTimeMillis()
+                    repository.salvarTarefa(ProjetoTarefaEntity(UUID.randomUUID().toString(), pid, title, "Criada pelo Workspace 2.0", TaskStatus.PENDING.name, TaskPriority.NORMAL.name, now, now))
+                    render()
                 }
             }
         }
@@ -183,6 +176,33 @@ class WorkspaceVNextActivity : AppCompatActivity() {
             Use essas informações apenas como contexto local para orientar a conversa.
             Não execute código nem envie prompts automaticamente.
         """.trimIndent()
+    }
+
+    /** Captura a sessão real persistida pelo BrowserHistoryManager e transforma somente metadados em contexto Room. */
+    private fun sincronizarContextoBrowser() {
+        lifecycleScope.launch {
+            val (abas, ativa) = browserHistoryManager.lerSessao()
+            if (abas.isEmpty()) {
+                toast("Nenhuma aba salva no navegador")
+                return@launch
+            }
+            val metadados = abas.mapIndexed { index, aba ->
+                val titulo = aba.tituloPagina ?: "sem título"
+                "${index + 1}. ${aba.nomeIA.ifBlank { "Navegador" }} — $titulo — ${aba.urlAtual} — ${if (aba.fixada) "fixada" else "normal"}"
+            }
+            val promptAssociado = abas.firstOrNull { it.id == ativa }?.urlAtual
+            repository.salvarContexto(
+                BrowserContextoEntity(
+                    id = UUID.randomUUID().toString(),
+                    origem = "BrowserHistoryManager",
+                    abaSelecionadaId = ativa,
+                    abas = metadados,
+                    prompt = promptAssociado,
+                    criadoEm = System.currentTimeMillis()
+                )
+            )
+            toast("Contexto sincronizado: ${abas.size} aba(s)")
+        }
     }
 
     private fun escolherIAs() {
