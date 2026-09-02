@@ -9,7 +9,9 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.aibrain.app.R
 import com.aibrain.app.data.local.AppDatabase
 import com.aibrain.app.data.local.ProjetoRepository
@@ -42,19 +44,19 @@ class ProjetosActivity : AppCompatActivity() {
         observarProjetos()
     }
 
-    override fun onResume() { super.onResume(); if (::lista.isInitialized) observarProjetos() }
-
     private fun observarProjetos() {
         lifecycleScope.launch {
-            projetoRepository.observarTodos().collect { projetos ->
-                lista.removeAllViews()
-                vazio.visibility = if (projetos.isEmpty()) View.VISIBLE else View.GONE
-                projetos.forEach { projeto ->
-                    val card = LinearLayout(this@ProjetosActivity).apply { orientation = LinearLayout.VERTICAL; setPadding(16, 16, 16, 16); setBackgroundResource(R.drawable.bg_card) }
-                    card.addView(TextView(this@ProjetosActivity).apply { text = projeto.nome; textSize = 19f; setTextColor(getColor(R.color.on_background)); setTypeface(null, android.graphics.Typeface.BOLD) })
-                    card.addView(TextView(this@ProjetosActivity).apply { text = "${projeto.plataforma ?: "Stack não definida"} · ${projeto.complexidade}\n${projeto.status}"; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 6, 0, 8) })
-                    card.addView(Button(this@ProjetosActivity).apply { text = getString(R.string.projetos_abrir); setOnClickListener { startActivity(ProjetoDetalheActivity.criarIntent(this@ProjetosActivity, projeto.id)) } })
-                    lista.addView(card, LinearLayout.LayoutParams(-1, -2).apply { setMargins(0, 0, 0, 12) })
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                projetoRepository.observarTodos().collect { projetos ->
+                    lista.removeAllViews()
+                    vazio.visibility = if (projetos.isEmpty()) View.VISIBLE else View.GONE
+                    projetos.forEach { projeto ->
+                        val card = LinearLayout(this@ProjetosActivity).apply { orientation = LinearLayout.VERTICAL; setPadding(16, 16, 16, 16); setBackgroundResource(R.drawable.bg_card) }
+                        card.addView(TextView(this@ProjetosActivity).apply { text = projeto.nome; textSize = 19f; setTextColor(getColor(R.color.on_background)); setTypeface(null, android.graphics.Typeface.BOLD) })
+                        card.addView(TextView(this@ProjetosActivity).apply { text = "${projeto.plataforma ?: "Stack não definida"} · ${projeto.complexidade}\n${projeto.status}"; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 6, 0, 8) })
+                        card.addView(Button(this@ProjetosActivity).apply { text = getString(R.string.projetos_abrir); setOnClickListener { startActivity(ProjetoDetalheActivity.criarIntent(this@ProjetosActivity, projeto.id)) } })
+                        lista.addView(card, LinearLayout.LayoutParams(-1, -2).apply { setMargins(0, 0, 0, 12) })
+                    }
                 }
             }
         }

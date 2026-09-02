@@ -27,12 +27,14 @@ class ProjetoDetalheActivity : AppCompatActivity() {
     private lateinit var projetoId: String
     private lateinit var conteudo: LinearLayout
     private lateinit var workspaceRepository: ProjetoWorkspaceRepository
+    private lateinit var projetoRepository: ProjetoRepository
     private val escolherZip = 9001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         projetoId = intent.getStringExtra(EXTRA_PROJETO_ID) ?: run { finish(); return }
         workspaceRepository = ProjetoWorkspaceRepository(applicationContext)
+        projetoRepository = ProjetoRepository(applicationContext)
         val raiz = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(getColor(R.color.background)); setPadding(20, 20, 20, 84) }
         val topo = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         topo.addView(TextView(this).apply { text = getString(R.string.projeto_workspace); textSize = 25f; setTextColor(getColor(R.color.on_background)); setTypeface(null, android.graphics.Typeface.BOLD) }, LinearLayout.LayoutParams(0, -2, 1f))
@@ -48,7 +50,7 @@ class ProjetoDetalheActivity : AppCompatActivity() {
 
     private fun carregar() {
         lifecycleScope.launch {
-            val projeto = com.aibrain.app.data.local.AppDatabase.getInstance(applicationContext).projetoDao().buscar(projetoId) ?: return@launch
+            val projeto = projetoRepository.buscar(projetoId) ?: return@launch
             val arquivos = workspaceRepository.arquivos(projetoId)
             conteudo.removeAllViews()
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = projeto.nome; textSize = 21f; setTextColor(getColor(R.color.on_background)); setTypeface(null, android.graphics.Typeface.BOLD) })
@@ -75,11 +77,12 @@ class ProjetoDetalheActivity : AppCompatActivity() {
             try {
                 val arquivo = File(cacheDir, "contribuicao-${System.currentTimeMillis()}.zip")
                 contentResolver.openInputStream(uri)?.use { input -> arquivo.outputStream().use(input::copyTo) }
-                val resultado = ZipWorkspaceImporter.importar(arquivo, "ZIP")
-                val contribuicao = ContribuicaoWorkspace(projetoId = projetoId, fonte = FonteContribuicao.ZIP, nomeFonte = uri.lastPathSegment ?: "arquivo ZIP", arquivos = resultado.arquivos, status = if (resultado.rejeitados.isEmpty()) StatusContribuicao.ANALISADA else StatusContribuicao.CONFLITO)
+                val nomeFonte = uri.lastPathSegment ?: "arquivo ZIP"
+                val resultado = ZipWorkspaceImporter.importar(arquivo, nomeFonte)
+                val contribuicao = ContribuicaoWorkspace(projetoId = projetoId, fonte = FonteContribuicao.ZIP, nomeFonte = nomeFonte, arquivos = resultado.arquivos, status = if (resultado.rejeitados.isEmpty()) StatusContribuicao.ANALISADA else StatusContribuicao.CONFLITO)
                 workspaceRepository.importarContribuicao(contribuicao)
                 val analise = AnalisadorWorkspace.comparar(emptyList(), listOf(contribuicao))
-                workspaceRepository.salvarIntegracao(projetoId, 1, listOf(contribuicao.nomeFonte), if (analise.conflitos.isEmpty()) "ANALISADA" else "CONFLITO", analise.conflitos)
+                workspaceRepository.salvarIntegracao(projetoId, listOf(contribuicao.nomeFonte), if (analise.conflitos.isEmpty()) "ANALISADA" else "CONFLITO", analise.conflitos)
                 Snackbar.make(conteudo, getString(R.string.projeto_importado), Snackbar.LENGTH_LONG).show()
                 carregar()
             } catch (_: Exception) { Snackbar.make(conteudo, getString(R.string.projeto_zip_invalido), Snackbar.LENGTH_LONG).show() }

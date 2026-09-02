@@ -19,6 +19,7 @@ interface ProjetoWorkspaceDao {
 interface ProjetoIntegracaoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvar(item: ProjetoIntegracaoEntity)
     @Query("SELECT * FROM projeto_integracoes WHERE projetoId=:projetoId ORDER BY numero DESC") fun observar(projetoId: String): Flow<List<ProjetoIntegracaoEntity>>
+    @Query("SELECT COALESCE(MAX(numero), 0) FROM projeto_integracoes WHERE projetoId=:projetoId") suspend fun maiorNumero(projetoId: String): Int
 }
 
 @Dao

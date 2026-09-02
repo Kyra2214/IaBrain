@@ -52,7 +52,7 @@ object AnalisadorWorkspace {
                 else -> mudancas += ArquivoMudanca(caminho, TipoMudanca.MODIFICADO, origem)
             }
         }
-        basePorCaminho.keys.filter { it !in porCaminho }.forEach { mudancas += ArquivoMudanca(it, TipoMudanca.IGUAL) }
+        basePorCaminho.keys.filter { it !in porCaminho }.forEach { mudancas += ArquivoMudanca(it, TipoMudanca.REMOVIDO) }
         val todos = porCaminho.keys
         return ResultadoAnaliseContribuicao(
             mudancas = mudancas.sortedBy { it.caminho }, conflitos = conflitos.distinct().sorted(),
@@ -78,7 +78,7 @@ object ZipWorkspaceImporter {
         ZipFile(zip).use { pacote ->
             pacote.entries().asSequence().filterNot { it.isDirectory }.forEach { entry ->
                 val caminho = entry.name.replace('\\', '/')
-                if (caminho.startsWith("/") || caminho.split('/').any { it == ".." }) { rejeitados += caminho; return@forEach }
+                if (caminho.isBlank() || caminho.startsWith("/") || caminho.matches(Regex("^[A-Za-z]:/.*")) || caminho.split('/').any { it == ".." }) { rejeitados += caminho; return@forEach }
                 val bytes = pacote.getInputStream(entry).use { it.readBytes() }
                 arquivos += ArquivoWorkspace(caminho, sha256(bytes), bytes.size.toLong(), origem)
             }

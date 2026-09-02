@@ -31,7 +31,8 @@ class ProjetoWorkspaceRepository(context: Context) {
         registrarHistorico(contribuicao.projetoId, "CONTRIBUICAO_RECEBIDA", "${contribuicao.fonte.name}: ${contribuicao.nomeFonte}")
     }
 
-    suspend fun salvarIntegracao(projetoId: String, numero: Int, fontes: List<String>, status: String, conflitos: List<String>) {
+    suspend fun salvarIntegracao(projetoId: String, fontes: List<String>, status: String, conflitos: List<String>) {
+        val numero = database.projetoIntegracaoDao().maiorNumero(projetoId) + 1
         database.projetoIntegracaoDao().salvar(ProjetoIntegracaoEntity(UUID.randomUUID().toString(), projetoId, numero, fontes, status, conflitos, System.currentTimeMillis(), if (status == "CONCLUIDA") System.currentTimeMillis() else null))
         registrarHistorico(projetoId, "INTEGRACAO", "${fontes.size} fonte(s); ${conflitos.size} conflito(s)")
     }
