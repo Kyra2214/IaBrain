@@ -216,6 +216,8 @@
     <string name="browser_voltar_desc">Voltar</string>
     <string name="browser_avancar_desc">Avançar</string>
     <string name="browser_atualizar_desc">Atualizar</string>
+    <string name="browser_endereco_hint">Endereço HTTPS</string>
+    <string name="browser_endereco_invalido">Digite um endereço HTTP ou HTTPS válido.</string>
     <string name="browser_compartilhar_desc">Compartilhar página</string>
     <string name="browser_abrir_externo_desc">Abrir no navegador externo</string>
     <string name="browser_fechar_aba_desc">Fechar aba</string>

@@ -10,6 +10,7 @@ object WebViewSecurityPolicy {
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
+            setSupportMultipleWindows(true)
             cacheMode = WebSettings.LOAD_DEFAULT
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             mediaPlaybackRequiresUserGesture = true

@@ -7,20 +7,66 @@
     android:orientation="vertical"
     android:background="@color/background">
 
-    <!--
-        Fase 24 — a barra superior com o nome "AI Brain" foi removida a pedido
-        do usuário: o site da IA agora ocupa a tela inteira. Voltar/avançar no
-        histórico é feito pelos gestos de navegação do próprio Android, e a
-        barra de abas continua presente (item "Nova aba" fecha o navegador e
-        volta ao catálogo). Ações adicionais (atualizar/compartilhar/abrir
-        externo) ficam no menu de cada aba (Fase 21.6).
-    -->
+    <LinearLayout
+        android:id="@+id/browserToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/space_xs"
+        android:paddingVertical="@dimen/space_xs"
+        android:background="@color/surface_container">
 
-    <!--
-        Fase 21.8 — barra de abas (Fase 21.6 integrada à tela): cada aba
-        aberta troca o WebView exibido no container abaixo via
-        BrowserTabManager.ativarNaTela, sem recriar nem recarregar página.
-    -->
+        <ImageButton
+            android:id="@+id/btnBrowserVoltar"
+            android:layout_width="@dimen/icon_button_size"
+            android:layout_height="@dimen/icon_button_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_voltar_desc"
+            android:src="@drawable/ic_back"
+            app:tint="@color/on_surface" />
+
+        <ImageButton
+            android:id="@+id/btnBrowserAvancar"
+            android:layout_width="@dimen/icon_button_size"
+            android:layout_height="@dimen/icon_button_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_avancar_desc"
+            android:src="@drawable/ic_forward"
+            app:tint="@color/on_surface" />
+
+        <EditText
+            android:id="@+id/editBrowserEndereco"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:imeOptions="actionGo"
+            android:inputType="textUri"
+            android:hint="@string/browser_endereco_hint"
+            android:paddingHorizontal="@dimen/space_sm"
+            android:paddingVertical="@dimen/space_xs"
+            android:background="@drawable/bg_search_rounded"
+            android:textColor="@color/on_surface"
+            android:textColorHint="@color/on_surface_variant" />
+
+        <ImageButton
+            android:id="@+id/btnBrowserRecarregar"
+            android:layout_width="@dimen/icon_button_size"
+            android:layout_height="@dimen/icon_button_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/browser_atualizar_desc"
+            android:src="@drawable/ic_refresh"
+            app:tint="@color/on_surface" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBrowserAba"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/secondary"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerAbasBrowser"
         android:layout_width="match_parent"
