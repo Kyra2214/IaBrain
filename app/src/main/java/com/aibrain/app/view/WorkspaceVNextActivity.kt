@@ -63,7 +63,6 @@ class WorkspaceVNextActivity : AppCompatActivity() {
     private fun render() {
         content.removeAllViews()
         val pid = projectId
-        val tarefas = runCatching { repository.todasTarefas() }.getOrNull()
         section("1 · Integração de contribuições", "Revisão por arquivo, decisão explícita e rollback.")
         section("2 · Prompt Actions unificado", "Ações seguem o contrato central e ficam registradas no histórico do prompt.")
         button("📋 Copiar prompt de teste") {
@@ -84,10 +83,15 @@ class WorkspaceVNextActivity : AppCompatActivity() {
         section("4 · Workspace 2.0", "Contexto ${pid?.let { "do projeto $it" } ?: "global"} persistido localmente.")
         section("5 · CI Standard 2.0", "Validação local explícita; estados remotos não são inventados.")
         section("6 · GitHub Workspace", "Estado remoto permanece NOT_VERIFIED até existir evidência real.")
-        section("7 · Chat contextual", "Memórias e contexto do projeto podem ser carregados antes de abrir o Chat.")
+        section("7 · Chat contextual", "Memórias e contexto do projeto são carregados antes de abrir o Chat.")
         button("💬 Abrir Chat contextual do projeto") {
-            val contexto = buildProjectPrompt()
-            startActivity(Intent(this, AIBrainActivity::class.java).putExtra(BrainChatContext.EXTRA_TEXTO_INICIAL, contexto))
+            lifecycleScope.launch {
+                val contexto = buildProjectPrompt()
+                startActivity(
+                    Intent(this@WorkspaceVNextActivity, AIBrainActivity::class.java)
+                        .putExtra(BrainChatContext.EXTRA_TEXTO_INICIAL, contexto)
+                )
+            }
         }
         section("8 · Orquestração Multi-IA", "Seleção explícita de candidatos; nenhuma IA recebe envio automático.")
         button("🧩 Selecionar IAs para plano") { escolherIAs() }
@@ -114,7 +118,6 @@ class WorkspaceVNextActivity : AppCompatActivity() {
                 }
             }
         }
-        val memCount = if (pid == null) 0 else 0
         section("10 · Memória de projeto", "Memórias ficam persistidas no Room e entram no contexto do Chat.")
         button("🧠 Registrar memória") {
             if (pid == null) toast("Abra pelo detalhe de um projeto")
@@ -136,8 +139,9 @@ class WorkspaceVNextActivity : AppCompatActivity() {
             }
         }
         lifecycleScope.launch {
-            val total = tarefas?.first()?.count { it.projetoId == pid || pid == null } ?: 0
-            val pendentes = tarefas?.first()?.count { (it.projetoId == pid || pid == null) && it.status == TaskStatus.PENDING.name } ?: 0
+            val tarefas = repository.todasTarefas().first()
+            val total = tarefas.count { it.projetoId == pid || pid == null }
+            val pendentes = tarefas.count { (it.projetoId == pid || pid == null) && it.status == TaskStatus.PENDING.name }
             section("12 · Task Center", "$total tarefa(s) · pendentes $pendentes.")
             button("📋 Abrir Task Center") { startActivity(Intent(this@WorkspaceVNextActivity, TaskCenterActivity::class.java)) }
             button("➕ Nova tarefa") {
@@ -152,12 +156,31 @@ class WorkspaceVNextActivity : AppCompatActivity() {
         }
     }
 
-    private fun buildProjectPrompt(): String {
+    /** Constrói o contexto real do projeto a partir das memórias e do snapshot de abas persistidos no Room. */
+    private suspend fun buildProjectPrompt(): String {
         val pid = projectId ?: return "Quero trabalhar em um projeto. Mostre o contexto necessário antes de continuar."
+        val memorias = repository.memorias(pid).first()
+        val contextoAbas = repository.contextosRecentes().first().firstOrNull()
+        val memoriaTexto = memorias
+            .sortedByDescending { it.atualizadoEm }
+            .take(12)
+            .joinToString("\n") { "- [${it.tipo}] ${it.titulo}: ${it.conteudo}" }
+            .ifBlank { "- Nenhuma memória de projeto registrada." }
+        val abasTexto = contextoAbas?.let { contexto ->
+            val abas = contexto.abas.take(12).joinToString(" | ")
+            "Origem: ${contexto.origem}; aba selecionada: ${contexto.abaSelecionadaId ?: "nenhuma"}; abas: ${abas.ifBlank { "nenhuma" }}; prompt associado: ${contexto.prompt ?: "nenhum"}."
+        } ?: "Nenhum snapshot de abas registrado."
         return """
             Projeto: $pid
             Quero trabalhar neste projeto pelo Chat contextual do IaBrain.
-            Antes de responder, considere as memórias persistidas e o estado local do Workspace.
+
+            MEMÓRIAS DO PROJETO:
+            $memoriaTexto
+
+            CONTEXTO RECENTE DO NAVEGADOR:
+            $abasTexto
+
+            Use essas informações apenas como contexto local para orientar a conversa.
             Não execute código nem envie prompts automaticamente.
         """.trimIndent()
     }
