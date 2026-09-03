@@ -31,6 +31,9 @@ interface ProjetoExecucaoDao {
 
     @Query("UPDATE projeto_execucoes SET status=:status, erro=:motivo, finalizadoEm=:agora, atualizadoEm=:agora WHERE id=:id AND status IN ('WAITING_USER', 'RUNNING')")
     suspend fun cancelar(id: String, status: String, motivo: String, agora: Long): Int
+
+    @Query("UPDATE projeto_execucoes SET status='WAITING_USER', erro=:motivo, atualizadoEm=:agora WHERE status='RUNNING'")
+    suspend fun recuperarEmExecucao(motivo: String, agora: Long): Int
 }
 
 @Dao
