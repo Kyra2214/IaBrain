@@ -36,7 +36,7 @@ class StrixSecurityProviderTest {
     }
 
     @Test fun findingsCriticoPrecisaDeCvssAltoEEvidencia() {
-        val finding = StrixFinding("Falha", StrixFinding.Severity.CRITICAL, "A01", 7.5, "evidência curta", validated = true)
+        val finding = StrixFinding(title = "Falha", severity = StrixFinding.Severity.CRITICAL, owaspCategory = "A01", cvssScore = 7.5, evidence = "evidência curta", validated = true)
         val errors = StrixFindingValidator.validate(StrixReport("a", StrixReport.Status.SUCCEEDED, listOf(finding)))
         assertEquals(2, errors.size)
     }
@@ -45,7 +45,7 @@ class StrixSecurityProviderTest {
         val runner = object : StrixRunner {
             override suspend fun assess(request: StrixAssessmentRequest) = StrixReport(
                 request.id, StrixReport.Status.SUCCEEDED,
-                (1..5).map { StrixFinding("f$it", StrixFinding.Severity.LOW, "A05", 2.0, "evidence-$it") }
+                (1..5).map { StrixFinding(title = "f$it", severity = StrixFinding.Severity.LOW, owaspCategory = "A05", cvssScore = 2.0, evidence = "evidence-$it") }
             )
         }
         val report = StrixAdapter(runner).assess(localRequest(StrixPolicy(allowExploitValidation = true, maxFindings = 2)))
