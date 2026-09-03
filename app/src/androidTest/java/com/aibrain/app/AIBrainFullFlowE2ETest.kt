@@ -334,7 +334,19 @@ class AIBrainFullFlowE2ETest {
         }
         val hierarchyPrivada = File(context.getDir("e2e-diagnostics", Context.MODE_PRIVATE), "$base.xml")
         runCatching {
-            instrumentation.uiAutomation.dumpWindowHierarchy(hierarchyPrivada)
+            val dump = instrumentation.uiAutomation.executeShellCommand(
+                "uiautomator dump /sdcard/iabrain-e2e-window.xml"
+            )
+            android.os.ParcelFileDescriptor.AutoCloseInputStream(dump).use { input ->
+                val buffer = ByteArray(1024)
+                while (input.read(buffer) >= 0) Unit
+            }
+            val cat = instrumentation.uiAutomation.executeShellCommand(
+                "cat /sdcard/iabrain-e2e-window.xml"
+            )
+            android.os.ParcelFileDescriptor.AutoCloseInputStream(cat).use { input ->
+                FileOutputStream(hierarchyPrivada).use { output -> input.copyTo(output) }
+            }
             diretorioExterno?.let { diretorio ->
                 hierarchyPrivada.copyTo(File(diretorio, "$base.xml"), overwrite = true)
             }
