@@ -11,7 +11,7 @@ import com.aibrain.app.data.local.ProjetoIARepository
 import com.aibrain.app.model.Categoria
 import java.util.UUID
 
-enum class ProjectExecutionStatus { BLOCKED, READY, RUNNING, WAITING_USER, COMPLETED, FAILED, SKIPPED }
+enum class ProjectExecutionStatus { BLOCKED, READY, RUNNING, WAITING_USER, COMPLETED, FAILED, SKIPPED, CANCELLED }
 data class ProjectExecutionState(
     val projetoId: String,
     val funcaoId: String,
@@ -24,7 +24,7 @@ data class ProjectExecutionState(
 )
 data class ProjectExecutionPlan(val state: ProjectExecutionState, val decision: RoutingDecision? = null)
 
-/** Orquestra a cadeia local: dependência → roteamento → prompt → registro → navegador. */
+/** Orquestra a preparação local: dependência → roteamento → prompt → registro → navegador. */
 class ProjectExecutionEngine(
     private val iaRepository: IARepository,
     private val projetoIARepository: ProjetoIARepository,

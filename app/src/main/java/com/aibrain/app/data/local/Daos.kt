@@ -16,10 +16,12 @@ import kotlinx.coroutines.flow.Flow
     @Query("SELECT * FROM projetos WHERE id = :id LIMIT 1") suspend fun buscar(id: String): ProjetoEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvar(projeto: ProjetoEntity)
     @Query("UPDATE projetos SET nome=:nome, descricao=:descricao, atualizadoEm=:atualizadoEm, status=:status WHERE id=:id") suspend fun atualizar(id: String, nome: String, descricao: String, atualizadoEm: Long, status: String)
+    @Query("UPDATE projetos SET status=:status, atualizadoEm=:agora WHERE id=:id") suspend fun marcarStatus(id: String, status: String, agora: Long): Int
 }
 
 @Dao interface ProjetoFuncaoDao {
     @Query("SELECT * FROM projeto_funcoes WHERE projetoId = :projetoId ORDER BY ordem") fun observarDoProjeto(projetoId: String): Flow<List<ProjetoFuncaoEntity>>
+    @Query("SELECT * FROM projeto_funcoes WHERE projetoId = :projetoId ORDER BY ordem") suspend fun listarDoProjeto(projetoId: String): List<ProjetoFuncaoEntity>
     @Query("SELECT * FROM projeto_funcoes WHERE id = :id LIMIT 1") suspend fun buscar(id: String): ProjetoFuncaoEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun salvarTodos(funcoes: List<ProjetoFuncaoEntity>)
     @Query("UPDATE projeto_funcoes SET status=:status WHERE id=:id") suspend fun marcarStatus(id: String, status: String)

@@ -1,7 +1,6 @@
 package com.aibrain.app.data.local
 
 import android.content.Context
-import com.aibrain.app.brain.Complexidade
 import com.aibrain.app.brain.ProjetoIntent
 import com.aibrain.app.brain.ProjetoRecommendation
 import com.aibrain.app.model.IA
@@ -35,6 +34,8 @@ class ProjetoRepository(context: Context) {
 class ProjetoFuncaoRepository(context: Context) {
     private val dao = AppDatabase.getInstance(context).projetoFuncaoDao()
     fun observar(projetoId: String): Flow<List<ProjetoFuncaoEntity>> = dao.observarDoProjeto(projetoId)
+    suspend fun listar(projetoId: String): List<ProjetoFuncaoEntity> = dao.listarDoProjeto(projetoId)
+    suspend fun buscar(id: String): ProjetoFuncaoEntity? = dao.buscar(id)
     suspend fun salvar(projetoId: String, funcoes: List<ProjetoFuncaoEntity>) = dao.salvarTodos(funcoes.mapIndexed { i, f -> f.copy(projetoId = projetoId, ordem = i) })
 }
 
