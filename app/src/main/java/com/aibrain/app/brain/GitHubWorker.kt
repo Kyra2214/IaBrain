@@ -39,11 +39,10 @@ class GitHubWorker {
     }
 
     fun get(taskId: String): Work? = works[taskId]
-
     fun snapshot(): List<Work> = works.values.toList()
 
     fun transition(taskId: String, target: Status, prNumber: Int? = null, error: String? = null): Work {
-        val current = works[taskId] ?: error("Task não encontrada: $taskId")
+        val current = requireNotNull(works[taskId]) { "Task não encontrada: $taskId" }
         check(isAllowed(current.status, target)) { "Transição inválida: ${current.status} -> $target" }
         return current.copy(status = target, pullRequestNumber = prNumber ?: current.pullRequestNumber, error = error)
             .also { works[taskId] = it }
@@ -51,7 +50,7 @@ class GitHubWorker {
 
     fun readyToMerge(taskId: String, qualityGate: ProjectQualityGate.Result): Work {
         check(qualityGate.passed) { "Quality Gate bloqueou a integração" }
-        val current = works[taskId] ?: error("Task não encontrada: $taskId")
+        val current = requireNotNull(works[taskId]) { "Task não encontrada: $taskId" }
         check(current.status == Status.QUALITY_GATE || current.status == Status.APPROVED) { "Task não está em Quality Gate" }
         return transition(taskId, Status.APPROVED)
     }
