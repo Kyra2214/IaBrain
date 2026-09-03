@@ -155,3 +155,33 @@ data class WorkflowComandoEntity(val workflowId: String, val ordem: Int, val com
 
 @Entity(tableName = "comando_execucoes", indices = [Index("comandoId"), Index("iaId")])
 data class ComandoExecucaoEntity(@androidx.room.PrimaryKey val id: String, val comandoId: String, val iaId: String?, val workflowId: String?, val duracaoMs: Long?, val sucesso: Boolean?, val erro: String?, val avaliacao: Int?, val criadoEm: Long)
+
+@Entity(
+    tableName = "projeto_funcao_dependencias",
+    primaryKeys = ["funcaoId", "dependeDeFuncaoId"],
+    indices = [Index("dependeDeFuncaoId")]
+)
+data class ProjetoFuncaoDependenciaEntity(
+    val funcaoId: String,
+    val dependeDeFuncaoId: String
+)
+
+@Entity(
+    tableName = "projeto_execucoes",
+    indices = [Index("projetoId"), Index("funcaoId"), Index("iaId"), Index("status"), Index("criadoEm")]
+)
+data class ProjetoExecucaoEntity(
+    @androidx.room.PrimaryKey val id: String,
+    val projetoId: String,
+    val funcaoId: String,
+    val iaId: String?,
+    val promptId: String?,
+    val status: String,
+    val promptSnapshot: String,
+    val resultado: String?,
+    val erro: String?,
+    val iniciadoEm: Long?,
+    val finalizadoEm: Long?,
+    val criadoEm: Long,
+    val atualizadoEm: Long
+)
