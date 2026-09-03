@@ -17,11 +17,11 @@ interface ProjetoExecucaoDao {
     @Query("SELECT * FROM projeto_execucoes WHERE id=:id LIMIT 1")
     suspend fun buscar(id: String): ProjetoExecucaoEntity?
 
-    @Query("UPDATE projeto_execucoes SET status=:status, iniciadoEm=:iniciadoEm WHERE id=:id")
+    @Query("UPDATE projeto_execucoes SET status=:status, iniciadoEm=:iniciadoEm, atualizadoEm=:iniciadoEm WHERE id=:id")
     suspend fun iniciar(id: String, status: String, iniciadoEm: Long)
 
-    @Query("UPDATE projeto_execucoes SET status=:status, resultado=:resultado, erro=:erro, concluidoEm=:concluidoEm WHERE id=:id")
-    suspend fun concluir(id: String, status: String, resultado: String?, erro: String?, concluidoEm: Long?)
+    @Query("UPDATE projeto_execucoes SET status=:status, resultado=:resultado, erro=:erro, finalizadoEm=:finalizadoEm, atualizadoEm=:finalizadoEm WHERE id=:id")
+    suspend fun concluir(id: String, status: String, resultado: String?, erro: String?, finalizadoEm: Long?)
 }
 
 @Dao
