@@ -37,7 +37,8 @@ class ChatOrchestrationTest {
             )
         )
         assertEquals("claude", decision.selectedAI?.iaId)
-        assertEquals(1, decision.alternatives.size)
+        // CODIGO is a hard requirement, so incompatible candidates are filtered before ranking.
+        assertEquals(0, decision.alternatives.size)
         assertTrue(decision.reasons.any { it.contains("capacidades exigidas") })
     }
 
