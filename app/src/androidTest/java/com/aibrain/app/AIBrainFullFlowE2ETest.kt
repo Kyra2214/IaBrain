@@ -96,6 +96,7 @@ class AIBrainFullFlowE2ETest {
 
     @After
     fun limparCenario() {
+        runCatching { capturarTela("99-estado-final-ou-falha.png") }
         if (::database.isInitialized) database.clearAllTables()
         limparEstadoLocal()
     }
@@ -151,6 +152,7 @@ class AIBrainFullFlowE2ETest {
         val intent = BrowserActivity.criarIntent(context, contrato)
 
         ActivityScenario.launch<BrowserActivity>(intent).use { browserScenario ->
+            capturarTela("03-browser-inicial.png")
             onView(isRoot()).perform(aguardarViewVisivel(R.id.recyclerAbasBrowser))
             onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 1))
             onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
@@ -190,8 +192,8 @@ class AIBrainFullFlowE2ETest {
     private fun validarFluxoDaTelaBrain() {
         limparEstadoLocal()
         ActivityScenario.launch(AIBrainActivity::class.java).use {
-            onView(withId(R.id.btnPerguntar)).perform(aguardarHabilitado())
             capturarTela("00-tela-inicial.png")
+            onView(withId(R.id.btnPerguntar)).perform(aguardarHabilitado())
             onView(withId(R.id.editPergunta)).perform(
                 androidx.test.espresso.action.ViewActions.replaceText(pergunta)
             )
