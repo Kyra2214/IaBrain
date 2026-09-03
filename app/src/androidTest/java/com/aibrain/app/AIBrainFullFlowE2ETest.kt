@@ -3,6 +3,7 @@ package com.aibrain.app
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
+import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -201,33 +202,28 @@ class AIBrainFullFlowE2ETest {
                 androidx.test.espresso.action.ViewActions.click()
             )
 
-            onView(isRoot()).perform(aguardarViewVisivel(R.id.containerPromptGerado))
-            onView(withId(R.id.txtPromptGerado)).check(matches(isDisplayed()))
-            onView(allOf(withId(R.id.txtPromptGerado), withText(containsString("/implement"))))
-                .check(matches(isDisplayed()))
-            onView(allOf(withId(R.id.txtPromptMeta), withText(containsString(iaSelecionada.nome))))
-                .check(matches(isDisplayed()))
-            capturarTela("01-prompt-implement.png")
-
-            onView(withId(R.id.btnAbrirIA)).perform(aguardarHabilitado())
-            onView(withId(R.id.btnAbrirIA)).perform(
+            // A pergunta primeiro produz a recomendação. O prompt só é criado
+            // depois da ação explícita "Criar prompt"; esperar o container do
+            // prompt aqui confundia estado intermediário com falha de navegação.
+            onView(isRoot()).perform(aguardarViewVisivel(R.id.containerResultado))
+            onView(isRoot()).perform(rolarParaFimDoBrain())
+            capturarEvidencia("01-antes-criar-prompt")
+            onView(withId(R.id.btnCriarPromptChat)).perform(
                 androidx.test.espresso.action.ViewActions.click()
             )
-            onView(isRoot()).perform(aguardarViewVisivel(R.id.recyclerAbasBrowser))
-            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 1))
-            onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
-            capturarTela("02-resultado-browser.png")
+
+            onView(isRoot()).perform(aguardarTextoVisivel(R.id.txtPreviewPrompt, "/implement"))
+            onView(withId(R.id.txtTituloCriadorPrompts)).check(matches(isDisplayed()))
+            onView(allOf(withId(R.id.txtPreviewPrompt), withText(containsString(pergunta))))
+                .check(matches(withText(containsString(pergunta))))
+            onView(allOf(withId(R.id.txtPreviewPrompt), withText(containsString(iaSelecionada.nome))))
+                .check(matches(withText(containsString(iaSelecionada.nome))))
+            capturarEvidencia("02-depois-criar-prompt")
         }
     }
 
     private fun capturarTela(nome: String) {
-        val screenshot = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
-            .uiAutomation.takeScreenshot()
-        val dir = context.getDir("e2e-screenshots", Context.MODE_PRIVATE)
-        FileOutputStream(File(dir, nome)).use { output ->
-            screenshot.compress(Bitmap.CompressFormat.PNG, 100, output)
-        }
-        screenshot.recycle()
+        capturarEvidencia(nome.removeSuffix(".png"))
     }
 
     private fun limparEstadoLocal() {
@@ -245,10 +241,27 @@ class AIBrainFullFlowE2ETest {
     }
 
     private fun aguardarViewVisivel(id: Int, timeoutMs: Long = 20_000): ViewAction =
-        esperarNoRoot(timeoutMs) { root ->
+        esperarNoRoot(timeoutMs, "view-${nomeRecurso(id)}") { root ->
             val view = root.findViewById<View>(id)
             view != null && view.visibility == View.VISIBLE && view.isShown
         }
+
+    private fun aguardarTextoVisivel(id: Int, trecho: String, timeoutMs: Long = 20_000): ViewAction =
+        esperarNoRoot(timeoutMs, "texto-${nomeRecurso(id)}") { root ->
+            val view = root.findViewById<TextView>(id)
+            view != null && view.visibility == View.VISIBLE && view.isShown &&
+                view.text?.toString()?.contains(trecho) == true
+        }
+
+    private fun rolarParaFimDoBrain(): ViewAction = object : ViewAction {
+        override fun getConstraints(): Matcher<View> = isRoot()
+        override fun getDescription(): String = "rolar até a ação Criar prompt"
+        override fun perform(uiController: androidx.test.espresso.UiController, view: View) {
+            view.findViewById<androidx.core.widget.NestedScrollView>(R.id.nestedScrollBrain)
+                ?.fullScroll(View.FOCUS_DOWN)
+            uiController.loopMainThreadForAtLeast(100)
+        }
+    }
 
     private fun aguardarHabilitado(timeoutMs: Long = 20_000): ViewAction =
         object : ViewAction {
@@ -264,40 +277,67 @@ class AIBrainFullFlowE2ETest {
         }
 
     private fun aguardarQuantidadeDeItens(id: Int, quantidade: Int, timeoutMs: Long = 20_000): ViewAction =
-        esperarNoRoot(timeoutMs) { root ->
+        esperarNoRoot(timeoutMs, "itens-${nomeRecurso(id)}-$quantidade") { root ->
             root.findViewById<androidx.recyclerview.widget.RecyclerView>(id)
                 ?.adapter?.itemCount == quantidade
         }
 
-    private fun esperarNoRoot(timeoutMs: Long, condicao: (View) -> Boolean): ViewAction =
+    private fun esperarNoRoot(
+        timeoutMs: Long,
+        estado: String,
+        condicao: (View) -> Boolean
+    ): ViewAction =
         object : ViewAction {
             override fun getConstraints(): Matcher<View> = isRoot()
-            override fun getDescription(): String = "aguardar estado observável da tela"
+            override fun getDescription(): String = "aguardar $estado"
             override fun perform(uiController: androidx.test.espresso.UiController, view: View) {
                 val limite = android.os.SystemClock.uptimeMillis() + timeoutMs
                 while (!condicao(view) && android.os.SystemClock.uptimeMillis() < limite) {
                     uiController.loopMainThreadForAtLeast(50)
                 }
                 if (!condicao(view)) {
-                    capturarDiagnostico("timeout-esperando-estado")
-                    error("Estado esperado não apareceu dentro do prazo")
+                    capturarDiagnostico("timeout-$estado")
+                    error("Estado esperado não apareceu dentro do prazo: $estado")
                 }
             }
         }
-    }
+
+    private fun nomeRecurso(id: Int): String =
+        runCatching { context.resources.getResourceEntryName(id) }.getOrDefault(id.toString())
 
     private fun capturarDiagnostico(prefixo: String) {
-        val dir = context.getDir("e2e-diagnostics", Context.MODE_PRIVATE)
+        capturarEvidencia(prefixo)
+    }
+
+    /**
+     * Captura screenshot e UI hierarchy do mesmo frame crítico. Além do
+     * armazenamento privado, grava em Android/media/additional_test_output,
+     * diretório de saída preservado pelo AndroidX Test durante o uninstall.
+     */
+    private fun capturarEvidencia(base: String) {
         val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+        val diretorioExterno = context.getExternalMediaDirs().firstOrNull()
+            ?.resolve("additional_test_output/e2e-evidence")
+            ?.also { it.mkdirs() }
+        val diretoriosScreenshot = listOfNotNull(
+            context.getDir("e2e-screenshots", Context.MODE_PRIVATE),
+            diretorioExterno
+        )
         runCatching {
             val bitmap = instrumentation.uiAutomation.takeScreenshot()
-            FileOutputStream(File(dir, "$prefixo-screenshot.png")).use { output ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+            diretoriosScreenshot.forEach { diretorio ->
+                FileOutputStream(File(diretorio, "$base.png")).use { output ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                }
             }
             bitmap.recycle()
         }
+        val hierarchyPrivada = File(context.getDir("e2e-diagnostics", Context.MODE_PRIVATE), "$base.xml")
         runCatching {
-            instrumentation.uiAutomation.dumpWindowHierarchy(File(dir, "$prefixo-ui.xml"))
+            instrumentation.uiAutomation.dumpWindowHierarchy(hierarchyPrivada)
+            diretorioExterno?.let { diretorio ->
+                hierarchyPrivada.copyTo(File(diretorio, "$base.xml"), overwrite = true)
+            }
         }
     }
 }
