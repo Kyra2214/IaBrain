@@ -4,22 +4,14 @@ import java.io.File
 
 /**
  * Pipeline unificado das fases 1.1 -> 2.0. A execução externa continua sob
- * controle do usuário; o IaBrain recebe o ZIP e decide se ele pode avançar.
+ * controle do usuário; o IaBrain recebe ZIPs e decide se o conjunto pode avançar.
  */
 class SoftwareFactoryPipeline(
     private val worker: GitHubWorker = GitHubWorker()
 ) {
     enum class Stage {
-        PLANNED,
-        ASSIGNED,
-        IN_PROGRESS,
-        ZIP_RECEIVED,
-        INTEGRATED,
-        REVIEWED,
-        QUALITY_GATE,
-        APPROVED,
-        MERGED,
-        BLOCKED
+        PLANNED, ASSIGNED, IN_PROGRESS, ZIP_RECEIVED, INTEGRATED, REVIEWED,
+        QUALITY_GATE, APPROVED, MERGED, BLOCKED
     }
 
     data class TaskState(
@@ -49,14 +41,54 @@ class SoftwareFactoryPipeline(
         val state = TaskState(item.taskId, item.functionId, aiId, item.branchName, Stage.ASSIGNED)
         states[item.taskId] = state
         worker.register(GitHubWorker.Work(item.taskId, item.functionId, item.branchName, aiId))
-        FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.TASK_STARTED, "", item.taskId, aiId))
         return state
     }
 
     fun markInProgress(taskId: String): TaskState {
-        val state = states[taskId] ?: error("Task não encontrada")
+        val state = requireNotNull(states[taskId]) { "Task não encontrada" }
         worker.transition(taskId, GitHubWorker.Status.IN_PROGRESS)
         return state.copy(stage = Stage.IN_PROGRESS).also { states[taskId] = it }
+    }
+
+    /**
+     * Analisa todos os ZIPs juntos. Isso é a fronteira real da integração:
+     * conflitos entre duas IAs só são detectáveis quando os artefatos são
+     * comparados no mesmo snapshot.
+     */
+    fun integrateBatch(
+        plan: ProjectWorkPlanner.Plan,
+        submissions: List<Submission>,
+        baseSha256ByPath: Map<String, String> = emptyMap(),
+        declaredFilesByFunction: Map<String, Set<String>> = emptyMap()
+    ): List<TaskState> {
+        require(submissions.isNotEmpty()) { "Nenhum ZIP para integrar" }
+        submissions.forEach { submission ->
+            val state = requireNotNull(states[submission.taskId]) { "Task não encontrada: ${submission.taskId}" }
+            require(state.functionId == submission.functionId && state.aiId == submission.aiId) { "ZIP não pertence à task ${submission.taskId}" }
+            require(state.stage == Stage.IN_PROGRESS) { "Task ${submission.taskId} não está em execução" }
+            require(submission.zip.isFile) { "ZIP não encontrado: ${submission.zip}" }
+        }
+
+        val artifacts = submissions.map {
+            ZipIntegrationEngine.Artifact(it.taskId, it.functionId, it.aiId, it.zip)
+        }
+        val analysis = ZipIntegrationEngine.analyze(artifacts, baseSha256ByPath)
+        val review = IntegrationReviewEngine.review(plan, analysis, declaredFilesByFunction)
+        val blocked = !analysis.safe || !review.approved
+
+        submissions.forEach { submission ->
+            val current = states.getValue(submission.taskId)
+            if (blocked) {
+                val reason = if (!analysis.safe) "Conflito estrutural no conjunto de ZIPs" else "Integration Review bloqueou o conjunto"
+                worker.transition(submission.taskId, GitHubWorker.Status.BLOCKED, error = reason)
+                states[submission.taskId] = current.copy(stage = Stage.BLOCKED, zip = submission.zip, review = review, error = reason)
+            } else {
+                worker.transition(submission.taskId, GitHubWorker.Status.READY_FOR_REVIEW)
+                states[submission.taskId] = current.copy(stage = Stage.INTEGRATED, zip = submission.zip, review = review)
+            }
+            FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.ZIP_RECEIVED, "", submission.taskId, submission.aiId))
+        }
+        return snapshot()
     }
 
     fun receiveZip(
@@ -64,29 +96,14 @@ class SoftwareFactoryPipeline(
         submission: Submission,
         baseSha256ByPath: Map<String, String> = emptyMap(),
         declaredFilesByFunction: Map<String, Set<String>> = emptyMap()
-    ): TaskState {
-        val state = states[submission.taskId] ?: error("Task não encontrada")
-        require(state.functionId == submission.functionId && state.aiId == submission.aiId) { "ZIP não pertence à task" }
-        require(submission.zip.isFile) { "ZIP não encontrado" }
-        val analysis = ZipIntegrationEngine.analyze(
-            listOf(ZipIntegrationEngine.Artifact(submission.taskId, submission.functionId, submission.aiId, submission.zip)),
-            baseSha256ByPath
-        )
-        if (!analysis.safe) {
-            worker.transition(submission.taskId, GitHubWorker.Status.BLOCKED, error = "Conflito estrutural no ZIP")
-            return state.copy(stage = Stage.BLOCKED, zip = submission.zip, error = "Conflito estrutural no ZIP").also { states[submission.taskId] = it }
-        }
-        val review = IntegrationReviewEngine.review(plan, analysis, declaredFilesByFunction)
-        val nextStage = if (review.approved) Stage.REVIEWED else Stage.BLOCKED
-        if (!review.approved) worker.transition(submission.taskId, GitHubWorker.Status.BLOCKED, error = "Review bloqueou integração")
-        else worker.transition(submission.taskId, GitHubWorker.Status.READY_FOR_REVIEW)
-        FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.ZIP_RECEIVED, "", submission.taskId, submission.aiId))
-        return state.copy(stage = nextStage, zip = submission.zip, review = review).also { states[submission.taskId] = it }
-    }
+    ): TaskState = integrateBatch(plan, listOf(submission), baseSha256ByPath, declaredFilesByFunction)
+        .first { it.taskId == submission.taskId }
+        .let { if (it.stage == Stage.INTEGRATED) it.copy(stage = Stage.REVIEWED) else it }
+        .also { states[submission.taskId] = it }
 
     fun runQualityGate(taskId: String, plan: ProjectWorkPlanner.Plan): TaskState {
-        val state = states[taskId] ?: error("Task não encontrada")
-        check(state.stage == Stage.REVIEWED) { "Review precisa passar antes do Quality Gate" }
+        val state = requireNotNull(states[taskId]) { "Task não encontrada" }
+        check(state.stage == Stage.REVIEWED || state.stage == Stage.INTEGRATED) { "Review precisa passar antes do Quality Gate" }
         val gate = ProjectQualityGate.validate(plan)
         if (!gate.passed) {
             worker.transition(taskId, GitHubWorker.Status.BLOCKED, error = "Quality Gate bloqueado")
@@ -94,19 +111,18 @@ class SoftwareFactoryPipeline(
         }
         worker.transition(taskId, GitHubWorker.Status.PR_OPEN)
         worker.transition(taskId, GitHubWorker.Status.QUALITY_GATE)
-        FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.REVIEWED, "", taskId, state.aiId))
         return state.copy(stage = Stage.QUALITY_GATE, qualityGate = gate).also { states[taskId] = it }
     }
 
     fun approve(taskId: String): TaskState {
-        val state = states[taskId] ?: error("Task não encontrada")
-        val gate = state.qualityGate ?: error("Quality Gate ausente")
+        val state = requireNotNull(states[taskId]) { "Task não encontrada" }
+        val gate = requireNotNull(state.qualityGate) { "Quality Gate ausente" }
         worker.readyToMerge(taskId, gate)
         return state.copy(stage = Stage.APPROVED).also { states[taskId] = it }
     }
 
     fun markMerged(taskId: String): TaskState {
-        val state = states[taskId] ?: error("Task não encontrada")
+        val state = requireNotNull(states[taskId]) { "Task não encontrada" }
         check(state.stage == Stage.APPROVED) { "Task não aprovada" }
         worker.transition(taskId, GitHubWorker.Status.MERGED)
         FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.MERGED, "", taskId, state.aiId))
