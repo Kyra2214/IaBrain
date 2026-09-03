@@ -3,6 +3,7 @@ package com.aibrain.app.brain
 import com.aibrain.app.data.local.IARepository
 import com.aibrain.app.data.local.PromptEntity
 import com.aibrain.app.data.local.PromptRoomRepository
+import com.aibrain.app.data.local.ProjetoContextoRepository
 import com.aibrain.app.data.local.ProjetoEntity
 import com.aibrain.app.data.local.ProjetoExecucaoEntity
 import com.aibrain.app.data.local.ProjetoExecucaoRepository
@@ -24,12 +25,13 @@ data class ProjectExecutionState(
 )
 data class ProjectExecutionPlan(val state: ProjectExecutionState, val decision: RoutingDecision? = null)
 
-/** Orquestra a preparação local: dependência → roteamento → prompt → registro → navegador. */
+/** Orquestra a preparação local: memória → dependência → roteamento → prompt → registro → navegador. */
 class ProjectExecutionEngine(
     private val iaRepository: IARepository,
     private val projetoIARepository: ProjetoIARepository,
     private val executionRepository: ProjetoExecucaoRepository,
-    private val promptRepository: PromptRoomRepository
+    private val promptRepository: PromptRoomRepository,
+    private val contextoRepository: ProjetoContextoRepository? = null
 ) {
     suspend fun prepare(projeto: ProjetoEntity, funcao: ProjetoFuncaoEntity): ProjectExecutionPlan {
         if (!executionRepository.podeExecutar(projeto.id, funcao.id)) {
@@ -52,6 +54,7 @@ class ProjectExecutionEngine(
             .filter { it.selecionada }
             .map { it.iaId }
             .toSet()
+        val memoria = contextoRepository?.resumo(projeto.id).orEmpty()
 
         val candidates = ias.map { ia ->
             RoutingCandidate(
@@ -73,12 +76,14 @@ class ProjectExecutionEngine(
             )
         }
 
+        val contextoBase = "Projeto: ${projeto.nome}; plataforma: ${projeto.plataforma ?: "não informada"}; complexidade: ${projeto.complexidade}"
+        val contextoCompleto = if (memoria.isBlank()) contextoBase else "$contextoBase\nMemória persistente do projeto:\n$memoria"
         val request = RoutingRequest(
             rawUserRequest = "Desenvolver a função '${funcao.funcao}' do projeto '${projeto.nome}': ${funcao.descricao.ifBlank { projeto.descricao }}",
             canonicalCommand = "/develop",
             requiredCapabilities = setOf(capability),
             preferredCapabilities = setOf("projeto-selecionado"),
-            context = "Projeto: ${projeto.nome}; plataforma: ${projeto.plataforma ?: "não informada"}; complexidade: ${projeto.complexidade}"
+            context = contextoCompleto
         )
 
         val decision = LocalAIRouter.route(request, candidates)
@@ -132,6 +137,8 @@ class ProjectExecutionEngine(
                 atualizadoEm = agora
             )
         )
+
+        contextoRepository?.registrarEvento(projeto, "Função preparada: ${funcao.funcao}")
 
         return ProjectExecutionPlan(
             ProjectExecutionState(

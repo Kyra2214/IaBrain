@@ -1,7 +1,7 @@
 package com.aibrain.app.brain
 
+import com.aibrain.app.data.local.ProjetoContextoRepository
 import com.aibrain.app.data.local.ProjetoExecucaoRepository
-import com.aibrain.app.data.local.ProjetoFuncaoEntity
 import com.aibrain.app.data.local.ProjetoFuncaoRepository
 import com.aibrain.app.data.local.ProjetoRepository
 import kotlinx.coroutines.sync.Mutex
@@ -15,7 +15,8 @@ class ProjectOrchestrator(
     private val projetoRepository: ProjetoRepository,
     private val funcaoRepository: ProjetoFuncaoRepository,
     private val executionRepository: ProjetoExecucaoRepository,
-    private val executionEngine: ProjectExecutionEngine
+    private val executionEngine: ProjectExecutionEngine,
+    private val contextoRepository: ProjetoContextoRepository? = null
 ) {
     private val mutex = Mutex()
 
@@ -26,6 +27,7 @@ class ProjectOrchestrator(
 
         if (funcoes.isEmpty()) {
             executionRepository.marcarProjetoStatus(projetoId, "SEM_FUNCOES")
+            contextoRepository?.registrarEvento(projeto, "Projeto bloqueado: sem funções")
             return@withLock ProjectOrchestrationResult.Blocked(projetoId, emptyList(), "O projeto não possui funções.")
         }
 
@@ -39,6 +41,7 @@ class ProjectOrchestrator(
 
         if (ativas.isEmpty()) {
             executionRepository.marcarProjetoStatus(projetoId, "CONCLUIDO")
+            contextoRepository?.registrarEvento(projeto, "Projeto concluído")
             return@withLock ProjectOrchestrationResult.Completed(projetoId)
         }
 
@@ -46,6 +49,7 @@ class ProjectOrchestrator(
         if (ready == null) {
             val bloqueadas = ativas.map { it.id }
             executionRepository.marcarProjetoStatus(projetoId, "BLOQUEADO")
+            contextoRepository?.registrarEvento(projeto, "Projeto bloqueado: dependências pendentes")
             return@withLock ProjectOrchestrationResult.Blocked(
                 projetoId,
                 bloqueadas,
@@ -73,6 +77,15 @@ class ProjectOrchestrator(
         if (!concluida) return ProjectOrchestrationResult.InvalidTransition(executionId)
         val execucao = executionRepository.listarPorId(executionId)
             ?: return ProjectOrchestrationResult.InvalidTransition(executionId)
+        val projeto = projetoRepository.buscar(execucao.projetoId)
+        if (projeto != null) {
+            contextoRepository?.registrarEvento(
+                projeto,
+                "Execução concluída: ${execucao.funcaoId}",
+                resultado = resultado,
+                erro = erro
+            )
+        }
         return advance(execucao.projetoId)
     }
 
@@ -95,6 +108,7 @@ class ProjectOrchestrator(
         val plan = executionEngine.prepare(projeto, funcao)
         if (plan.state.status == ProjectExecutionStatus.WAITING_USER) {
             executionRepository.marcarProjetoStatus(projetoId, "AGUARDANDO_USUARIO")
+            contextoRepository?.registrarEvento(projeto, "Retry preparado: ${funcao.funcao}")
             ProjectOrchestrationResult.Prepared(plan)
         } else {
             ProjectOrchestrationResult.Failed(funcaoId, plan.state.reason)
@@ -104,6 +118,12 @@ class ProjectOrchestrator(
     suspend fun cancel(executionId: String, motivo: String = "Execução cancelada pelo usuário"): ProjectOrchestrationResult = mutex.withLock {
         val cancelada = executionRepository.cancelar(executionId, motivo)
         if (!cancelada) return@withLock ProjectOrchestrationResult.InvalidTransition(executionId)
+        val execucao = executionRepository.listarPorId(executionId)
+        if (execucao != null) {
+            projetoRepository.buscar(execucao.projetoId)?.let { projeto ->
+                contextoRepository?.registrarEvento(projeto, "Execução cancelada: ${execucao.funcaoId}", erro = motivo)
+            }
+        }
         ProjectOrchestrationResult.Cancelled(executionId)
     }
 
