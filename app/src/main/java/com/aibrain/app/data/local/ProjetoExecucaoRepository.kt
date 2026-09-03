@@ -76,6 +76,15 @@ class ProjetoExecucaoRepository(context: android.content.Context) {
         return true
     }
 
+    suspend fun recuperarExecucoesInterrompidas(): Int {
+        val agora = System.currentTimeMillis()
+        val alteradas = execucaoDao.recuperarEmExecucao("Execução retomável após reinício do aplicativo", agora)
+        if (alteradas > 0) {
+            historicoDao.registrar(ProjetoHistoricoEntity(UUID.randomUUID().toString(), "SISTEMA", "EXECUCOES_RECUPERADAS", "$alteradas execução(ões) retornaram para WAITING_USER", agora))
+        }
+        return alteradas
+    }
+
     suspend fun marcarProjetoStatus(projetoId: String, status: String) {
         projetoDao.marcarStatus(projetoId, status, System.currentTimeMillis())
     }
