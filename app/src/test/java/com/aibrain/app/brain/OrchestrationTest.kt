@@ -19,7 +19,7 @@ class OrchestrationTest {
     fun cicloDeDependenciaERejeitado() {
         val a = OrchestrationTask(id = "a", title = "A", objective = "a", dependsOn = setOf("b"))
         val b = OrchestrationTask(id = "b", title = "B", objective = "b", dependsOn = setOf("a"))
-        val result = OrchestrationPlanValidator.validate(OrchestrationPlan("x", tasks = listOf(a, b)))
+        val result = OrchestrationPlanValidator.validate(OrchestrationPlan(objective = "x", tasks = listOf(a, b)))
         assertFalse(result.valid)
         assertTrue(result.errors.any { it.contains("ciclo") })
     }
