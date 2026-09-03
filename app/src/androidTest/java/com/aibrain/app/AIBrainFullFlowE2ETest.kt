@@ -87,7 +87,7 @@ class AIBrainFullFlowE2ETest {
             listOf(ComandoIAEntity("implement", iaSelecionada.id, 1, "IA local do catálogo"))
         )
         database.iaCapabilityDao().salvarTodos(
-            listOf(IACapabilityEntity(iaSelecionada.id, "PROGRAMAÇÃO", especialidade = false, nivel = 1))
+            listOf(IACapabilityEntity(iaSelecionada.id, "CODIGO", especialidade = false, nivel = 1))
         )
     }
 
