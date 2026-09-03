@@ -8,17 +8,15 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
-def validate(path: Path) -> list[str]:
-    errors: list[str] = []
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        return [f"{path}: invalid JSON: {exc}"]
-
-    version = data.get("versao")
+def validate_version(data: dict, path: Path) -> list[str]:
+    version = data.get("versao", data.get("version"))
     if not isinstance(version, int) or version < 0:
-        errors.append(f"{path}: versao must be a non-negative integer")
+        return [f"{path}: version/versao must be a non-negative integer"]
+    return []
 
+
+def validate_ai_catalog(data: dict, path: Path) -> list[str]:
+    errors = validate_version(data, path)
     entries = data.get("ias")
     if not isinstance(entries, list) or not entries:
         return errors + [f"{path}: ias must be a non-empty array"]
@@ -66,6 +64,49 @@ def validate(path: Path) -> list[str]:
                         errors.append(f"{prefix}.notas.{key} must be between 0 and 10")
 
     return errors
+
+
+def validate_command_catalog(data: dict, path: Path) -> list[str]:
+    errors = validate_version(data, path)
+    commands = data.get("commands")
+    if not isinstance(commands, list) or not commands:
+        return errors + [f"{path}: commands must be a non-empty array"]
+
+    ids: set[str] = set()
+    for index, command in enumerate(commands):
+        prefix = f"{path}: commands[{index}]"
+        if not isinstance(command, dict):
+            errors.append(f"{prefix} must be an object")
+            continue
+
+        identifier = command.get("id")
+        if not isinstance(identifier, str) or not identifier.strip():
+            errors.append(f"{prefix}.id must be a non-empty string")
+        elif identifier in ids:
+            errors.append(f"{prefix}.id is duplicated: {identifier}")
+        else:
+            ids.add(identifier)
+
+        for field in ("nome", "comando"):
+            if not isinstance(command.get(field), str) or not command[field].strip():
+                errors.append(f"{prefix}.{field} must be a non-empty string")
+
+    return errors
+
+
+def validate(path: Path) -> list[str]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{path}: invalid JSON: {exc}"]
+
+    if not isinstance(data, dict):
+        return [f"{path}: root must be an object"]
+
+    # The command catalog intentionally has a different schema from the AI catalog.
+    if path.name == "comandos_catalogo.json" or "commands" in data:
+        return validate_command_catalog(data, path)
+    return validate_ai_catalog(data, path)
 
 
 def main() -> int:
