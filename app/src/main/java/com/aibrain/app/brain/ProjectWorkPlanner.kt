@@ -14,7 +14,9 @@ object ProjectWorkPlanner {
         val branchName: String,
         val dependsOn: List<String>,
         val requiredCapabilities: Set<String>,
-        val command: String = "/develop"
+        val command: String = "/develop",
+        val acceptanceCriteria: List<String> = emptyList(),
+        val taskId: String = "task-$functionId"
     )
 
     data class Plan(
@@ -26,7 +28,8 @@ object ProjectWorkPlanner {
     fun build(project: ProjectBuilder.ProjectPlan, baseBranch: String = "main"): Plan {
         require(baseBranch.isNotBlank()) { "Branch base não pode ser vazia" }
         val usedBranches = mutableSetOf<String>()
-        val items = project.functions.mapIndexed { index, function ->
+        val usedTaskIds = mutableSetOf<String>()
+        val items = project.functions.map { function ->
             val role = when (function.id) {
                 "analysis" -> Role.ANALYSIS
                 "architecture" -> Role.ARCHITECTURE
@@ -35,14 +38,22 @@ object ProjectWorkPlanner {
                 else -> Role.IMPLEMENTATION
             }
             val branch = "ai/${projectKey(project.objective)}/${function.id}"
+            val taskId = "task-${projectKey(project.objective)}-${function.id}"
             require(usedBranches.add(branch)) { "Branch duplicada no plano: $branch" }
+            require(usedTaskIds.add(taskId)) { "Task duplicada no plano: $taskId" }
             WorkItem(
                 functionId = function.id,
                 role = role,
                 branchName = branch,
                 dependsOn = function.dependencies,
                 requiredCapabilities = function.requiredCapabilities,
-                command = if (role == Role.TESTING) "/test" else "/develop"
+                command = if (role == Role.TESTING) "/test" else "/develop",
+                acceptanceCriteria = listOf(
+                    "Implementar a responsabilidade declarada da função",
+                    "Respeitar dependências e capacidades exigidas",
+                    "Entregar somente alterações relacionadas à função"
+                ),
+                taskId = taskId
             )
         }
         return Plan(project.objective, baseBranch, items)
@@ -68,22 +79,25 @@ object ProjectQualityGate {
     fun validate(plan: ProjectWorkPlanner.Plan): Result {
         val ids = plan.workItems.map { it.functionId }.toSet()
         val branches = plan.workItems.map { it.branchName }
+        val taskIds = plan.workItems.map { it.taskId }
         val checks = mutableListOf<Check>()
 
         checks += Check("objetivo", plan.objective.isNotBlank(), "Objetivo deve existir")
         checks += Check("branch-base", plan.baseBranch == "main", "Integração deve partir de main")
         checks += Check("branches-unicas", branches.size == branches.toSet().size, "Cada função precisa de uma branch própria")
+        checks += Check("tasks-unicas", taskIds.size == taskIds.toSet().size, "Cada unidade precisa de taskId único")
         checks += Check(
             "dependencias-validas",
             plan.workItems.all { item -> item.dependsOn.all { it in ids && it != item.functionId } },
             "Toda dependência deve apontar para outra função do plano"
         )
         checks += Check(
-            "capacidades", 
+            "capacidades",
             plan.workItems.all { it.requiredCapabilities.isNotEmpty() },
             "Toda função precisa declarar capacidades exigidas"
         )
         checks += Check("comandos", plan.workItems.all { it.command.startsWith("/") }, "Toda unidade precisa de comando explícito")
+        checks += Check("aceitacao", plan.workItems.all { it.acceptanceCriteria.isNotEmpty() }, "Toda unidade precisa de critérios de aceitação")
 
         return Result(
             if (checks.all { it.passed }) Status.PASSED else Status.BLOCKED,
