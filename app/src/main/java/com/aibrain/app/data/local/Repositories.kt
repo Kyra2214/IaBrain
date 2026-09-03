@@ -23,7 +23,7 @@ class ProjetoRepository(context: Context) {
     private val dao = AppDatabase.getInstance(context).projetoDao()
     fun observarTodos(): Flow<List<ProjetoEntity>> = dao.observarTodos()
     suspend fun buscar(id: String): ProjetoEntity? = dao.buscar(id)
-    suspend fun salvar(intent: ProjetoIntent, recommendation: ProjetoRecommendation, nome: String = intent.tipoProjeto ?: "Novo projeto"): String {
+    suspend fun salvar(intent: ProjetoIntent, _recommendation: ProjetoRecommendation, nome: String = intent.tipoProjeto ?: "Novo projeto"): String {
         val agora = System.currentTimeMillis(); val id = UUID.randomUUID().toString()
         dao.salvar(ProjetoEntity(id, nome, intent.textoOriginal, intent.plataforma, intent.complexidade.name, intent.acessoPreferido?.chave, agora, agora, "ATIVO"))
         return id

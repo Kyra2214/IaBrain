@@ -26,7 +26,7 @@ data class CatalogoQuery(
     val somenteAtivas: Boolean = true
 ) {
     fun aplicar(catalogo: List<IA>): List<IA> = catalogo.filter { ia ->
-        (idsPermitidos == null || ia.id in idsPermitidos!!) &&
+        (idsPermitidos == null || ia.id in idsPermitidos) &&
             (plataforma == null || ia.plataformas.isEmpty() || ia.plataformas.any { it.equals(plataforma, true) }) &&
             (!somenteAtivas || ia.status.isNullOrBlank() || !ia.status.equals("inativa", true)) &&
             (acesso == null || ia.acesso == acesso)

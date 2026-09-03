@@ -99,7 +99,7 @@ object OrchestrationPolicyGuard {
 
 data class ValidationReport(val outcome: ValidationOutcome, val reasons: List<String>, val evidence: String? = null)
 class OrchestrationValidator {
-    fun validate(task: OrchestrationTask, response: ProviderResponse): ValidationReport {
+    fun validate(_task: OrchestrationTask, response: ProviderResponse): ValidationReport {
         if (!response.success || response.output.isNullOrBlank()) return ValidationReport(if (response.transient) ValidationOutcome.FAILED else ValidationOutcome.NEEDS_REVISION, listOf(response.error ?: "Provider não produziu saída"))
         if (response.output.length < 8) return ValidationReport(ValidationOutcome.NEEDS_REVISION, listOf("Saída curta demais para o objetivo"))
         return ValidationReport(ValidationOutcome.SUCCEEDED, listOf("Saída não vazia e dentro do contrato"), response.output.take(240))

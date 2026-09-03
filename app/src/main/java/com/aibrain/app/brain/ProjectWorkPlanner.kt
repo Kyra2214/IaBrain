@@ -26,7 +26,7 @@ object ProjectWorkPlanner {
     fun build(project: ProjectBuilder.ProjectPlan, baseBranch: String = "main"): Plan {
         require(baseBranch.isNotBlank()) { "Branch base não pode ser vazia" }
         val usedBranches = mutableSetOf<String>()
-        val items = project.functions.mapIndexed { index, function ->
+        val items = project.functions.map { function ->
             val role = when (function.id) {
                 "analysis" -> Role.ANALYSIS
                 "architecture" -> Role.ARCHITECTURE
