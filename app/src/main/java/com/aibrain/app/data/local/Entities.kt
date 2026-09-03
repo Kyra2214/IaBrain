@@ -158,10 +158,11 @@ data class ComandoExecucaoEntity(@androidx.room.PrimaryKey val id: String, val c
 
 @Entity(
     tableName = "projeto_funcao_dependencias",
-    primaryKeys = ["funcaoId", "dependeDeFuncaoId"],
+    primaryKeys = ["projetoId", "funcaoId", "dependeDeFuncaoId"],
     indices = [Index("dependeDeFuncaoId")]
 )
 data class ProjetoFuncaoDependenciaEntity(
+    val projetoId: String,
     val funcaoId: String,
     val dependeDeFuncaoId: String
 )
