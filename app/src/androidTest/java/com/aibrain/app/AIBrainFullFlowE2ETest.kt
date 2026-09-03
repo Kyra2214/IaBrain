@@ -1,6 +1,7 @@
 package com.aibrain.app
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -43,6 +44,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.net.URI
+import java.io.File
+import java.io.FileOutputStream
 
 /**
  * E2E funcional do fluxo interno do IaBrain, sem login, API ou site externo.
@@ -152,6 +155,7 @@ class AIBrainFullFlowE2ETest {
             onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 1))
             onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
             onView(withText(contrato.selectedAIName)).check(matches(isDisplayed()))
+            capturarTela("03-browser-primeira-aba.png")
 
             browserScenario.onActivity { activity ->
                 assertEquals(contrato.selectedAIName, activity.intent.getStringExtra(BrowserActivity.EXTRA_NOME_IA))
@@ -170,6 +174,7 @@ class AIBrainFullFlowE2ETest {
             }
 
             onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 2))
+            capturarTela("04-browser-segunda-aba.png")
             browserScenario.onActivity { activity ->
                 val itens = (activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerAbasBrowser)
                     .adapter as com.aibrain.app.browser.BrowserAdapter).currentList
@@ -186,6 +191,7 @@ class AIBrainFullFlowE2ETest {
         limparEstadoLocal()
         ActivityScenario.launch(AIBrainActivity::class.java).use {
             onView(withId(R.id.btnPerguntar)).perform(aguardarHabilitado())
+            capturarTela("00-tela-inicial.png")
             onView(withId(R.id.editPergunta)).perform(
                 androidx.test.espresso.action.ViewActions.replaceText(pergunta)
             )
@@ -199,6 +205,7 @@ class AIBrainFullFlowE2ETest {
                 .check(matches(isDisplayed()))
             onView(allOf(withId(R.id.txtPromptMeta), withText(containsString(iaSelecionada.nome))))
                 .check(matches(isDisplayed()))
+            capturarTela("01-prompt-implement.png")
 
             onView(withId(R.id.btnAbrirIA)).perform(aguardarHabilitado())
             onView(withId(R.id.btnAbrirIA)).perform(
@@ -207,7 +214,18 @@ class AIBrainFullFlowE2ETest {
             onView(isRoot()).perform(aguardarViewVisivel(R.id.recyclerAbasBrowser))
             onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 1))
             onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
+            capturarTela("02-resultado-browser.png")
         }
+    }
+
+    private fun capturarTela(nome: String) {
+        val screenshot = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+            .uiAutomation.takeScreenshot()
+        val dir = context.getDir("e2e-screenshots", Context.MODE_PRIVATE)
+        FileOutputStream(File(dir, nome)).use { output ->
+            screenshot.compress(Bitmap.CompressFormat.PNG, 100, output)
+        }
+        screenshot.recycle()
     }
 
     private fun limparEstadoLocal() {

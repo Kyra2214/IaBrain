@@ -94,6 +94,9 @@ jobs:
             set +e
             ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest
             test_exit=$?
+            mkdir -p artifacts/emulator-fullflow/screenshots
+            adb exec-out run-as com.aibrain.app tar -cf - -C app_e2e-screenshots . | tar -xf - -C artifacts/emulator-fullflow/screenshots
+            printf '%s\n' "$?" > artifacts/emulator-fullflow/screenshots-export.exit-code
             timeout 20s adb exec-out screencap -p > artifacts/emulator-fullflow/screenshot-during-test.png
             capture_exit=$?
             printf '%s\n' "$capture_exit" > artifacts/emulator-fullflow/screenshot-during-test.exit-code
