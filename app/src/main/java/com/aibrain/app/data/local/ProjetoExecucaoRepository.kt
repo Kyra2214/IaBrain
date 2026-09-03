@@ -15,8 +15,7 @@ class ProjetoExecucaoRepository(context: android.content.Context) {
 
     suspend fun registrarDependencias(projetoId: String, dependencias: List<Pair<String, String>>) {
         require(dependencias.none { it.first == it.second }) { "Uma função não pode depender de si mesma" }
-        val itens = dependencias.map { (funcao, dependeDe) -> ProjetoFuncaoDependenciaEntity(projetoId, funcao, dependeDe) }
-        dependenciaDao.salvarTodos(itens)
+        dependenciaDao.salvarTodos(dependencias.map { (funcao, dependeDe) -> ProjetoFuncaoDependenciaEntity(projetoId, funcao, dependeDe) })
     }
 
     suspend fun dependencias(projetoId: String, funcaoId: String): List<ProjetoFuncaoDependenciaEntity> = dependenciaDao.dependencias(projetoId, funcaoId)
@@ -31,6 +30,16 @@ class ProjetoExecucaoRepository(context: android.content.Context) {
     suspend fun preparar(execucao: ProjetoExecucaoEntity) {
         execucaoDao.salvar(execucao)
         historicoDao.registrar(ProjetoHistoricoEntity(UUID.randomUUID().toString(), execucao.projetoId, "EXECUCAO_PREPARADA", "Função ${execucao.funcaoId}; IA ${execucao.iaId ?: "não selecionada"}", System.currentTimeMillis()))
+    }
+
+    suspend fun iniciar(id: String): Boolean {
+        val execucao = execucaoDao.buscar(id) ?: return false
+        if (execucao.status != ProjectExecutionStatus.WAITING_USER.name) return false
+        val agora = System.currentTimeMillis()
+        execucaoDao.iniciar(id, ProjectExecutionStatus.RUNNING.name, agora)
+        funcaoDao.marcarStatus(execucao.funcaoId, "EM_EXECUCAO")
+        historicoDao.registrar(ProjetoHistoricoEntity(UUID.randomUUID().toString(), execucao.projetoId, "EXECUCAO_INICIADA", "Função ${execucao.funcaoId} iniciada pelo usuário", agora))
+        return true
     }
 
     suspend fun concluir(id: String, resultado: String?, erro: String? = null) {
