@@ -14,7 +14,6 @@ import com.aibrain.app.brain.abrirExecucaoProjeto
 import com.aibrain.app.data.local.AppDatabase
 import com.aibrain.app.data.local.IARepository
 import com.aibrain.app.data.local.ProjetoExecucaoRepository
-import com.aibrain.app.data.local.ProjetoFuncaoRepository
 import com.aibrain.app.data.local.ProjetoIARepository
 import com.aibrain.app.data.local.ProjetoRepository
 import kotlinx.coroutines.launch
@@ -40,7 +39,7 @@ class ProjetoExecucaoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val db = AppDatabase.getInstance(applicationContext)
             val projeto = ProjetoRepository(applicationContext).buscar(projetoId)
-            val funcao = ProjetoFuncaoRepository(applicationContext).let { repo -> db.projetoFuncaoDao().buscar(funcaoId) }
+            val funcao = db.projetoFuncaoDao().buscar(funcaoId)
             if (projeto == null || funcao == null) { finish(); return@launch }
             val engine = ProjectExecutionEngine(IARepository(applicationContext), ProjetoIARepository(applicationContext), ProjetoExecucaoRepository(applicationContext))
             val plan = engine.prepare(projeto, funcao)
@@ -54,8 +53,17 @@ class ProjetoExecucaoActivity : AppCompatActivity() {
 
         abrir.setOnClickListener {
             lifecycleScope.launch {
+                val id = executionId
+                if (id != null && !ProjetoExecucaoRepository(applicationContext).iniciar(id)) {
+                    Toast.makeText(this@ProjetoExecucaoActivity, "Esta execução não está mais disponível.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+                status.text = "Status: ${ProjectExecutionStatus.RUNNING}\nAguardando resultado da IA..."
                 val ok = iaId?.let { abrirExecucaoProjeto(this@ProjetoExecucaoActivity, it, prompt.text.toString()) } == true
-                if (!ok) Toast.makeText(this@ProjetoExecucaoActivity, "Não foi possível resolver a URL oficial da IA.", Toast.LENGTH_LONG).show()
+                if (!ok) {
+                    id?.let { ProjetoExecucaoRepository(applicationContext).concluir(it, null, "URL oficial da IA não pôde ser resolvida") }
+                    Toast.makeText(this@ProjetoExecucaoActivity, "Não foi possível resolver a URL oficial da IA.", Toast.LENGTH_LONG).show()
+                }
             }
         }
         registrar.setOnClickListener { pedirResultado() }
