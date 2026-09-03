@@ -77,14 +77,12 @@ class AIBrainFullFlowE2ETest {
             .firstOrNull()
             ?: error("O catálogo local não possui uma IA HTTPS")
 
-        // A IA vem do asset local do catálogo; não é uma fake nem uma URL criada pelo teste.
         database.iaDao().salvarTodos(listOf(iaSelecionada.toEntity()))
 
         val resolver = RoomCommandResolver(context, database)
         val request = resolver.resolve(pergunta) ?: error("A pergunta não resolveu para um comando")
         assertEquals("/implement", request.canonicalCommand)
 
-        // Relação real persistida no grafo local para que o router reconheça o comando.
         database.comandoGrafoDao().salvarComandosIA(
             listOf(ComandoIAEntity("implement", iaSelecionada.id, 1, "IA local do catálogo"))
         )
@@ -151,7 +149,7 @@ class AIBrainFullFlowE2ETest {
 
         ActivityScenario.launch<BrowserActivity>(intent).use { browserScenario ->
             onView(isRoot()).perform(aguardarViewVisivel(R.id.recyclerAbasBrowser))
-            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 2))
+            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 1))
             onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
             onView(withText(contrato.selectedAIName)).check(matches(isDisplayed()))
 
@@ -163,7 +161,6 @@ class AIBrainFullFlowE2ETest {
                 assertTrue(activity.findViewById<android.view.ViewGroup>(R.id.containerWebViewBrowser).childCount > 0)
             }
 
-            // onNewIntent é o caminho real de BrowserActivity(singleTask) para uma nova aba.
             val segundaAba = contrato.copy(generatedPrompt = "Segunda pergunta para revisão")
             browserScenario.onActivity { activity ->
                 activity.startActivity(
@@ -172,7 +169,7 @@ class AIBrainFullFlowE2ETest {
                 )
             }
 
-            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 3))
+            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 2))
             browserScenario.onActivity { activity ->
                 val itens = (activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerAbasBrowser)
                     .adapter as com.aibrain.app.browser.BrowserAdapter).currentList
@@ -203,19 +200,22 @@ class AIBrainFullFlowE2ETest {
             onView(allOf(withId(R.id.txtPromptMeta), withText(containsString(iaSelecionada.nome))))
                 .check(matches(isDisplayed()))
 
-            // A ação abre o BrowserActivity pelo contrato real; não envia prompt algum.
             onView(withId(R.id.btnAbrirIA)).perform(aguardarHabilitado())
             onView(withId(R.id.btnAbrirIA)).perform(
                 androidx.test.espresso.action.ViewActions.click()
             )
             onView(isRoot()).perform(aguardarViewVisivel(R.id.recyclerAbasBrowser))
-            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 2))
+            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 1))
             onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
         }
     }
 
     private fun limparEstadoLocal() {
         context.getSharedPreferences("ai_brain_prefs", Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .commit()
+        context.getSharedPreferences("ai_brain_browser_prefs", Context.MODE_PRIVATE)
             .edit()
             .clear()
             .commit()
