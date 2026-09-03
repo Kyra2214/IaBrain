@@ -13,6 +13,7 @@ import com.aibrain.app.brain.ProjectExecutionStatus
 import com.aibrain.app.brain.abrirExecucaoProjeto
 import com.aibrain.app.data.local.AppDatabase
 import com.aibrain.app.data.local.IARepository
+import com.aibrain.app.data.local.PromptRoomRepository
 import com.aibrain.app.data.local.ProjetoExecucaoRepository
 import com.aibrain.app.data.local.ProjetoIARepository
 import com.aibrain.app.data.local.ProjetoRepository
@@ -41,7 +42,7 @@ class ProjetoExecucaoActivity : AppCompatActivity() {
             val projeto = ProjetoRepository(applicationContext).buscar(projetoId)
             val funcao = db.projetoFuncaoDao().buscar(funcaoId)
             if (projeto == null || funcao == null) { finish(); return@launch }
-            val engine = ProjectExecutionEngine(IARepository(applicationContext), ProjetoIARepository(applicationContext), ProjetoExecucaoRepository(applicationContext))
+            val engine = ProjectExecutionEngine(IARepository(applicationContext), ProjetoIARepository(applicationContext), ProjetoExecucaoRepository(applicationContext), PromptRoomRepository(applicationContext))
             val plan = engine.prepare(projeto, funcao)
             status.text = "Status: ${plan.state.status}\nIA: ${plan.state.iaId ?: "nenhuma"}\nConfiança: ${"%.0f".format(plan.state.confidence * 100)}%"
             prompt.text = plan.state.prompt ?: plan.state.reason
