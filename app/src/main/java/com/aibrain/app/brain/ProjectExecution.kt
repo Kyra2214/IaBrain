@@ -1,6 +1,8 @@
 package com.aibrain.app.brain
 
 import com.aibrain.app.data.local.IARepository
+import com.aibrain.app.data.local.PromptEntity
+import com.aibrain.app.data.local.PromptRoomRepository
 import com.aibrain.app.data.local.ProjetoEntity
 import com.aibrain.app.data.local.ProjetoExecucaoEntity
 import com.aibrain.app.data.local.ProjetoExecucaoRepository
@@ -10,15 +12,15 @@ import com.aibrain.app.model.Categoria
 import java.util.UUID
 
 enum class ProjectExecutionStatus { BLOCKED, READY, RUNNING, WAITING_USER, COMPLETED, FAILED, SKIPPED }
-
 data class ProjectExecutionState(val projetoId: String, val funcaoId: String, val status: ProjectExecutionStatus, val iaId: String? = null, val prompt: String? = null, val executionId: String? = null, val confidence: Double = 0.0, val reason: String = "")
 data class ProjectExecutionPlan(val state: ProjectExecutionState, val decision: RoutingDecision? = null)
 
-/** Orquestra apenas preparação local. A execução da IA externa continua sob controle do usuário. */
+/** Orquestra a cadeia local: dependência → roteamento → prompt → registro → navegador. */
 class ProjectExecutionEngine(
     private val iaRepository: IARepository,
     private val projetoIARepository: ProjetoIARepository,
-    private val executionRepository: ProjetoExecucaoRepository
+    private val executionRepository: ProjetoExecucaoRepository,
+    private val promptRepository: PromptRoomRepository
 ) {
     suspend fun prepare(projeto: ProjetoEntity, funcao: ProjetoFuncaoEntity): ProjectExecutionPlan {
         if (!executionRepository.podeExecutar(projeto.id, funcao.id)) {
@@ -52,8 +54,10 @@ class ProjectExecutionEngine(
         val selected = decision.selectedAI ?: return ProjectExecutionPlan(ProjectExecutionState(projeto.id, funcao.id, ProjectExecutionStatus.FAILED, reason = "Nenhuma IA disponível para a função."), decision)
         val spec = PromptGenerationSpecBuilder.from(request, decision, funcao.id)
         val prompt = ContextualPromptGenerator.generate(spec)
+        val agora = System.currentTimeMillis()
+        promptRepository.salvar(PromptEntity(UUID.randomUUID().toString(), projeto.id, funcao.id, selected.iaId, "Execução: ${funcao.funcao}", prompt, spec.modeloGeracao, "PROJECT_EXECUTION", agora, agora, false))
         val id = UUID.randomUUID().toString()
-        executionRepository.preparar(ProjetoExecucaoEntity(id, projeto.id, funcao.id, selected.iaId, prompt, ProjectExecutionStatus.WAITING_USER.name, null, null, decision.confidence, System.currentTimeMillis(), System.currentTimeMillis(), null))
+        executionRepository.preparar(ProjetoExecucaoEntity(id, projeto.id, funcao.id, selected.iaId, prompt, ProjectExecutionStatus.WAITING_USER.name, null, null, decision.confidence, agora, null, null))
         return ProjectExecutionPlan(ProjectExecutionState(projeto.id, funcao.id, ProjectExecutionStatus.WAITING_USER, selected.iaId, prompt, id, decision.confidence, "Prompt preparado; usuário deve abrir a IA e iniciar a execução."), decision)
     }
 }
