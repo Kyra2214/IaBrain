@@ -16,6 +16,8 @@ class ProjetoExecucaoRepository(context: android.content.Context) {
 
     suspend fun listar(projetoId: String): List<ProjetoExecucaoEntity> = execucaoDao.listarDoProjeto(projetoId)
 
+    suspend fun listarPorId(id: String): ProjetoExecucaoEntity? = execucaoDao.buscar(id)
+
     suspend fun ultimaDaFuncao(projetoId: String, funcaoId: String): ProjetoExecucaoEntity? =
         execucaoDao.ultimaDaFuncao(projetoId, funcaoId)
 
