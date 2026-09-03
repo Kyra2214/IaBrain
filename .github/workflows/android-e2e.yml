@@ -92,8 +92,26 @@ jobs:
             adb wait-for-device
             mkdir -p artifacts/emulator-fullflow
             set +e
+            mkdir -p artifacts/emulator-fullflow/live-screenshots artifacts/emulator-fullflow/live-ui
+            (
+              n=0
+              while true; do
+                stamp=$(date -u +%Y%m%dT%H%M%S)
+                printf '%s\n' "$stamp" >> artifacts/emulator-fullflow/live-adb-state.log
+                adb get-state >> artifacts/emulator-fullflow/live-adb-state.log 2>&1
+                timeout 5s adb exec-out screencap -p > "artifacts/emulator-fullflow/live-screenshots/${n}-${stamp}.png" 2> "artifacts/emulator-fullflow/live-screenshots/${n}-${stamp}.stderr"
+                timeout 5s adb shell uiautomator dump /sdcard/iabrain-window.xml > "artifacts/emulator-fullflow/live-ui/${n}-${stamp}.dump.txt" 2>&1
+                timeout 5s adb exec-out cat /sdcard/iabrain-window.xml > "artifacts/emulator-fullflow/live-ui/${n}-${stamp}.xml" 2> "artifacts/emulator-fullflow/live-ui/${n}-${stamp}.stderr"
+                n=$((n + 1))
+                sleep 2
+              done
+            ) &
+            monitor_pid=$!
             ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest
             test_exit=$?
+            kill "$monitor_pid" 2>/dev/null
+            wait "$monitor_pid" 2>/dev/null
+            printf '%s\n' "$test_exit" > artifacts/emulator-fullflow/test-exit-code.txt
             mkdir -p artifacts/emulator-fullflow/screenshots
             adb exec-out run-as com.aibrain.app tar -cf - -C app_e2e-screenshots . | tar -xf - -C artifacts/emulator-fullflow/screenshots
             printf '%s\n' "$?" > artifacts/emulator-fullflow/screenshots-export.exit-code
