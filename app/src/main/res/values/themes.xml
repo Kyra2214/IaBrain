@@ -92,7 +92,6 @@
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
 
         <!-- Tipografia suavizada aplicada ao app inteiro -->
         <item name="android:fontFamily">sans-serif</item>
@@ -110,12 +109,7 @@
         <item name="android:windowAnimationStyle">@style/Animacao.AIBrain.Janela</item>
     </style>
 
-    <!--
-        Fase 24 — variante sem a barra de título do sistema (ActionBar).
-        Todas as telas do app desenham cabeçalhos próprios; sem este tema, o
-        sistema desenhava uma barra cinza extra no topo com o nome "AI Brain",
-        que era o bug reportado pelo usuário.
-    -->
+    <!-- Fase 24 — variante sem a barra de título do sistema (ActionBar). -->
     <style name="Theme.AIBrain.NoActionBar" parent="Theme.AIBrain">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

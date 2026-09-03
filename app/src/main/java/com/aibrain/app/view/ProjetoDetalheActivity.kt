@@ -16,10 +16,12 @@ import com.aibrain.app.brain.FonteContribuicao
 import com.aibrain.app.brain.StatusContribuicao
 import com.aibrain.app.brain.ValidadorProjeto
 import com.aibrain.app.brain.ZipWorkspaceImporter
+import com.aibrain.app.data.local.AppDatabase
 import com.aibrain.app.data.local.ProjetoRepository
 import com.aibrain.app.data.local.ProjetoWorkspaceRepository
 import com.aibrain.app.navigation.GlobalNavigation
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -52,9 +54,18 @@ class ProjetoDetalheActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val projeto = projetoRepository.buscar(projetoId) ?: return@launch
             val arquivos = workspaceRepository.arquivos(projetoId)
+            val funcoes = AppDatabase.getInstance(applicationContext).projetoFuncaoDao().observarDoProjeto(projetoId).first()
             conteudo.removeAllViews()
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = projeto.nome; textSize = 21f; setTextColor(getColor(R.color.on_background)); setTypeface(null, android.graphics.Typeface.BOLD) })
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "${projeto.descricao}\nStack: ${projeto.plataforma ?: "não definida"} · ${projeto.complexidade}"; setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
+            conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "EXECUÇÃO DO PROJETO"; textSize = 18f; setTextColor(getColor(R.color.on_background)); setPadding(0, 12, 0, 6) })
+            if (funcoes.isEmpty()) conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = "Nenhuma função cadastrada."; setTextColor(getColor(R.color.on_background_muted)) })
+            funcoes.forEach { funcao ->
+                conteudo.addView(Button(this@ProjetoDetalheActivity).apply {
+                    text = "▶ ${funcao.funcao} · ${funcao.status}"
+                    setOnClickListener { startActivity(Intent(this@ProjetoDetalheActivity, ProjetoExecucaoActivity::class.java).putExtra(ProjetoExecucaoActivity.EXTRA_PROJETO_ID, projetoId).putExtra(ProjetoExecucaoActivity.EXTRA_FUNCAO_ID, funcao.id)) }
+                })
+            }
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_github) + "\n" + getString(R.string.projeto_github_desconectado); setTextColor(getColor(R.color.on_background_muted)); setPadding(0, 8, 0, 16) })
             conteudo.addView(Button(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_validar); setOnClickListener { validar(arquivos) } })
             conteudo.addView(TextView(this@ProjetoDetalheActivity).apply { text = getString(R.string.projeto_contribuicoes); textSize = 18f; setTextColor(getColor(R.color.on_background)); setPadding(0, 18, 0, 6) })
