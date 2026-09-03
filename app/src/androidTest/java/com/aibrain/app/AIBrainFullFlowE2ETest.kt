@@ -278,7 +278,26 @@ class AIBrainFullFlowE2ETest {
                 while (!condicao(view) && android.os.SystemClock.uptimeMillis() < limite) {
                     uiController.loopMainThreadForAtLeast(50)
                 }
-                if (!condicao(view)) error("Estado esperado não apareceu dentro do prazo")
+                if (!condicao(view)) {
+                    capturarDiagnostico("timeout-esperando-estado")
+                    error("Estado esperado não apareceu dentro do prazo")
+                }
             }
         }
+    }
+
+    private fun capturarDiagnostico(prefixo: String) {
+        val dir = context.getDir("e2e-diagnostics", Context.MODE_PRIVATE)
+        val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+        runCatching {
+            val bitmap = instrumentation.uiAutomation.takeScreenshot()
+            FileOutputStream(File(dir, "$prefixo-screenshot.png")).use { output ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+            }
+            bitmap.recycle()
+        }
+        runCatching {
+            instrumentation.uiAutomation.dumpWindowHierarchy(File(dir, "$prefixo-ui.xml"))
+        }
+    }
 }
