@@ -1,5 +1,10 @@
 package com.aibrain.app.brain
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
 class ExplorerIntelligenceTest {
     private val pipeline = ExplorerIntelligencePipeline()
 
@@ -7,7 +12,6 @@ class ExplorerIntelligenceTest {
         id: String,
         name: String,
         region: ExplorerRegion = ExplorerRegion.CHINA,
-        type: ExplorerItemType = ExplorerItemType.AI,
         capabilities: Set<String> = setOf("agent", "coding"),
         firstSeen: Long = NOW - 2 * DAY,
         confidence: Double = .9,
@@ -18,7 +22,7 @@ class ExplorerIntelligenceTest {
     ) = ExplorerCandidate(
         id = id,
         name = name,
-        type = type,
+        type = ExplorerItemType.AI,
         region = region,
         officialUrl = "https://$id.example.com",
         description = "AI agent for coding and automation",
@@ -31,92 +35,90 @@ class ExplorerIntelligenceTest {
         confidence = confidence
     )
 
+    @Test
     fun phase1_chinaPriorityIsVisible() {
         val china = candidate("china", "China AI")
         val global = candidate("global", "Global AI", ExplorerRegion.UNITED_STATES)
         val ranked = pipeline.rankRadar(listOf(global, china), NOW)
-        check(ranked.first().candidate.region == ExplorerRegion.CHINA)
-        check(ranked.first().reasons.contains("prioridade do radar chinês"))
+        assertEquals(ExplorerRegion.CHINA, ranked.first().candidate.region)
+        assertTrue(ranked.first().reasons.contains("prioridade do radar chinês"))
     }
 
+    @Test
     fun phase2_duplicateOfficialUrlAndNameCollapses() {
         val a = candidate("same-a", "Same", firstSeen = NOW - DAY)
         val b = a.copy(id = "same-b")
-        val ranked = pipeline.rankRadar(listOf(a, b), NOW)
-        check(ranked.size == 1)
+        assertEquals(1, pipeline.rankRadar(listOf(a, b), NOW).size)
     }
 
+    @Test
     fun phase3_privateOrCredentialUrlIsBlocked() {
         val unsafe = candidate("unsafe", "Unsafe").copy(officialUrl = "https://user:secret@localhost/tool")
         val result = pipeline.validateSecurity(unsafe)
-        check(!result.safe)
-        check(result.blockers.isNotEmpty())
+        assertFalse(result.safe)
+        assertTrue(result.blockers.isNotEmpty())
     }
 
+    @Test
     fun phase4_unknownLicenseRequiresReview() {
         val unknown = candidate("unknown-license", "Unknown License", license = ExplorerLicense.UNKNOWN, licenseVerified = false)
-        val result = pipeline.licenseReview(unknown)
-        check(result.decision == ReuseDecision.REVIEW_REQUIRED)
+        assertEquals(ReuseDecision.REVIEW_REQUIRED, pipeline.licenseReview(unknown).decision)
     }
 
+    @Test
     fun phase5_workspaceOpensAndMinimizes() {
-        val ai = candidate("workspace", "Workspace AI")
-        val opened = pipeline.openWindow(WorkspaceState(), ai)
-        check(opened.activeWindowId == "explorer-workspace")
+        val opened = pipeline.openWindow(WorkspaceState(), candidate("workspace", "Workspace AI"))
+        assertEquals("explorer-workspace", opened.activeWindowId)
         val minimized = pipeline.minimizeWindow(opened, "explorer-workspace")
-        check(minimized.windows.single().state == WorkspaceWindowState.MINIMIZED)
+        assertEquals(WorkspaceWindowState.MINIMIZED, minimized.windows.single().state)
     }
 
+    @Test
     fun phase6_browserIsFirstChannel() {
         val decision = pipeline.chooseChannel(
             ConnectorProfile("kimi", setOf(ExplorerChannel.API, ExplorerChannel.BROWSER), setOf("agent"), apiAvailable = true, browserAvailable = true)
         )
-        check(decision.selected == ExplorerChannel.BROWSER)
-        check(decision.alternatives.contains(ExplorerChannel.API))
+        assertEquals(ExplorerChannel.BROWSER, decision.selected)
+        assertTrue(decision.alternatives.contains(ExplorerChannel.API))
     }
 
+    @Test
     fun phase7_evaluationKeepsEvidence() {
         val evaluation = pipeline.evaluate("model", "coding task", 8.5, 1200, "measured test run")
-        check(evaluation.score == 8.5)
-        check(evaluation.latencyMs == 1200L)
-        check(evaluation.evidence == "measured test run")
+        assertEquals(8.5, evaluation.score, 0.0)
+        assertEquals(1200L, evaluation.latencyMs)
+        assertEquals("measured test run", evaluation.evidence)
     }
 
+    @Test
     fun phase8_closedProjectCannotBeReused() {
         val closed = candidate("closed", "Closed", openSource = OpenSourceStatus.CLOSED)
-        check(pipeline.licenseReview(closed).decision == ReuseDecision.REJECT)
+        assertEquals(ReuseDecision.REJECT, pipeline.licenseReview(closed).decision)
     }
 
+    @Test
     fun phase9_brainHandoffCarriesOnlyKnownFacts() {
-        val result = pipeline.run(NOW, listOf(ExplorerSource("official", "Official", ExplorerRegion.CHINA, 90, true)), listOf(candidate("handoff", "Handoff AI")))
+        val result = pipeline.run(
+            NOW,
+            listOf(ExplorerSource("official", "Official", ExplorerRegion.CHINA, 90, true)),
+            listOf(candidate("handoff", "Handoff AI"))
+        )
         val handoff = result.brainHandoffs.single()
-        check(handoff.facts["name"] == "Handoff AI")
-        check(handoff.facts["region"] == ExplorerRegion.CHINA.name)
-        check(handoff.capabilities.contains("agent"))
+        assertEquals("Handoff AI", handoff.facts["name"])
+        assertEquals(ExplorerRegion.CHINA.name, handoff.facts["region"])
+        assertTrue(handoff.capabilities.contains("agent"))
     }
 
+    @Test
     fun phase10_weeklyRadarIsDeterministic() {
         val result = pipeline.run(
-            weekEpochMs = NOW,
-            sources = listOf(ExplorerSource("official", "Official", ExplorerRegion.CHINA, 90, true)),
-            candidates = listOf(candidate("weekly", "Weekly AI"))
+            NOW,
+            listOf(ExplorerSource("official", "Official", ExplorerRegion.CHINA, 90, true)),
+            listOf(candidate("weekly", "Weekly AI"))
         )
-        check(result.radar.weekKey == ExplorerIntelligencePipeline.weekKey(NOW))
-        check(result.radar.discovered == 1)
-        check(result.radar.accepted == 1)
-    }
-
-    fun allPhasesPass() {
-        phase1_chinaPriorityIsVisible()
-        phase2_duplicateOfficialUrlAndNameCollapses()
-        phase3_privateOrCredentialUrlIsBlocked()
-        phase4_unknownLicenseRequiresReview()
-        phase5_workspaceOpensAndMinimizes()
-        phase6_browserIsFirstChannel()
-        phase7_evaluationKeepsEvidence()
-        phase8_closedProjectCannotBeReused()
-        phase9_brainHandoffCarriesOnlyKnownFacts()
-        phase10_weeklyRadarIsDeterministic()
+        assertEquals(ExplorerIntelligencePipeline.weekKey(NOW), result.radar.weekKey)
+        assertEquals(1, result.radar.discovered)
+        assertEquals(1, result.radar.accepted)
     }
 
     companion object {
