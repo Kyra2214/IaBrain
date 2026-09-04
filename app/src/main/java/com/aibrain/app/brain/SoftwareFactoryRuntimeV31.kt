@@ -16,7 +16,14 @@ class SoftwareFactoryRuntimeV31(
 
     data class SnapshotFile(val path: String, val sha256: String, val size: Long)
     data class WorkspaceSnapshot(val id: String, val root: File, val files: List<SnapshotFile>, val backup: File)
-    data class MergeResult(val assessment: SoftwareFactoryIntelligenceV31.MergeAssessment, val snapshot: WorkspaceSnapshot?, val rolledBack: Boolean)
+    data class MergeResult(
+        val assessment: SoftwareFactoryIntelligenceV31.MergeAssessment,
+        val snapshot: WorkspaceSnapshot?,
+        val merged: Boolean,
+        val blocked: Boolean,
+        val rolledBack: Boolean,
+        val reason: String? = null
+    )
     enum class BaseModifiedPolicy { BLOCK, REVIEW, ALLOW }
 
     fun snapshot(id: String, root: File): WorkspaceSnapshot {
@@ -55,17 +62,18 @@ class SoftwareFactoryRuntimeV31(
         if (assessment.decision == SoftwareFactoryIntelligenceV31.MergeDecision.HUMAN_AI_REVIEW_REQUIRED ||
             (baseModified && baseModifiedPolicy != BaseModifiedPolicy.ALLOW)
         ) {
-            return MergeResult(assessment, before, false)
+            val reason = if (baseModified && baseModifiedPolicy != BaseModifiedPolicy.ALLOW) "BASE_MODIFIED policy=${baseModifiedPolicy.name}" else "Merge requires review"
+            return MergeResult(assessment, before, merged = false, blocked = true, rolledBack = false, reason = reason)
         }
         try {
             artifacts.forEach { artifact ->
                 ZipIntegrationEngine.materialize(artifact, workspace)
             }
             val after = snapshot("after-merge", workspace)
-            return MergeResult(assessment, after, false)
+            return MergeResult(assessment, after, merged = true, blocked = false, rolledBack = false)
         } catch (failure: Throwable) {
             restore(before)
-            return MergeResult(assessment, before, true)
+            return MergeResult(assessment, before, merged = false, blocked = true, rolledBack = true, reason = failure.message)
         }
     }
 
@@ -82,7 +90,12 @@ class SoftwareFactoryRuntimeV31(
         val symbol: SoftwareFactoryIntelligenceV31.Symbol,
         val consumers: Set<String>
     )
-    data class ContractGraph(val nodes: List<ContractNode>, val dependencies: Map<String, Set<String>>)
+    enum class ContractGraphResolution { LEXICAL_V1, AST_V2_PENDING }
+    data class ContractGraph(
+        val nodes: List<ContractNode>,
+        val dependencies: Map<String, Set<String>>,
+        val resolution: ContractGraphResolution = ContractGraphResolution.LEXICAL_V1
+    )
 
     fun contractGraph(contentsByPath: Map<String, String>): ContractGraph {
         val symbols = SoftwareFactoryIntelligenceV31.analyzeContracts(contentsByPath)

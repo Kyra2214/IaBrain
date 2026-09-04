@@ -12,6 +12,9 @@ class SoftwareFactoryPipeline(
     private val projectId: String = "default",
     private val workspace: File? = null
 ) {
+    private var lastPhysicalMerge: SoftwareFactoryRuntimeV31.MergeResult? = null
+    fun lastMergeResult(): SoftwareFactoryRuntimeV31.MergeResult? = lastPhysicalMerge
+
     enum class Stage {
         PLANNED, ASSIGNED, IN_PROGRESS, ZIP_RECEIVED, INTEGRATED, REVIEWED,
         QUALITY_GATE, APPROVED, MERGED, BLOCKED
@@ -63,7 +66,8 @@ class SoftwareFactoryPipeline(
         submissions: List<Submission>,
         baseSha256ByPath: Map<String, String> = emptyMap(),
         declaredFilesByFunction: Map<String, Set<String>> = emptyMap(),
-        baseModifiedPolicy: SoftwareFactoryRuntimeV31.BaseModifiedPolicy = SoftwareFactoryRuntimeV31.BaseModifiedPolicy.REVIEW
+        baseModifiedPolicy: SoftwareFactoryRuntimeV31.BaseModifiedPolicy = SoftwareFactoryRuntimeV31.BaseModifiedPolicy.REVIEW,
+        allowAutoMerge: Boolean = false
     ): List<TaskState> {
         require(submissions.isNotEmpty()) { "Nenhum ZIP para integrar" }
         submissions.forEach { submission ->
@@ -79,14 +83,16 @@ class SoftwareFactoryPipeline(
         val analysis = ZipIntegrationEngine.analyze(artifacts, baseSha256ByPath)
         val review = IntegrationReviewEngine.review(plan, analysis, declaredFilesByFunction)
         val physicalMerge = if (runtime != null && workspace != null) {
-            runtime.merge(workspace, analysis, artifacts, declaredFilesByFunction, baseModifiedPolicy = baseModifiedPolicy)
+            runtime.merge(workspace, analysis, artifacts, declaredFilesByFunction, allowAutoMerge = allowAutoMerge, baseModifiedPolicy = baseModifiedPolicy)
         } else null
-        val blocked = !analysis.safe || !review.approved || physicalMerge?.rolledBack == true
+        lastPhysicalMerge = physicalMerge
+        val blocked = !analysis.safe || !review.approved || physicalMerge?.blocked == true
 
         submissions.forEach { submission ->
             val current = states.getValue(submission.taskId)
             if (blocked) {
-                val reason = if (!analysis.safe) "Conflito estrutural no conjunto de ZIPs" else "Integration Review bloqueou o conjunto"
+                val reason = physicalMerge?.reason
+                    ?: if (!analysis.safe) "Conflito estrutural no conjunto de ZIPs" else "Integration Review bloqueou o conjunto"
                 worker.transition(submission.taskId, GitHubWorker.Status.BLOCKED, error = reason)
                 states[submission.taskId] = current.copy(stage = Stage.BLOCKED, zip = submission.zip, review = review, error = reason)
             } else {
@@ -103,8 +109,9 @@ class SoftwareFactoryPipeline(
         submission: Submission,
         baseSha256ByPath: Map<String, String> = emptyMap(),
         declaredFilesByFunction: Map<String, Set<String>> = emptyMap(),
-        baseModifiedPolicy: SoftwareFactoryRuntimeV31.BaseModifiedPolicy = SoftwareFactoryRuntimeV31.BaseModifiedPolicy.REVIEW
-    ): TaskState = integrateBatch(plan, listOf(submission), baseSha256ByPath, declaredFilesByFunction, baseModifiedPolicy)
+        baseModifiedPolicy: SoftwareFactoryRuntimeV31.BaseModifiedPolicy = SoftwareFactoryRuntimeV31.BaseModifiedPolicy.REVIEW,
+        allowAutoMerge: Boolean = false
+    ): TaskState = integrateBatch(plan, listOf(submission), baseSha256ByPath, declaredFilesByFunction, baseModifiedPolicy, allowAutoMerge)
         .first { it.taskId == submission.taskId }
         .let { if (it.stage == Stage.INTEGRATED) it.copy(stage = Stage.REVIEWED) else it }
         .also { states[submission.taskId] = it }
