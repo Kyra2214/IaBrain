@@ -7,7 +7,10 @@ import java.io.File
  * controle do usuário; o IaBrain recebe ZIPs e decide se o conjunto pode avançar.
  */
 class SoftwareFactoryPipeline(
-    private val worker: GitHubWorker = GitHubWorker()
+    private val worker: GitHubWorker = GitHubWorker(),
+    private val runtime: SoftwareFactoryRuntimeV31? = null,
+    private val projectId: String = "default",
+    private val workspace: File? = null
 ) {
     enum class Stage {
         PLANNED, ASSIGNED, IN_PROGRESS, ZIP_RECEIVED, INTEGRATED, REVIEWED,
@@ -59,7 +62,8 @@ class SoftwareFactoryPipeline(
         plan: ProjectWorkPlanner.Plan,
         submissions: List<Submission>,
         baseSha256ByPath: Map<String, String> = emptyMap(),
-        declaredFilesByFunction: Map<String, Set<String>> = emptyMap()
+        declaredFilesByFunction: Map<String, Set<String>> = emptyMap(),
+        baseModifiedPolicy: SoftwareFactoryRuntimeV31.BaseModifiedPolicy = SoftwareFactoryRuntimeV31.BaseModifiedPolicy.REVIEW
     ): List<TaskState> {
         require(submissions.isNotEmpty()) { "Nenhum ZIP para integrar" }
         submissions.forEach { submission ->
@@ -74,7 +78,10 @@ class SoftwareFactoryPipeline(
         }
         val analysis = ZipIntegrationEngine.analyze(artifacts, baseSha256ByPath)
         val review = IntegrationReviewEngine.review(plan, analysis, declaredFilesByFunction)
-        val blocked = !analysis.safe || !review.approved
+        val physicalMerge = if (runtime != null && workspace != null) {
+            runtime.merge(workspace, analysis, artifacts, declaredFilesByFunction, baseModifiedPolicy = baseModifiedPolicy)
+        } else null
+        val blocked = !analysis.safe || !review.approved || physicalMerge?.rolledBack == true
 
         submissions.forEach { submission ->
             val current = states.getValue(submission.taskId)
@@ -86,7 +93,7 @@ class SoftwareFactoryPipeline(
                 worker.transition(submission.taskId, GitHubWorker.Status.READY_FOR_REVIEW)
                 states[submission.taskId] = current.copy(stage = Stage.INTEGRATED, zip = submission.zip, review = review)
             }
-            FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.ZIP_RECEIVED, "", submission.taskId, submission.aiId))
+            FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.ZIP_RECEIVED, projectId, submission.taskId, submission.aiId))
         }
         return snapshot()
     }
@@ -95,8 +102,9 @@ class SoftwareFactoryPipeline(
         plan: ProjectWorkPlanner.Plan,
         submission: Submission,
         baseSha256ByPath: Map<String, String> = emptyMap(),
-        declaredFilesByFunction: Map<String, Set<String>> = emptyMap()
-    ): TaskState = integrateBatch(plan, listOf(submission), baseSha256ByPath, declaredFilesByFunction)
+        declaredFilesByFunction: Map<String, Set<String>> = emptyMap(),
+        baseModifiedPolicy: SoftwareFactoryRuntimeV31.BaseModifiedPolicy = SoftwareFactoryRuntimeV31.BaseModifiedPolicy.REVIEW
+    ): TaskState = integrateBatch(plan, listOf(submission), baseSha256ByPath, declaredFilesByFunction, baseModifiedPolicy)
         .first { it.taskId == submission.taskId }
         .let { if (it.stage == Stage.INTEGRATED) it.copy(stage = Stage.REVIEWED) else it }
         .also { states[submission.taskId] = it }
@@ -125,7 +133,7 @@ class SoftwareFactoryPipeline(
         val state = requireNotNull(states[taskId]) { "Task não encontrada" }
         check(state.stage == Stage.APPROVED) { "Task não aprovada" }
         worker.transition(taskId, GitHubWorker.Status.MERGED)
-        FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.MERGED, "", taskId, state.aiId))
+        FactoryTelemetry.record(FactoryTelemetry.Event(FactoryTelemetry.EventType.MERGED, projectId, taskId, state.aiId))
         return state.copy(stage = Stage.MERGED).also { states[taskId] = it }
     }
 

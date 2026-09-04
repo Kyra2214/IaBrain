@@ -17,6 +17,7 @@ class SoftwareFactoryRuntimeV31(
     data class SnapshotFile(val path: String, val sha256: String, val size: Long)
     data class WorkspaceSnapshot(val id: String, val root: File, val files: List<SnapshotFile>, val backup: File)
     data class MergeResult(val assessment: SoftwareFactoryIntelligenceV31.MergeAssessment, val snapshot: WorkspaceSnapshot?, val rolledBack: Boolean)
+    enum class BaseModifiedPolicy { BLOCK, REVIEW, ALLOW }
 
     fun snapshot(id: String, root: File): WorkspaceSnapshot {
         require(id.isNotBlank()) { "Snapshot sem id" }
@@ -42,11 +43,18 @@ class SoftwareFactoryRuntimeV31(
         analysis: ZipIntegrationEngine.Analysis,
         artifacts: List<ZipIntegrationEngine.Artifact>,
         declaredFilesByFunction: Map<String, Set<String>>,
-        allowAutoMerge: Boolean = false
+        allowAutoMerge: Boolean = false,
+        baseModifiedPolicy: BaseModifiedPolicy = BaseModifiedPolicy.REVIEW
     ): MergeResult {
         val before = snapshot("before-merge", workspace)
-        val assessment = SoftwareFactoryIntelligenceV31.assessMerge(analysis, declaredFilesByFunction, allowAutoMerge)
-        if (assessment.decision == SoftwareFactoryIntelligenceV31.MergeDecision.HUMAN_AI_REVIEW_REQUIRED) {
+        val baseModified = analysis.conflicts.any { it.type == ZipIntegrationEngine.ConflictType.BASE_MODIFIED }
+        val effectiveAnalysis = if (baseModified && baseModifiedPolicy == BaseModifiedPolicy.ALLOW) {
+            analysis.copy(conflicts = analysis.conflicts.filterNot { it.type == ZipIntegrationEngine.ConflictType.BASE_MODIFIED })
+        } else analysis
+        val assessment = SoftwareFactoryIntelligenceV31.assessMerge(effectiveAnalysis, declaredFilesByFunction, allowAutoMerge)
+        if (assessment.decision == SoftwareFactoryIntelligenceV31.MergeDecision.HUMAN_AI_REVIEW_REQUIRED ||
+            (baseModified && baseModifiedPolicy != BaseModifiedPolicy.ALLOW)
+        ) {
             return MergeResult(assessment, before, false)
         }
         try {
@@ -56,7 +64,7 @@ class SoftwareFactoryRuntimeV31(
             val after = snapshot("after-merge", workspace)
             return MergeResult(assessment, after, false)
         } catch (failure: Throwable) {
-            // Materialization is isolated; callers receive the pre-merge snapshot and failure state.
+            restore(before)
             return MergeResult(assessment, before, true)
         }
     }
@@ -78,11 +86,14 @@ class SoftwareFactoryRuntimeV31(
 
     fun contractGraph(contentsByPath: Map<String, String>): ContractGraph {
         val symbols = SoftwareFactoryIntelligenceV31.analyzeContracts(contentsByPath)
-        val names = symbols.map { it.name }.toSet()
         val nodes = symbols.map { symbol ->
             val key = "${symbol.path}|${symbol.kind}|${symbol.name}"
             val consumers = contentsByPath.filter { (path, content) ->
-                path != symbol.path && names.any { name -> content.contains("$name(") || content.contains("$name {") }
+                path != symbol.path && when (symbol.kind) {
+                    SoftwareFactoryIntelligenceV31.SymbolKind.FUNCTION -> Regex("\\b${Regex.escape(symbol.name)}\\s*\\(").containsMatchIn(content)
+                    SoftwareFactoryIntelligenceV31.SymbolKind.CLASS,
+                    SoftwareFactoryIntelligenceV31.SymbolKind.INTERFACE -> Regex("\\b${Regex.escape(symbol.name)}\\b").containsMatchIn(content)
+                }
             }.keys
             ContractNode(key, symbol, consumers)
         }
@@ -158,19 +169,42 @@ class SoftwareFactoryRuntimeV31(
     fun reviewCase(id: String, assessment: SoftwareFactoryIntelligenceV31.MergeAssessment, changes: List<SoftwareFactoryIntelligenceV31.ContractChange>): ReviewCase =
         ReviewCase(id, assessment, changes, "Ownership, conflito ou alteração de contrato exige revisão")
 
-    class Store {
+    class Store(private val journal: File? = null) {
         private val snapshots = linkedMapOf<String, WorkspaceSnapshot>()
         private val reviews = linkedMapOf<String, ReviewCase>()
         private val repairs = linkedMapOf<String, RepairTask>()
         private val reports = linkedMapOf<String, TestReport>()
-        fun save(snapshot: WorkspaceSnapshot) { snapshots[snapshot.id] = snapshot }
-        fun save(review: ReviewCase) { reviews[review.id] = review }
-        fun save(repair: RepairTask) { repairs[repair.id] = repair }
-        fun save(id: String, report: TestReport) { reports[id] = report }
+        private val persisted = linkedSetOf<String>()
+
+        init {
+            journal?.takeIf { it.isFile }?.forEachLine { line ->
+                line.split('\t', limit = 2).takeIf { it.size == 2 }?.let { persisted += "${it[0]}:${it[1]}" }
+            }
+        }
+
+        fun save(snapshot: WorkspaceSnapshot) { snapshots[snapshot.id] = snapshot; persist("snapshot", snapshot.id) }
+        fun save(review: ReviewCase) { reviews[review.id] = review; persist("review", review.id) }
+        fun save(repair: RepairTask) { repairs[repair.id] = repair; persist("repair", repair.id) }
+        fun save(id: String, report: TestReport) { reports[id] = report; persist("report", id) }
         fun snapshot(id: String) = snapshots[id]
         fun review(id: String) = reviews[id]
         fun repair(id: String) = repairs[id]
         fun report(id: String) = reports[id]
-        fun size(): Int = snapshots.size + reviews.size + repairs.size + reports.size
+        fun contains(type: String, id: String): Boolean = "$type:$id" in persisted || when (type) {
+            "snapshot" -> id in snapshots
+            "review" -> id in reviews
+            "repair" -> id in repairs
+            "report" -> id in reports
+            else -> false
+        }
+        fun size(): Int = (persisted + snapshots.keys.map { "snapshot:$it" } + reviews.keys.map { "review:$it" } + repairs.keys.map { "repair:$it" } + reports.keys.map { "report:$it" }).size
+
+        private fun persist(type: String, id: String) {
+            val key = "$type:$id"
+            if (persisted.add(key)) {
+                journal?.parentFile?.mkdirs()
+                journal?.appendText("$type\t$id\n")
+            }
+        }
     }
 }
