@@ -80,138 +80,61 @@ object SoftwareFactoryV3 {
         val aiHistory: List<AiProfile>
     )
 
-    data class CouncilVerdict(
-        val approved: Boolean,
-        val score: Int,
-        val votes: Map<String, Boolean>,
-        val findings: List<String>
-    )
-
-    data class FactoryRequest(
-        val projectId: String,
-        val objective: String,
-        val taskId: String,
-        val zipPaths: List<String> = emptyList()
-    )
-
+    data class FactoryRequest(val projectId: String, val objective: String)
+    data class CouncilVerdict(val approved: Boolean, val score: Int, val votes: Map<String, Boolean>, val reasons: List<String>)
     data class FactoryResult(
-        val accepted: Boolean,
-        val phase: String,
-        val snapshotCount: Int,
+        val projectId: String,
         val mergePlan: MergePlan,
-        val contracts: List<ContractChange>,
-        val review: Review,
-        val validationTasks: List<ValidationTask>,
-        val repair: RepairTask?,
-        val recommendation: String,
+        val validations: List<ValidationTask>,
+        val council: CouncilVerdict,
+        val repairTask: RepairTask?,
         val memory: MemorySnapshot
     )
 
-    private val criticalNames = setOf(
-        "AndroidManifest.xml", "build.gradle", "build.gradle.kts", "settings.gradle.kts",
-        "gradle.properties", "proguard-rules.pro"
-    )
-
-    private fun sha256(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256")
-        .digest(bytes).joinToString("") { "%02x".format(it) }
-
-    private fun language(path: String): String = when {
-        path.endsWith(".kt") -> "Kotlin"
-        path.endsWith(".java") -> "Java"
-        path.endsWith(".ktm") -> "Kotlin"
-        path.endsWith(".xml") -> "XML"
-        path.endsWith(".json") -> "JSON"
-        path.endsWith(".md") -> "Markdown"
-        path.endsWith(".gradle") || path.endsWith(".gradle.kts") -> "Gradle"
-        path.endsWith(".yml") || path.endsWith(".yaml") -> "YAML"
-        path.endsWith(".toml") -> "TOML"
-        else -> "Other"
-    }
-
-    /** v2.1: inspect the ZIP without extracting it and reject traversal/oversized entries. */
-    fun inspectZip(zipPath: String, artifactId: String, taskId: String, maxFiles: Int = 10_000, maxBytes: Long = 50_000_000): ZipSnapshot {
+    fun analyzeZip(artifactId: String, taskId: String, zipPath: String): ZipSnapshot {
         val files = mutableListOf<ZipFileInfo>()
         val findings = mutableListOf<String>()
-        var total = 0L
         ZipFile(zipPath).use { zip ->
-            if (zip.size() > maxFiles) findings += "ZIP contains too many entries"
-            val root = zipPath.substringBeforeLast('/').ifEmpty { "." }
-            zip.entries().asSequence().filterNot { it.isDirectory }.forEach { entry ->
-                val normalized = entry.name.replace('\\', '/')
-                if (normalized.startsWith("/") || normalized.split('/').any { it == ".." }) {
-                    findings += "Path traversal rejected: ${entry.name}"
+            zip.entries().asSequence().forEach { entry ->
+                if (entry.isDirectory) return@forEach
+                val normalized = normalize(entry.name)
+                if (normalized == null) {
+                    findings += "Unsafe ZIP path: ${entry.name}"
                     return@forEach
                 }
-                if (normalized.contains("://")) findings += "Suspicious path rejected: $normalized"
-                total += entry.size.coerceAtLeast(0L)
-                if (total > maxBytes) findings += "ZIP uncompressed size limit exceeded"
                 val bytes = zip.getInputStream(entry).use { it.readBytes() }
-                files += ZipFileInfo(
-                    normalized,
-                    entry.size,
-                    sha256(bytes),
-                    language(normalized),
-                    normalized.substringAfterLast('/') in criticalNames
-                )
+                files += ZipFileInfo(normalized, entry.size, sha256(bytes), detectLanguage(normalized), isCritical(normalized))
             }
         }
-        val paths = files.map { it.path }
-        return ZipSnapshot(
-            artifactId, taskId, files.sortedBy { it.path }, paths, emptyList(), emptyList(),
-            findings.distinct(), findings.none { it.contains("rejected") || it.contains("limit") }
-        )
+        return ZipSnapshot(artifactId, taskId, files, files.map { it.path }, emptyList(), emptyList(), findings, findings.isEmpty())
     }
 
-    /** v2.2: combine snapshots and block same-path divergent writes. */
     fun planMerge(snapshots: List<ZipSnapshot>): MergePlan {
-        val byPath = snapshots.flatMap { it.files }.groupBy { it.path }
-        val conflicts = byPath.filterValues { entries -> entries.map { it.sha256 }.distinct().size > 1 }
-            .keys.sorted().map { "Conflicting artifact content: $it" }
-        val files = byPath.keys.sorted()
+        val grouped = snapshots.flatMap { it.files }.groupBy { it.path }
+        val conflicts = grouped.filterValues { files -> files.map { it.sha256 }.distinct().size > 1 }.keys.sorted()
+        val files = grouped.keys.sorted()
         return MergePlan(files, conflicts, conflicts.isEmpty() && snapshots.all { it.safe }, conflicts.isNotEmpty())
     }
 
-    /** v2.3: lightweight contract extraction suitable for offline analysis. */
-    fun analyzeContracts(contentsByPath: Map<String, String>): List<ContractChange> {
-        val result = mutableListOf<ContractChange>()
-        contentsByPath.forEach { (path, content) ->
-            if (!path.endsWith(".kt") && !path.endsWith(".java")) return@forEach
-            Regex("(?:fun|function)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\(([^)]*)\\)").findAll(content).forEach {
-                result += ContractChange("${path}:${it.groupValues[1]}", "FUNCTION", false, "Public callable detected")
-            }
-            Regex("interface\\s+([A-Za-z_][A-Za-z0-9_]*)").findAll(content).forEach {
-                result += ContractChange("${path}:${it.groupValues[1]}", "INTERFACE", false, "Interface contract detected")
-            }
-        }
-        return result.distinctBy { it.symbol to it.kind }
-    }
-
-    /** v2.4/v2.9: turn a failed integration into a bounded repair task. */
-    fun createRepairTask(projectId: String, failure: String, failedPhase: String): RepairTask = RepairTask(
-        "repair-$projectId-${failedPhase.lowercase()}",
-        failure.take(500),
-        "Diagnose the failure, preserve existing contracts, produce a new ZIP, and resubmit through the same integration gate.",
-        setOf("CODIGO", "TESTES", "ANALISE")
+    fun generateValidationTasks(projectId: String, files: List<String>, contracts: List<ContractChange>): List<ValidationTask> = listOf(
+        ValidationTask("$projectId-unit", ValidationTask.Kind.UNIT, "Validar unidades afetadas: ${files.size} arquivos", true),
+        ValidationTask("$projectId-integration", ValidationTask.Kind.INTEGRATION, "Validar integração entre módulos", true),
+        ValidationTask("$projectId-regression", ValidationTask.Kind.REGRESSION, "Validar regressões do contrato", true),
+        ValidationTask("$projectId-security", ValidationTask.Kind.SECURITY, "Validar segurança das alterações", true),
+        ValidationTask("$projectId-compatibility", ValidationTask.Kind.COMPATIBILITY, "Validar ${contracts.count { it.breaking }} mudanças potencialmente incompatíveis", true)
     )
 
-    /** v2.5: generate tests after integration planning, without executing them here. */
-    fun generateValidationTasks(projectId: String, files: List<String>, contracts: List<ContractChange>): List<ValidationTask> {
-        val tasks = mutableListOf<ValidationTask>()
-        tasks += ValidationTask("$projectId-unit", ValidationTask.Kind.UNIT, "Validate changed implementation units", true)
-        if (files.size > 1 || contracts.isNotEmpty()) {
-            tasks += ValidationTask("$projectId-integration", ValidationTask.Kind.INTEGRATION, "Validate cross-module contracts and integration", true)
-        }
-        tasks += ValidationTask("$projectId-regression", ValidationTask.Kind.REGRESSION, "Run the frozen v0.2.0 compatibility suite", true)
-        tasks += ValidationTask("$projectId-security", ValidationTask.Kind.SECURITY, "Scan paths, secrets, dangerous commands and artifacts", true)
-        tasks += ValidationTask("$projectId-compatibility", ValidationTask.Kind.COMPATIBILITY, "Verify public contracts and persisted data compatibility", true)
-        return tasks
-    }
+    fun createRepairTask(projectId: String, cause: String, taskType: String): RepairTask = RepairTask(
+        id = "repair-$projectId-${taskType.lowercase()}",
+        cause = cause,
+        instructions = "Corrigir somente a causa identificada e devolver novo ZIP; não alterar a main.",
+        preferredCapabilities = setOf("CODIGO", "DEBUG")
+    )
 
-    /** v2.6: deterministic council; each specialist has a clear veto domain. */
     fun reviewCouncil(review: Review): CouncilVerdict {
         val votes = mapOf(
-            "architecture" to (review.score >= 70),
-            "security" to (review.findings.none { it.contains("secret", true) || it.contains("unsafe", true) }),
+            "architecture" to (review.score >= 60),
+            "security" to (review.score >= 80),
             "performance" to (review.score >= 60),
             "testing" to (review.score >= 70),
             "compatibility" to (review.score >= 75)
@@ -243,7 +166,28 @@ object SoftwareFactoryV3 {
         val council = reviewCouncil(review)
         val accepted = merge.safeToMerge && council.approved
         val repair = if (accepted) null else createRepairTask(request.projectId, (merge.conflicts + review.findings).joinToString("; "), "INTEGRATION")
-        val recommendation = if (accepted) "Proceed to external validation, Quality Gate and PR; never write directly to main." else "Do not merge. Execute the repair task and resubmit the ZIP snapshot."
-        return FactoryResult(accepted, "V3_PIPELINE", snapshots.size, merge, contracts, review, validations, repair, recommendation, updateMemory(memory, review, contracts, repair?.cause))
+        return FactoryResult(request.projectId, merge, validations, council, repair, updateMemory(memory, review, contracts, repair?.cause))
     }
+
+    private fun normalize(path: String): String? {
+        if (path.isBlank() || path.startsWith("/") || path.contains('\\')) return null
+        val parts = path.split('/')
+        if (parts.any { it.isBlank() || it == "." || it == ".." }) return null
+        return parts.joinToString("/")
+    }
+
+    private fun detectLanguage(path: String): String = when {
+        path.endsWith(".kt") -> "KOTLIN"
+        path.endsWith(".java") -> "JAVA"
+        path.endsWith(".xml") -> "XML"
+        path.endsWith(".json") -> "JSON"
+        path.endsWith(".gradle") || path.endsWith(".gradle.kts") -> "GRADLE"
+        path.endsWith(".js") -> "JAVASCRIPT"
+        path.endsWith(".ts") -> "TYPESCRIPT"
+        path.endsWith(".py") -> "PYTHON"
+        else -> "OTHER"
+    }
+
+    private fun isCritical(path: String): Boolean = path.endsWith("AndroidManifest.xml") || path.contains("build.gradle") || path.contains("settings.gradle")
+    private fun sha256(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
 }
