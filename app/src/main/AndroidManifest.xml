@@ -36,6 +36,8 @@
         <activity android:name=".view.ComandosActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.PromptsComandosActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ProjetosActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity android:name=".view.PublicApisActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
+        <activity android:name=".view.PublicApiDetailActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ProjetoDetalheActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ProjetoExecucaoActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />
         <activity android:name=".view.ComandoDetalheActivity" android:exported="false" android:theme="@style/Theme.AIBrain.NoActionBar" />

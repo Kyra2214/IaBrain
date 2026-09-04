@@ -95,6 +95,23 @@ class GlobalNavigationE2ETest {
 
             onView(withId(R.id.btnAbrirColecoes))
                 .check(matches(isDisplayed()))
+
+            // Brain -> Public APIs: catálogo local deve abrir sem depender da rede
+            onView(withId(R.id.nav_public_apis))
+                .perform(click())
+
+            onView(withId(R.id.txtPublicApisTitle))
+                .check(matches(isDisplayed()))
+            onView(withText("Atualizar catálogo"))
+                .check(matches(isDisplayed()))
+            onView(withText("Catálogo local"))
+                .check(matches(isDisplayed()))
+
+            // Public APIs -> Brain
+            onView(withId(R.id.nav_brain))
+                .perform(click())
+            onView(withId(R.id.btnAbrirColecoes))
+                .check(matches(isDisplayed()))
         }
     }
 
