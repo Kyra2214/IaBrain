@@ -13,6 +13,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import com.aibrain.app.R
+import com.aibrain.app.data.AiApiCatalogSync
 import com.aibrain.app.data.AssistenteIARepository
 import com.aibrain.app.databinding.ActivityWelcomeBinding
 
@@ -36,6 +37,7 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(binding.root)
         configurarBarrasDoSistema()
         iniciarPulsoDaMarca()
+        AiApiCatalogSync(applicationContext).syncIfStale()
 
         val prefs = getSharedPreferences(PREFS_NOME, Context.MODE_PRIVATE)
         if (prefs.getBoolean(CHAVE_JA_VIU_WELCOME, false)) {
