@@ -11,30 +11,47 @@ import com.aibrain.app.brain.RuntimeRequest
 import com.aibrain.app.brain.UrlResolutionStatus
 import java.net.URI
 
-/** v6.1/v6.3 Android bridge: sends the browser-first route to the existing in-app BrowserActivity. */
+/** v7.1 bridge: opens the existing native BrowserActivity and registers a real runtime session. */
 class BrowserRuntimeExecutionPort(private val context: Context) : RuntimeExecutionPort {
     override fun openBrowser(request: RuntimeRequest, candidate: RuntimeCandidate): RuntimeDispatchResult {
         val url = candidate.url ?: return RuntimeDispatchResult.Failure("BROWSER_URL_MISSING", false)
+        val normalizedUrl = url.trim()
         val valid = runCatching {
-            val uri = URI(url.trim())
+            val uri = URI(normalizedUrl)
             uri.scheme.equals("https", true) && !uri.host.isNullOrBlank() && uri.userInfo == null && uri.fragment == null
         }.getOrDefault(false)
         if (!valid) return RuntimeDispatchResult.Failure("BROWSER_URL_INVALID", false)
 
+        BrowserRuntimeSessionStore.opened(
+            BrowserRuntimeSession(
+                requestId = request.id,
+                aiId = candidate.id,
+                aiName = candidate.name,
+                url = normalizedUrl,
+                prompt = request.prompt,
+                state = BrowserRuntimeSessionState.OPENING
+            )
+        )
+
         val contract = IAOpenContract(
             selectedAIId = candidate.id,
             selectedAIName = candidate.name,
-            officialResolvedUrl = url.trim(),
+            officialResolvedUrl = normalizedUrl,
             urlStatus = UrlResolutionStatus.RESOLVED,
             generatedPrompt = request.prompt
         )
         context.startActivity(BrowserActivity.criarIntent(context, contract).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+
+        BrowserRuntimeSessionStore.update(request.id) {
+            it.copy(state = BrowserRuntimeSessionState.WAITING_FOR_USER)
+        }
+
         return RuntimeDispatchResult.Browser(
             BrowserDispatch(
                 requestId = request.id,
                 aiId = candidate.id,
                 aiName = candidate.name,
-                url = url.trim(),
+                url = normalizedUrl,
                 prompt = request.prompt,
                 prefillAttempted = false,
                 awaitingUser = true
