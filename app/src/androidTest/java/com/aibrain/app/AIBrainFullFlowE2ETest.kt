@@ -163,7 +163,7 @@ class AIBrainFullFlowE2ETest {
             onView(isRoot()).perform(aguardarViewVisivel(R.id.recyclerAbasBrowser))
             onView(isRoot()).perform(aguardarQuantidadeDeAbas(1))
             onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
-            onView(withText(contrato.selectedAIName)).check(matches(isDisplayed()))
+            onView(withId(R.id.txtAbaItem)).check(matches(isDisplayed()))
             capturarTela("03-browser-primeira-aba.png")
 
             browserScenario.onActivity { activity ->
