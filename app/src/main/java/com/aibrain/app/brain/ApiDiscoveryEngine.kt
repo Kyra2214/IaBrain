@@ -5,6 +5,7 @@ import com.aibrain.app.model.ApiAuthentication
 import com.aibrain.app.model.ApiReviewDecision
 import com.aibrain.app.model.ApiStatus
 import com.aibrain.app.model.PublicApi
+import com.aibrain.app.model.PublicApiMergePolicy
 import com.aibrain.app.repository.ApiCatalogMergeResult
 import com.aibrain.app.repository.PublicApiCatalogRepository
 
@@ -87,13 +88,7 @@ class ApiDiscoveryEngine(
         )
     }
 
-    fun deduplicate(apis: List<PublicApi>): List<PublicApi> = apis
-        .map(::normalize)
-        .groupBy(::identityKey)
-        .toSortedMap()
-        .values
-        .map { group -> group.sortedWith(compareByDescending<PublicApi> { it.source.priority }.thenBy { it.id }).reduce(::merge) }
-        .sortedWith(compareBy<PublicApi> { it.name.lowercase() }.thenBy { it.id })
+    fun deduplicate(apis: List<PublicApi>): List<PublicApi> = PublicApiMergePolicy.deduplicate(apis.map(::normalize))
 
     fun validate(api: PublicApi) = ApiSecurityAnalyzer.analyze(normalize(api))
 
@@ -160,33 +155,6 @@ class ApiDiscoveryEngine(
             .toInt()
             .coerceIn(0, 100)
     }
-
-    private fun merge(left: PublicApi, right: PublicApi): PublicApi {
-        val preferred = listOf(left, right).sortedWith(compareByDescending<PublicApi> { it.source.priority }.thenBy { it.id }).first()
-        return preferred.copy(
-            id = left.id,
-            name = if (preferred.name.isNotBlank()) preferred.name else left.name,
-            description = listOf(preferred.description, left.description).firstOrNull { it.isNotBlank() }.orEmpty(),
-            category = listOf(preferred.category, left.category).firstOrNull { it.isNotBlank() }.orEmpty(),
-            baseUrl = preferred.baseUrl ?: left.baseUrl,
-            documentationUrl = preferred.documentationUrl ?: left.documentationUrl,
-            authentication = if (preferred.authentication != ApiAuthentication.UNKNOWN) preferred.authentication else left.authentication,
-            https = preferred.https ?: left.https,
-            endpoints = (left.endpoints + right.endpoints).distinctBy { it.normalizedMethod + " " + it.normalizedPath },
-            capabilities = (left.capabilities + right.capabilities).distinct().sorted(),
-            status = if (preferred.status != ApiStatus.UNKNOWN) preferred.status else left.status,
-            reliability = preferred.reliability ?: left.reliability,
-            lastChecked = preferred.lastChecked ?: left.lastChecked,
-            createdAt = left.createdAt ?: right.createdAt,
-            updatedAt = maxOf(left.updatedAt ?: 0L, right.updatedAt ?: 0L).takeIf { it > 0 },
-            sources = (left.allSources + right.allSources).distinct()
-        )
-    }
-
-    private fun identityKey(api: PublicApi): String = (api.baseUrl ?: api.documentationUrl)
-        ?.trim()?.lowercase()?.removeSuffix("/")
-        ?.takeIf(String::isNotBlank)
-        ?: api.name.trim().lowercase()
 
     private fun normalizeUrl(value: String?): String? = value?.trim()?.takeIf { it.isNotBlank() }?.removeSuffix("/")
 }

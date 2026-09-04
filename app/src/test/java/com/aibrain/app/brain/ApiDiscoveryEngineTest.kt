@@ -85,6 +85,18 @@ class ApiDiscoveryEngineTest {
     }
 
     @Test
+    fun `security blocks private IPv6 and secrets in endpoint metadata`() {
+        val report = ApiSecurityAnalyzer.analyze(api(
+            baseUrl = "https://[::1]/v1",
+            endpoints = listOf(ApiEndpoint("GET", "/books", headers = listOf("Authorization: Bearer abcdefghijklmnopqrstuvwxyz123456")))
+        ))
+        val codes = report.findings.map { it.code }
+        assertTrue("SUSPICIOUS_DOMAIN" in codes)
+        assertTrue("CREDENTIAL_EXPOSED" in codes)
+        assertTrue(report.blockers.isNotEmpty())
+    }
+
+    @Test
     fun `review decisions are deterministic and ranking breaks ties by id`() {
         val safe = api(id = "b", baseUrl = "https://b.example.com", documentationUrl = "https://b.example.com/docs", endpoints = listOf(ApiEndpoint("GET", "/health", parameters = listOf("verbose"), headers = listOf("Accept"), requestBody = "none", response = "HealthResponse", schema = "HealthResponse")))
         val safeA = api(id = "a", baseUrl = "https://a.example.com", documentationUrl = "https://a.example.com/docs", endpoints = listOf(ApiEndpoint("GET", "/health", parameters = listOf("verbose"), headers = listOf("Accept"), requestBody = "none", response = "HealthResponse", schema = "HealthResponse")))

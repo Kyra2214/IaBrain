@@ -39,8 +39,13 @@ object ApiSecurityAnalyzer {
         if (api.endpoints.isEmpty()) {
             findings += info("ENDPOINTS_UNKNOWN", "A fonte não informou endpoints conhecidos")
         }
-        val exposedText = listOf(api.name, api.description, api.baseUrl.orEmpty(), api.documentationUrl.orEmpty())
-            .joinToString(" ")
+        val exposedText = buildString {
+            append(listOf(api.name, api.description, api.baseUrl.orEmpty(), api.documentationUrl.orEmpty()).joinToString(" "))
+            api.endpoints.forEach { endpoint ->
+                append(' ')
+                append(listOf(endpoint.method, endpoint.path, endpoint.summary.orEmpty(), endpoint.parameters.joinToString(" "), endpoint.headers.joinToString(" "), endpoint.requestBody.orEmpty(), endpoint.response.orEmpty(), endpoint.schema.orEmpty()).joinToString(" "))
+            }
+        }
         if (secretPattern.containsMatchIn(exposedText)) {
             findings += blocker("CREDENTIAL_EXPOSED", "O metadado contém um padrão semelhante a segredo ou token")
         }
@@ -51,7 +56,7 @@ object ApiSecurityAnalyzer {
             }
         }
         val score = (100 - findings.sumOf { it.severity.weight }).coerceIn(0, 100)
-        return ApiSecurityReport(findings.distinctBy { it.code }, score, api.baseUrl, redirectsChecked = false)
+        return ApiSecurityReport(findings.distinctBy { it.code }, score, urls.firstOrNull(), redirectsChecked = false)
     }
 
     private fun validateUrl(value: String): UrlValidation {
@@ -60,8 +65,17 @@ object ApiSecurityAnalyzer {
         val host = uri.host ?: return UrlValidation.INVALID
         if (uri.userInfo != null || uri.path.orEmpty().split('/').any { it == ".." }) return UrlValidation.PATH_TRAVERSAL
         if (scheme != "https") return if (scheme == "http") UrlValidation.HTTP else UrlValidation.INVALID
-        val suspiciousHost = host.equals("localhost", true) || host == "127.0.0.1" || host == "0.0.0.0" || isPrivateIpv4(host)
+        val suspiciousHost = isSuspiciousHost(host)
         return if (suspiciousHost) UrlValidation.SUSPICIOUS else UrlValidation.VALID
+    }
+
+    private fun isSuspiciousHost(rawHost: String): Boolean {
+        val host = rawHost.trim().removePrefix("[").removeSuffix("]").lowercase()
+        return host == "localhost" || host == "127.0.0.1" || host == "0.0.0.0" ||
+            isPrivateIpv4(host) || host == "::1" || host == "0:0:0:0:0:0:0:1" ||
+            host.startsWith("fc") || host.startsWith("fd") || host.startsWith("fe8") ||
+            host.startsWith("fe9") || host.startsWith("fea") || host.startsWith("feb") ||
+            host.substringAfterLast(':', missingDelimiterValue = "").let { isPrivateIpv4(it) }
     }
 
     private fun isPrivateIpv4(host: String): Boolean {

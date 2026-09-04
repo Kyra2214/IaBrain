@@ -6,6 +6,7 @@ import com.aibrain.app.model.ApiEndpoint
 import com.aibrain.app.model.ApiSource
 import com.aibrain.app.model.ApiStatus
 import com.aibrain.app.model.PublicApi
+import com.aibrain.app.model.PublicApiMergePolicy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -24,7 +25,7 @@ class PublicApiCatalogRepository(context: Context) {
     suspend fun add(api: PublicApi): Boolean = withContext(Dispatchers.IO) {
         synchronized(this@PublicApiCatalogRepository) {
             val current = readUnsafe()
-            if (current.any { sameApi(it, api) }) return@synchronized false
+            if (current.any { PublicApiMergePolicy.sameApi(it, api) }) return@synchronized false
             writeUnsafe(current + api.copy(createdAt = api.createdAt ?: System.currentTimeMillis()))
             true
         }
@@ -45,34 +46,35 @@ class PublicApiCatalogRepository(context: Context) {
         synchronized(this@PublicApiCatalogRepository) {
             val now = System.currentTimeMillis()
             val current = readUnsafe()
-            val uniqueIncoming = deduplicate(discovered)
+            val uniqueIncoming = PublicApiMergePolicy.deduplicate(discovered, now)
             val merged = current.toMutableList()
             var added = 0
             var updated = 0
             uniqueIncoming.forEach { incoming ->
-                val index = merged.indexOfFirst { sameApi(it, incoming) }
+                val index = merged.indexOfFirst { PublicApiMergePolicy.sameApi(it, incoming) }
                 if (index < 0) {
                     merged += incoming.copy(createdAt = incoming.createdAt ?: now, updatedAt = now)
                     added++
                 } else {
                     val existing = merged[index]
-                    merged[index] = combine(existing, incoming, now)
+                    merged[index] = PublicApiMergePolicy.merge(existing, incoming, now)
                     if (merged[index] != existing) updated++
                 }
             }
             var inactive = 0
             if (markMissingInactive && uniqueIncoming.isNotEmpty()) {
-                val incomingKeys = uniqueIncoming.map(::identityKey).toSet()
+                val incomingKeys = uniqueIncoming.map(PublicApiMergePolicy::identityKey).toSet()
+
                 merged.indices.forEach { index ->
                     val existing = merged[index]
-                    if (identityKey(existing) !in incomingKeys && existing.status != ApiStatus.INACTIVE) {
+                    if (PublicApiMergePolicy.identityKey(existing) !in incomingKeys && existing.status != ApiStatus.INACTIVE) {
                         merged[index] = existing.copy(status = ApiStatus.INACTIVE, updatedAt = now)
                         inactive++
                     }
                 }
             }
             val before = current.size
-            val normalized = deduplicate(merged)
+            val normalized = PublicApiMergePolicy.deduplicate(merged, now)
             val duplicatesRemoved = (before + added - normalized.size).coerceAtLeast(0)
             writeUnsafe(normalized)
             ApiCatalogMergeResult(added, updated, inactive, duplicatesRemoved, normalized.size)
@@ -168,43 +170,6 @@ class PublicApiCatalogRepository(context: Context) {
         putNullable("createdAt", api.createdAt)
         putNullable("updatedAt", api.updatedAt)
         put("sources", JSONArray(api.allSources.map { it.key }))
-    }
-
-    private fun combine(existing: PublicApi, incoming: PublicApi, now: Long): PublicApi {
-        val preferred = listOf(existing, incoming).sortedWith(compareByDescending<PublicApi> { it.source.priority }.thenBy { it.id }).first()
-        return preferred.copy(
-            id = existing.id,
-            name = if (incoming.name.isNotBlank()) incoming.name else existing.name,
-            description = if (incoming.description.isNotBlank()) incoming.description else existing.description,
-            category = if (incoming.category.isNotBlank()) incoming.category else existing.category,
-            baseUrl = incoming.baseUrl ?: existing.baseUrl,
-            documentationUrl = incoming.documentationUrl ?: existing.documentationUrl,
-            authentication = if (incoming.authentication != ApiAuthentication.UNKNOWN) incoming.authentication else existing.authentication,
-            https = incoming.https ?: existing.https,
-            endpoints = (existing.endpoints + incoming.endpoints).distinctBy { it.normalizedMethod + " " + it.normalizedPath },
-            capabilities = (existing.capabilities + incoming.capabilities).distinct().sorted(),
-            status = if (incoming.status != ApiStatus.UNKNOWN) incoming.status else existing.status,
-            reliability = incoming.reliability ?: existing.reliability,
-            lastChecked = incoming.lastChecked ?: existing.lastChecked,
-            createdAt = existing.createdAt ?: incoming.createdAt ?: now,
-            updatedAt = now,
-            sources = (existing.allSources + incoming.allSources).distinct()
-        )
-    }
-
-    private fun deduplicate(apis: List<PublicApi>): List<PublicApi> = apis
-        .groupBy(::identityKey)
-        .toSortedMap()
-        .values
-        .map { group -> group.sortedWith(compareByDescending<PublicApi> { it.source.priority }.thenBy { it.id }).reduce { current, next -> combine(current, next, current.updatedAt ?: System.currentTimeMillis()) } }
-        .sortedWith(compareBy<PublicApi> { it.name.lowercase() }.thenBy { it.id })
-
-    private fun sameApi(left: PublicApi, right: PublicApi): Boolean = identityKey(left) == identityKey(right)
-
-    private fun identityKey(api: PublicApi): String {
-        val url = (api.baseUrl ?: api.documentationUrl).orEmpty().trim().lowercase()
-            .removeSuffix("/")
-        return if (url.isNotBlank()) url else api.name.trim().lowercase()
     }
 
     private fun JSONObject.optStringList(key: String): List<String> {

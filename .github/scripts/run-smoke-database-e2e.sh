@@ -4,7 +4,7 @@ set +e
 mkdir -p artifacts/emulator-smoke-database
 adb wait-for-device
 ./gradlew connectedDebugAndroidTest --stacktrace \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.MainActivitySmokeTest,com.aibrain.app.data.local.AppDatabaseTest
+  -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.MainActivitySmokeTest,com.aibrain.app.data.local.AppDatabaseTest,com.aibrain.app.repository.PublicApiCatalogRepositoryTest
 test_exit=$?
 
 timeout 20s adb exec-out screencap -p \
