@@ -12,6 +12,7 @@ import com.aibrain.app.browser.BrowserActivity
 import com.aibrain.app.view.AIBrainActivity
 import com.aibrain.app.view.PromptsComandosActivity
 import com.aibrain.app.view.ProjetosActivity
+import com.aibrain.app.view.PublicApisActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 object GlobalNavigation {
@@ -20,6 +21,7 @@ object GlobalNavigation {
     const val BRAIN = 2
     const val PROMPTS = 3
     const val PROJETOS = 4
+    const val PUBLIC_APIS = 5
 
     fun attach(activity: Activity, container: ViewGroup, selected: Int) {
         val navigation = BottomNavigationView(activity).apply {
@@ -42,6 +44,7 @@ object GlobalNavigation {
                     R.id.nav_brain -> BRAIN
                     R.id.nav_prompts -> PROMPTS
                     R.id.nav_projects -> PROJETOS
+                    R.id.nav_public_apis -> PUBLIC_APIS
                     else -> selected
                 }
                 if (destination != selected) open(activity, destination)
@@ -69,6 +72,7 @@ object GlobalNavigation {
             NAVEGADOR -> BrowserActivity::class.java
             BRAIN -> MainActivity::class.java
             PROJETOS -> ProjetosActivity::class.java
+            PUBLIC_APIS -> PublicApisActivity::class.java
             else -> PromptsComandosActivity::class.java
         }
         activity.startActivity(Intent(activity, target).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))
