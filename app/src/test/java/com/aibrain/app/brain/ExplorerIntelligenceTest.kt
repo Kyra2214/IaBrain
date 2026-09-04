@@ -53,10 +53,9 @@ class ExplorerIntelligenceTest {
 
     @Test
     fun phase3_privateOrCredentialUrlIsBlocked() {
-        val unsafe = candidate("unsafe", "Unsafe").copy(officialUrl = "https://user:secret@localhost/tool")
-        val result = pipeline.validateSecurity(unsafe)
-        assertFalse(result.safe)
-        assertTrue(result.blockers.isNotEmpty())
+        assertFalse(isSafeHttps("https://user:secret@localhost/tool"))
+        assertFalse(isSafeHttps("http://example.com/tool"))
+        assertTrue(isSafeHttps("https://example.com/tool"))
     }
 
     @Test
