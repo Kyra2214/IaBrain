@@ -88,67 +88,7 @@ jobs:
           emulator-boot-timeout: 600
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
-          script: |
-            adb wait-for-device
-            mkdir -p artifacts/emulator-fullflow
-            set +e
-            mkdir -p artifacts/emulator-fullflow/live-screenshots artifacts/emulator-fullflow/live-ui
-            timeout 5s adb logcat -c > artifacts/emulator-fullflow/logcat-interval-clear.txt 2> artifacts/emulator-fullflow/logcat-interval-clear.stderr.txt
-            printf '%s\n' "$?" > artifacts/emulator-fullflow/logcat-interval-clear.exit-code
-            adb logcat -v threadtime > artifacts/emulator-fullflow/logcat-interval.txt 2> artifacts/emulator-fullflow/logcat-interval.stderr.txt &
-            logcat_pid=$!
-            (
-              n=0
-              while true; do
-                stamp=$(date -u +%Y%m%dT%H%M%S)
-                printf '%s\n' "$stamp" >> artifacts/emulator-fullflow/live-adb-state.log
-                adb get-state >> artifacts/emulator-fullflow/live-adb-state.log 2>&1
-                screenshot="artifacts/emulator-fullflow/live-screenshots/${n}-${stamp}.png"
-                if timeout 5s adb exec-out screencap -p > "$screenshot" 2> "${screenshot%.png}.stderr"; then
-                  [ -s "$screenshot" ] || rm -f "$screenshot"
-                else
-                  rm -f "$screenshot"
-                fi
-                if timeout 5s adb shell uiautomator dump /sdcard/iabrain-window.xml > "artifacts/emulator-fullflow/live-ui/${n}-${stamp}.dump.txt" 2> "artifacts/emulator-fullflow/live-ui/${n}-${stamp}.dump.stderr"; then
-                  hierarchy="artifacts/emulator-fullflow/live-ui/${n}-${stamp}.xml"
-                  timeout 5s adb exec-out cat /sdcard/iabrain-window.xml > "$hierarchy" 2> "${hierarchy%.xml}.stderr"
-                  [ -s "$hierarchy" ] || rm -f "$hierarchy"
-                fi
-                n=$((n + 1))
-                sleep 2
-              done
-            ) &
-            monitor_pid=$!
-            ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest
-            test_exit=$?
-            kill "$monitor_pid" 2>/dev/null
-            wait "$monitor_pid" 2>/dev/null
-            kill "$logcat_pid" 2>/dev/null
-            wait "$logcat_pid" 2>/dev/null
-            printf '%s\n' "$test_exit" > artifacts/emulator-fullflow/test-exit-code.txt
-            mkdir -p artifacts/emulator-fullflow/evidence artifacts/emulator-fullflow/test-output
-            timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/e2e-evidence artifacts/emulator-fullflow/evidence > artifacts/emulator-fullflow/evidence-pull.txt 2>&1
-            printf '%s\n' "$?" > artifacts/emulator-fullflow/evidence-pull.exit-code
-            timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additional_test_output artifacts/emulator-fullflow/test-output > artifacts/emulator-fullflow/test-output-pull.txt 2>&1
-            printf '%s\n' "$?" > artifacts/emulator-fullflow/test-output-pull.exit-code
-            mkdir -p artifacts/emulator-fullflow/private-screenshots
-            timeout 20s adb exec-out run-as com.aibrain.app tar -cf - -C app_e2e-screenshots . > /tmp/fullflow-screenshots.tar 2> artifacts/emulator-fullflow/private-screenshots-export.stderr
-            tar -xf /tmp/fullflow-screenshots.tar -C artifacts/emulator-fullflow/private-screenshots 2> artifacts/emulator-fullflow/private-screenshots-export.tar.stderr
-            printf '%s\n' "$?" > artifacts/emulator-fullflow/screenshots-export.exit-code
-            mkdir -p artifacts/emulator-fullflow/private-diagnostics
-            timeout 20s adb exec-out run-as com.aibrain.app tar -cf - -C app_e2e-diagnostics . > /tmp/fullflow-diagnostics.tar 2> artifacts/emulator-fullflow/private-diagnostics-export.stderr
-            tar -xf /tmp/fullflow-diagnostics.tar -C artifacts/emulator-fullflow/private-diagnostics 2> artifacts/emulator-fullflow/private-diagnostics-export.tar.stderr
-            printf '%s\n' "$?" > artifacts/emulator-fullflow/timeout-diagnostics-export.exit-code
-            timeout 20s adb exec-out screencap -p > artifacts/emulator-fullflow/screenshot-before-teardown.png 2> artifacts/emulator-fullflow/screenshot-before-teardown.stderr
-            printf '%s\n' "$?" > artifacts/emulator-fullflow/screenshot-before-teardown.exit-code
-            timeout 20s adb shell uiautomator dump /sdcard/iabrain-before-teardown.xml > artifacts/emulator-fullflow/ui-hierarchy-before-teardown.dump.txt 2> artifacts/emulator-fullflow/ui-hierarchy-before-teardown.dump.stderr
-            hierarchy_exit=$?
-            printf '%s\n' "$hierarchy_exit" > artifacts/emulator-fullflow/ui-hierarchy-before-teardown.dump.exit-code
-            if [ "$hierarchy_exit" -eq 0 ]; then
-              timeout 20s adb exec-out cat /sdcard/iabrain-before-teardown.xml > artifacts/emulator-fullflow/ui-hierarchy-before-teardown.xml 2> artifacts/emulator-fullflow/ui-hierarchy-before-teardown.stderr
-              printf '%s\n' "$?" > artifacts/emulator-fullflow/ui-hierarchy-before-teardown.exit-code
-            fi
-            exit "$test_exit"
+          script: bash .github/scripts/run-fullflow-e2e.sh
 
       - name: Collect FullFlow emulator diagnostics
         if: always()
