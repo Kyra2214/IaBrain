@@ -23,7 +23,7 @@ class ContextIntelligence {
         val lower = normalized.lowercase()
         if (lower.contains("offline") || lower.contains("local-first")) constraints += "OFFLINE_FIRST"
         if (lower.contains("sem api") || lower.contains("without api")) constraints += "NO_EXTERNAL_API_REQUIRED"
-        if (lower.contains("não quebr") || lower.contains("nao quebr")) constraints += "PRESERVE_EXISTING_CONTRACT"
+        if (lower.contains("não quebr") || lower.contains("nao quebr") || lower.contains("preserve o contrato") || lower.contains("preservar o contrato")) constraints += "PRESERVE_EXISTING_CONTRACT"
         if (lower.contains("github")) requirements += "GITHUB_INTEGRATION"
         if (lower.contains("test")) requirements += "TEST_COVERAGE"
         if (lower.contains("android")) requirements += "ANDROID_COMPATIBILITY"
@@ -54,9 +54,7 @@ class AutonomousPlanner {
         steps["design"] = PlanStep("design", "Define implementation approach", setOf("understand"), risk = Risk.LOW)
         steps["implement"] = PlanStep("implement", "Implement the required change", setOf("design"), setOf("code"), Risk.MEDIUM)
         steps["test"] = PlanStep("test", "Run automated validation", setOf("implement"), setOf("test"), Risk.MEDIUM)
-        if (context.requirements.contains("GITHUB_INTEGRATION")) {
-            steps["review"] = PlanStep("review", "Review repository integration", setOf("test"), setOf("github"), Risk.MEDIUM)
-        }
+        if (context.requirements.contains("GITHUB_INTEGRATION")) steps["review"] = PlanStep("review", "Review repository integration", setOf("test"), setOf("github"), Risk.MEDIUM)
         val order = topologicalOrder(steps.values.toList())
         return if (order.size == steps.size) ExecutionPlan(steps.values.toList(), order, true, emptyList())
         else ExecutionPlan(steps.values.toList(), order, false, listOf("PLAN_DEPENDENCY_CYCLE"))
@@ -98,7 +96,6 @@ class ResultEvaluator {
 }
 
 enum class CouncilRole { PLANNER, IMPLEMENTER, REVIEWER, TESTER, EVALUATOR }
-
 data class CouncilOpinion(val role: CouncilRole, val decision: Decision, val rationale: String, val confidence: Double)
 enum class Decision { APPROVE, REVISE, BLOCK }
 data class CouncilResult(val decision: Decision, val opinions: List<CouncilOpinion>, val confidence: Double)
@@ -119,7 +116,6 @@ class MultiAgentCouncil {
 }
 
 enum class FactoryStage { UNDERSTAND, PLAN, ROUTE, IMPLEMENT, TEST, REVIEW, QUALITY_GATE, PUBLISH, COMPLETED, FAILED }
-
 data class FactoryRun(val id: String, val stage: FactoryStage, val plan: ExecutionPlan, val evaluation: Evaluation?, val council: CouncilResult?, val evidence: List<String>, val approved: Boolean, val error: String? = null)
 
 class AutonomousSoftwareFactory(
@@ -143,7 +139,7 @@ class AutonomousSoftwareFactory(
         return run.copy(stage = stage, evaluation = evaluation, council = councilResult, approved = stage == FactoryStage.QUALITY_GATE, evidence = run.evidence + evaluation.evidence)
     }
 
-    private fun fingerprint(value: String): String = value.trim().hashCode().toUInt().toString(16)
+    private fun fingerprint(value: String): String = value.hashCode().toString(16)
 }
 
 data class MemoryRecord(val key: String, val value: String, val confidence: Double, val timestamp: Long, val tags: Set<String> = emptySet())
@@ -170,7 +166,6 @@ class LearningEngine {
 }
 
 data class ProviderProfile(val providerId: String, val quality: Double, val reliability: Double, val speed: Double, val cost: Double)
-
 data class OptimizationDecision(val providerId: String, val score: Double, val reason: String)
 
 class CostLatencyOptimizer {
@@ -194,15 +189,17 @@ class PersistentWorkflowEngine {
     private val states = mutableMapOf<String, WorkflowState>()
     fun start(definition: WorkflowDefinition): WorkflowState {
         require(definition.steps.isNotEmpty()); require(definition.maxRuns > 0)
-        val state = WorkflowState(definition.id, 1, 0, false)
+        val state = WorkflowState(definition.id, 1, 0, definition.steps.size == 1)
         states[definition.id] = state
         return state
     }
     fun advance(definition: WorkflowDefinition): WorkflowState {
         val current = states[definition.id] ?: return start(definition)
-        val nextStep = current.currentStep + 1
-        val done = nextStep >= definition.steps.size
-        val next = current.copy(currentStep = nextStep.coerceAtMost(definition.steps.size), completed = done)
+        if (current.completed) return current
+        val lastIndex = definition.steps.lastIndex
+        val nextStep = (current.currentStep + 1).coerceAtMost(lastIndex)
+        val done = nextStep >= lastIndex
+        val next = current.copy(currentStep = nextStep, completed = done)
         states[definition.id] = next
         return next
     }

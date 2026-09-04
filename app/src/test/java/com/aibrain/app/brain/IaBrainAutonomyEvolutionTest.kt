@@ -49,7 +49,7 @@ class IaBrainAutonomyEvolutionTest {
         val factory = AutonomousSoftwareFactory()
         val prepared = factory.prepare("implemente testes no Android")
         assertEquals(FactoryStage.PLAN, prepared.stage)
-        val evaluated = factory.evaluate(prepared, "implement testes passed", setOf("tests", "passed"))
+        val evaluated = factory.evaluate(prepared, "validate task context define implementation approach implement required change run automated validation tests passed", setOf("tests", "passed"))
         assertEquals(FactoryStage.QUALITY_GATE, evaluated.stage)
         assertTrue(evaluated.approved)
     }
