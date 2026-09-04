@@ -40,11 +40,7 @@ class BrowserRuntimeExecutionPort(private val context: Context) : RuntimeExecuti
             urlStatus = UrlResolutionStatus.RESOLVED,
             generatedPrompt = request.prompt
         )
-        val intent = BrowserActivity.criarIntent(context, contract).apply {
-            putExtra(BrowserActivity.EXTRA_RUNTIME_REQUEST_ID, request.id)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        context.startActivity(intent)
+        context.startActivity(BrowserActivity.criarIntent(context, contract).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
         BrowserRuntimeSessionStore.update(request.id) {
             it.copy(state = BrowserRuntimeSessionState.WAITING_FOR_USER)
