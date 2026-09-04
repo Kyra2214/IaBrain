@@ -68,3 +68,7 @@ Toda descoberta externa deve seguir:
 `descobrir → normalizar → validar → deduplicar → revisar licença → ranquear → catalogar → avaliar → entregar ao Brain`
 
 O Explorer não executa uma API só porque encontrou sua documentação e não automatiza uma interface web sem um adaptador confirmado.
+
+## Regra de CI
+
+A PR só pode ser considerada concluída depois de `test`, lint, assemble e E2E verdes. Falha de compilação ou teste bloqueia o merge e deve gerar correção no mesmo ramo.
