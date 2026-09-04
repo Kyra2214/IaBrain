@@ -100,7 +100,7 @@ class GlobalNavigationE2ETest {
             onView(withId(R.id.nav_public_apis))
                 .perform(click())
 
-            onView(withText("Public APIs"))
+            onView(withId(R.id.txtPublicApisTitle))
                 .check(matches(isDisplayed()))
             onView(withText("Atualizar catálogo"))
                 .check(matches(isDisplayed()))

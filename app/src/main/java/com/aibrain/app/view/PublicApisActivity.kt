@@ -57,6 +57,7 @@ class PublicApisActivity : AppCompatActivity() {
             setPadding(dp(16), dp(16), dp(16), dp(112))
         }
         content.addView(TextView(this).apply {
+            id = R.id.txtPublicApisTitle
             text = "Public APIs"
             textSize = 28f
             setTextColor(getColor(R.color.on_surface))
