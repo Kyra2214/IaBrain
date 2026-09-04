@@ -79,6 +79,10 @@ private_screenshots_copy_exit=$private_screenshots_list_exit
 if [ "$private_screenshots_list_exit" -eq 0 ]; then
   while IFS= read -r screenshot_name; do
     [ -n "$screenshot_name" ] || continue
+    case "$screenshot_name" in
+      *.png|*.xml) ;;
+      *) continue ;;
+    esac
     timeout 20s adb exec-out run-as com.aibrain.app cat "app_e2e-screenshots/$screenshot_name" \
       > "artifacts/emulator-fullflow/private-screenshots/$screenshot_name" \
       2>> artifacts/emulator-fullflow/private-screenshots-export.stderr
