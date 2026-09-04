@@ -71,18 +71,25 @@ find app/build -type d \( \
 done
 
 mkdir -p artifacts/emulator-fullflow/private-screenshots
-timeout 20s adb exec-out run-as com.aibrain.app tar -cf - -C app_e2e-screenshots . \
-  > /tmp/fullflow-screenshots.tar \
+timeout 20s adb exec-out run-as com.aibrain.app ls app_e2e-screenshots \
+  > artifacts/emulator-fullflow/private-screenshots-list.txt \
   2> artifacts/emulator-fullflow/private-screenshots-export.stderr
-private_screenshots_adb_exit=$?
-if [ "$private_screenshots_adb_exit" -eq 0 ]; then
-  tar -xf /tmp/fullflow-screenshots.tar -C artifacts/emulator-fullflow/private-screenshots \
-    2> artifacts/emulator-fullflow/private-screenshots-export.tar.stderr
-  private_screenshots_tar_exit=$?
-else
-  private_screenshots_tar_exit=$private_screenshots_adb_exit
+private_screenshots_list_exit=$?
+private_screenshots_copy_exit=$private_screenshots_list_exit
+if [ "$private_screenshots_list_exit" -eq 0 ]; then
+  while IFS= read -r screenshot_name; do
+    [ -n "$screenshot_name" ] || continue
+    timeout 20s adb exec-out run-as com.aibrain.app cat "app_e2e-screenshots/$screenshot_name" \
+      > "artifacts/emulator-fullflow/private-screenshots/$screenshot_name" \
+      2>> artifacts/emulator-fullflow/private-screenshots-export.stderr
+    copy_exit=$?
+    if [ "$copy_exit" -ne 0 ]; then
+      private_screenshots_copy_exit=$copy_exit
+      rm -f "artifacts/emulator-fullflow/private-screenshots/$screenshot_name"
+    fi
+  done < artifacts/emulator-fullflow/private-screenshots-list.txt
 fi
-printf '%s\n' "$private_screenshots_tar_exit" > artifacts/emulator-fullflow/screenshots-export.exit-code
+printf '%s\n' "$private_screenshots_copy_exit" > artifacts/emulator-fullflow/screenshots-export.exit-code
 
 # Estas capturas são deliberadamente feitas antes do retorno ao runner, que
 # então encerra o emulador e pode deixar o ADB offline.

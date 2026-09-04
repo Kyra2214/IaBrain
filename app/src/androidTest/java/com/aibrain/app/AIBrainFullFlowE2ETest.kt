@@ -409,14 +409,22 @@ class AIBrainFullFlowE2ETest {
     }
 
     private fun escreverEvidencia(nome: String, escrever: (java.io.OutputStream) -> Unit) {
-        val arquivoOutput = runCatching {
-            PlatformTestStorageRegistry.getInstance().openOutputFile("e2e-evidence/$nome")
-        }.getOrNull()
-        if (arquivoOutput != null) {
-            arquivoOutput.use(escrever)
+        val arquivoPrivado = File(context.getDir("e2e-screenshots", Context.MODE_PRIVATE), nome)
+        val privadoEscrito = runCatching {
+            arquivoPrivado.parentFile?.mkdirs()
+            FileOutputStream(arquivoPrivado).use(escrever)
+            true
+        }.getOrDefault(false)
+        if (privadoEscrito) {
+            runCatching {
+                PlatformTestStorageRegistry.getInstance()
+                    .openOutputFile("e2e-evidence/$nome")
+                    .use { output -> arquivoPrivado.inputStream().use { it.copyTo(output) } }
+            }
             return
         }
-        val diretorioPrivado = context.getDir("e2e-screenshots", Context.MODE_PRIVATE)
-        FileOutputStream(File(diretorioPrivado, nome)).use(escrever)
+        PlatformTestStorageRegistry.getInstance()
+            .openOutputFile("e2e-evidence/$nome")
+            .use(escrever)
     }
 }
