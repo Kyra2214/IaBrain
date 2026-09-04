@@ -1,6 +1,7 @@
 name: Android E2E
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
   pull_request:
@@ -87,9 +88,7 @@ jobs:
           emulator-boot-timeout: 600
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
-          script: |
-            adb wait-for-device
-            ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest
+          script: bash .github/scripts/run-fullflow-e2e.sh
 
       - name: Collect FullFlow emulator diagnostics
         if: always()
@@ -106,8 +105,15 @@ jobs:
           run_diag adb-devices adb devices -l
           run_diag getprop adb shell getprop
           run_diag logcat adb logcat -d
-          timeout 20s adb exec-out screencap -p > artifacts/emulator-fullflow/screenshot.png 2> artifacts/emulator-fullflow/screenshot-error.txt
-          printf '%s\n' "$?" > artifacts/emulator-fullflow/screenshot.exit-code
+          timeout 20s adb exec-out screencap -p > artifacts/emulator-fullflow/post-teardown-screenshot.png 2> artifacts/emulator-fullflow/post-teardown-screenshot.stderr
+          printf '%s\n' "$?" > artifacts/emulator-fullflow/post-teardown-screenshot.exit-code
+          timeout 20s adb shell uiautomator dump /sdcard/iabrain-post-teardown.xml > artifacts/emulator-fullflow/post-teardown-ui.dump.txt 2> artifacts/emulator-fullflow/post-teardown-ui.dump.stderr
+          post_hierarchy_exit=$?
+          printf '%s\n' "$post_hierarchy_exit" > artifacts/emulator-fullflow/post-teardown-ui.dump.exit-code
+          if [ "$post_hierarchy_exit" -eq 0 ]; then
+            timeout 20s adb exec-out cat /sdcard/iabrain-post-teardown.xml > artifacts/emulator-fullflow/post-teardown-ui.xml 2> artifacts/emulator-fullflow/post-teardown-ui.stderr
+            printf '%s\n' "$?" > artifacts/emulator-fullflow/post-teardown-ui.exit-code
+          fi
           printf 'diagnostics_completed_at=%s\n' "$(date -u +%FT%TZ)" > artifacts/emulator-fullflow/collection-status.txt
 
       - name: Upload FullFlow diagnostics
@@ -119,6 +125,9 @@ jobs:
           path: |
             artifacts/emulator-fullflow/**
             **/build/outputs/androidTest-results/**
+            **/build/outputs/managed_device_android_test_additional_output/**
+            **/build/outputs/additional_test_output/**
+            **/build/outputs/additionalTestOutputDir/**
             **/build/reports/androidTests/**
             **/build/test-results/**
 
@@ -162,8 +171,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: |
-            adb wait-for-device
-            ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.GlobalNavigationE2ETest
+            bash .github/scripts/run-global-navigation-e2e.sh
 
       - name: Collect navigation emulator diagnostics
         if: always()
@@ -237,8 +245,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: |
-            adb wait-for-device
-            ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.MainActivitySmokeTest,com.aibrain.app.data.local.AppDatabaseTest
+            bash .github/scripts/run-smoke-database-e2e.sh
 
       - name: Collect smoke/database emulator diagnostics
         if: always()

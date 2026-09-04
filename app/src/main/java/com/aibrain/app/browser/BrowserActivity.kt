@@ -158,6 +158,7 @@ class BrowserActivity : AppCompatActivity() {
             abrirNovaAbaDoIntent(intent)
         } else {
             tabManager.idAbaAtiva()?.let { selecionarAba(it) }
+                ?: criarNovaAbaManual()
         }
     }
 

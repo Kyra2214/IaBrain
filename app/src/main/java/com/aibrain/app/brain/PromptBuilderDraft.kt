@@ -88,7 +88,7 @@ data class PromptBuilderDraft(
     )
 
     companion object {
-        private val PLACEHOLDER = Regex("\\{\\{\\s*([A-Za-zÀ-ÿ0-9_ -]+?)\\s*}}")
+        private val PLACEHOLDER = Regex("\\{\\{\\s*([A-Za-zÀ-ÿ0-9_ -]+?)\\s*\\}\\}")
 
         fun fromPrompt(prompt: Prompt, duplicar: Boolean = false): PromptBuilderDraft = PromptBuilderDraft(
             id = if (duplicar) null else prompt.id,

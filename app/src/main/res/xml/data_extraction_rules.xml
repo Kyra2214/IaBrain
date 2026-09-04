@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <include domain="sharedpref" path="." requireFlags="clientSideEncryption" />
+        <exclude domain="sharedpref" path="ai_brain_secure_prefs.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="ai_brain_secure_prefs.xml" />
+        <exclude domain="database" path="." />
+        <exclude domain="file" path="." />
+    </device-transfer>
+</data-extraction-rules>
