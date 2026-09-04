@@ -3,6 +3,7 @@ package com.aibrain.app
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.app.Instrumentation.ActivityResult
 import android.view.View
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
@@ -10,7 +11,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.ActivityResult
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import org.hamcrest.Matchers.allOf
