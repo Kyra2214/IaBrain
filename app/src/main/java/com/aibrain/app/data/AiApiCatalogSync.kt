@@ -20,7 +20,7 @@ class AiApiCatalogSync(context: Context) {
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.IO)
 
     fun syncIfStale(nowEpochMs:Long=System.currentTimeMillis()){scope.launch{val state=runCatching{db.aiApiSyncStateDao().get()}.getOrNull();if(com.aibrain.app.brain.AiApiSyncPolicy.isStale(state?.lastSyncAt?:0L,nowEpochMs))runCatching{syncBlocking(nowEpochMs)}}}
-    fun syncNow(nowEpochMs:Long=System.currentTimeMillis()):Result<Int>=runCatching{syncBlocking(nowEpochMs)}
+    fun syncNow(nowEpochMs:Long=System.currentTimeMillis()): Result<Int> = runCatching{syncBlocking(nowEpochMs)}
 
     private fun syncBlocking(nowEpochMs:Long):Int{
         val raw=fetchRemoteCatalog()?:appContext.assets.open(LOCAL_ASSET).bufferedReader().use{it.readText()};val hash=sha256(raw);val root=JSONObject(raw);val version=root.optString("version","unknown");val providers=root.optJSONArray("providers")?:return 0
