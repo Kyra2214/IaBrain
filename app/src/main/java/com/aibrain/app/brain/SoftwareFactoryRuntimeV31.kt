@@ -81,8 +81,8 @@ class SoftwareFactoryRuntimeV31(
         val names = symbols.map { it.name }.toSet()
         val nodes = symbols.map { symbol ->
             val key = "${symbol.path}|${symbol.kind}|${symbol.name}"
-            val consumers = contentsByPath.filter { (_, content) ->
-                it.key != key && names.any { name -> content.contains("$name(") || content.contains("$name {") }
+            val consumers = contentsByPath.filter { (path, content) ->
+                path != symbol.path && names.any { name -> content.contains("$name(") || content.contains("$name {") }
             }.keys
             ContractNode(key, symbol, consumers)
         }
