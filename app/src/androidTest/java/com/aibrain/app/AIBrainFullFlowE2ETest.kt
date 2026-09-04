@@ -155,7 +155,7 @@ class AIBrainFullFlowE2ETest {
         ActivityScenario.launch<BrowserActivity>(intent).use { browserScenario ->
             capturarTela("03-browser-inicial.png")
             onView(isRoot()).perform(aguardarViewVisivel(R.id.recyclerAbasBrowser))
-            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 1))
+            onView(isRoot()).perform(aguardarQuantidadeDeAbas(1))
             onView(withId(R.id.containerWebViewBrowser)).check(matches(isDisplayed()))
             onView(withText(contrato.selectedAIName)).check(matches(isDisplayed()))
             capturarTela("03-browser-primeira-aba.png")
@@ -168,15 +168,14 @@ class AIBrainFullFlowE2ETest {
                 assertTrue(activity.findViewById<android.view.ViewGroup>(R.id.containerWebViewBrowser).childCount > 0)
             }
 
-            val segundaAba = contrato.copy(generatedPrompt = "Segunda pergunta para revisão")
-            browserScenario.onActivity { activity ->
-                activity.startActivity(
-                    BrowserActivity.criarIntent(context, segundaAba)
-                        .addFlags(android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                )
-            }
-
-            onView(isRoot()).perform(aguardarQuantidadeDeItens(R.id.recyclerAbasBrowser, 2))
+            // A segunda aba deve ser criada pela ação de UI do navegador. O
+            // startActivity com REORDER_TO_FRONT usado antes não representa a
+            // interação do usuário e, com singleTask, podia apenas reordenar a
+            // Activity sem entregar um novo Intent observável ao teste.
+            onView(withId(R.id.btnNovaAbaItem)).perform(
+                androidx.test.espresso.action.ViewActions.click()
+            )
+            onView(isRoot()).perform(aguardarQuantidadeDeAbas(2))
             capturarTela("04-browser-segunda-aba.png")
             browserScenario.onActivity { activity ->
                 val itens = (activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerAbasBrowser)
@@ -276,10 +275,13 @@ class AIBrainFullFlowE2ETest {
             }
         }
 
-    private fun aguardarQuantidadeDeItens(id: Int, quantidade: Int, timeoutMs: Long = 20_000): ViewAction =
-        esperarNoRoot(timeoutMs, "itens-${nomeRecurso(id)}-$quantidade") { root ->
-            root.findViewById<androidx.recyclerview.widget.RecyclerView>(id)
-                ?.adapter?.itemCount == quantidade
+    private fun aguardarQuantidadeDeAbas(quantidade: Int, timeoutMs: Long = 20_000): ViewAction =
+        esperarNoRoot(timeoutMs, "abas-$quantidade") { root ->
+            val recycler = root.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerAbasBrowser)
+            val adapter = recycler?.adapter as? com.aibrain.app.browser.BrowserAdapter
+            adapter?.currentList?.count {
+                it is com.aibrain.app.browser.BrowserAdapter.ItemBarra.Aba
+            } == quantidade
         }
 
     private fun esperarNoRoot(

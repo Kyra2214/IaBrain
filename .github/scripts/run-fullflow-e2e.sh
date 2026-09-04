@@ -7,7 +7,7 @@ set +e
 mkdir -p artifacts/emulator-fullflow
 adb wait-for-device
 
-mkdir -p artifacts/emulator-fullflow/live-screenshots artifacts/emulator-fullflow/live-ui
+mkdir -p artifacts/emulator-fullflow/live-screenshots
 timeout 5s adb logcat -c \
   > artifacts/emulator-fullflow/logcat-interval-clear.txt \
   2> artifacts/emulator-fullflow/logcat-interval-clear.stderr.txt
@@ -29,15 +29,6 @@ logcat_pid=$!
       [ -s "$screenshot" ] || rm -f "$screenshot"
     else
       rm -f "$screenshot"
-    fi
-
-    if timeout 5s adb shell uiautomator dump /sdcard/iabrain-window.xml \
-        > "artifacts/emulator-fullflow/live-ui/${n}-${stamp}.dump.txt" \
-        2> "artifacts/emulator-fullflow/live-ui/${n}-${stamp}.dump.stderr"; then
-      hierarchy="artifacts/emulator-fullflow/live-ui/${n}-${stamp}.xml"
-      timeout 5s adb exec-out cat /sdcard/iabrain-window.xml \
-        > "$hierarchy" 2> "${hierarchy%.xml}.stderr"
-      [ -s "$hierarchy" ] || rm -f "$hierarchy"
     fi
 
     n=$((n + 1))
