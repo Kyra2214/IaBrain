@@ -2,7 +2,7 @@ package com.aibrain.app.browser
 
 import android.content.Context
 import android.content.Intent
-import com.aibrain.app.brain.BrowserActivity
+import com.aibrain.app.brain.BrowserDispatch
 import com.aibrain.app.brain.IAOpenContract
 import com.aibrain.app.brain.RuntimeCandidate
 import com.aibrain.app.brain.RuntimeDispatchResult
@@ -30,7 +30,7 @@ class BrowserRuntimeExecutionPort(private val context: Context) : RuntimeExecuti
         )
         context.startActivity(BrowserActivity.criarIntent(context, contract).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         return RuntimeDispatchResult.Browser(
-            com.aibrain.app.brain.BrowserDispatch(
+            BrowserDispatch(
                 requestId = request.id,
                 aiId = candidate.id,
                 aiName = candidate.name,
