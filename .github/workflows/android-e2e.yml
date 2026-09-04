@@ -171,15 +171,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: |
-            adb wait-for-device
-            mkdir -p artifacts/emulator-navigation
-            set +e
-            ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.GlobalNavigationE2ETest
-            test_exit=$?
-            timeout 20s adb exec-out screencap -p > artifacts/emulator-navigation/screenshot-during-test.png
-            capture_exit=$?
-            printf '%s\n' "$capture_exit" > artifacts/emulator-navigation/screenshot-during-test.exit-code
-            exit "$test_exit"
+            bash .github/scripts/run-global-navigation-e2e.sh
 
       - name: Collect navigation emulator diagnostics
         if: always()
@@ -253,15 +245,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: |
-            adb wait-for-device
-            mkdir -p artifacts/emulator-smoke-database
-            set +e
-            ./gradlew connectedDebugAndroidTest --stacktrace -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.MainActivitySmokeTest,com.aibrain.app.data.local.AppDatabaseTest
-            test_exit=$?
-            timeout 20s adb exec-out screencap -p > artifacts/emulator-smoke-database/screenshot-during-test.png
-            capture_exit=$?
-            printf '%s\n' "$capture_exit" > artifacts/emulator-smoke-database/screenshot-during-test.exit-code
-            exit "$test_exit"
+            bash .github/scripts/run-smoke-database-e2e.sh
 
       - name: Collect smoke/database emulator diagnostics
         if: always()
