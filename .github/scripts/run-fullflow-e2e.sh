@@ -38,7 +38,8 @@ done
 monitor_pid=$!
 
 ./gradlew connectedDebugAndroidTest --stacktrace \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest
+  -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest \
+  -Pandroid.testInstrumentationRunnerArguments.additionalTestOutputDir=/sdcard/Android/media/com.aibrain.app/additionalTestOutputDir
 test_exit=$?
 
 kill "$monitor_pid" 2>/dev/null
