@@ -64,7 +64,7 @@ class SoftwareFactoryRuntimeV31Test {
         val zip = zip("src/A.kt", "class A")
         val artifact = ZipIntegrationEngine.Artifact("a", "implementation", "ia", zip)
         val runtime = SoftwareFactoryRuntimeV31()
-        val result = runtime.merge(root, ZipIntegrationEngine.analyze(listOf(artifact)), listOf(artifact), emptyMap())
+        val result = runtime.merge(root, ZipIntegrationEngine.analyze(listOf(artifact)), listOf(artifact), mapOf("implementation" to setOf("src/A.kt")))
         assertTrue(result.rolledBack)
         assertEquals("before", File(root, "keep.txt").readText())
         assertTrue(File(root, "src").isFile)
