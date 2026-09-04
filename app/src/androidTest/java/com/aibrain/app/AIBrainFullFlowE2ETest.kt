@@ -340,30 +340,39 @@ class AIBrainFullFlowE2ETest {
     }
 
     /**
-     * Captura o screenshot do mesmo frame crítico. O dump de UI hierarchy é
-     * feito pelo script do runner após a instrumentação terminar; executar
-     * `uiautomator dump` aqui abriria um segundo UiAutomation no Android 14 e
-     * concorreria com o UiAutomation usado pelo Espresso.
+     * Captura screenshot e hierarchy do mesmo frame crítico. O dump usa o
+     * mesmo UiAutomation já usado para o screenshot; não há um segundo
+     * `uiautomator dump` concorrendo com o Espresso no Android 14.
      */
     private fun capturarEvidencia(base: String) {
         val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+        val uiAutomation = instrumentation.uiAutomation
         runCatching {
-            val bitmap = instrumentation.uiAutomation.takeScreenshot()
-            val arquivoOutput = runCatching {
-                PlatformTestStorageRegistry.getInstance()
-                    .openOutputFile("e2e-evidence/$base.png")
-            }.getOrNull()
-            if (arquivoOutput != null) {
-                arquivoOutput.use { output ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
-                }
-            } else {
-                val diretorioPrivado = context.getDir("e2e-screenshots", Context.MODE_PRIVATE)
-                FileOutputStream(File(diretorioPrivado, "$base.png")).use { output ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
-                }
+            val bitmap = uiAutomation.takeScreenshot()
+            escreverEvidencia("$base.png") { output ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
             }
             bitmap.recycle()
         }
+        runCatching {
+            val arquivoHierarchy = File(context.cacheDir, "$base.xml")
+            uiAutomation.dumpWindowHierarchy(arquivoHierarchy)
+            escreverEvidencia("$base.xml") { output ->
+                arquivoHierarchy.inputStream().use { input -> input.copyTo(output) }
+            }
+            arquivoHierarchy.delete()
+        }
+    }
+
+    private fun escreverEvidencia(nome: String, escrever: (java.io.OutputStream) -> Unit) {
+        val arquivoOutput = runCatching {
+            PlatformTestStorageRegistry.getInstance().openOutputFile("e2e-evidence/$nome")
+        }.getOrNull()
+        if (arquivoOutput != null) {
+            arquivoOutput.use(escrever)
+            return
+        }
+        val diretorioPrivado = context.getDir("e2e-screenshots", Context.MODE_PRIVATE)
+        FileOutputStream(File(diretorioPrivado, nome)).use(escrever)
     }
 }

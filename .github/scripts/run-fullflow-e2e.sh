@@ -49,11 +49,11 @@ wait "$logcat_pid" 2>/dev/null
 printf '%s\n' "$test_exit" > artifacts/emulator-fullflow/test-exit-code.txt
 
 mkdir -p artifacts/emulator-fullflow/evidence artifacts/emulator-fullflow/test-output
-timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additional_test_output/e2e-evidence \
+timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additionalTestOutputDir/e2e-evidence \
   artifacts/emulator-fullflow/evidence \
   > artifacts/emulator-fullflow/evidence-pull.txt 2>&1
 printf '%s\n' "$?" > artifacts/emulator-fullflow/evidence-pull.exit-code
-timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additional_test_output \
+timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additionalTestOutputDir \
   artifacts/emulator-fullflow/test-output \
   > artifacts/emulator-fullflow/test-output-pull.txt 2>&1
 printf '%s\n' "$?" > artifacts/emulator-fullflow/test-output-pull.exit-code
@@ -63,7 +63,8 @@ printf '%s\n' "$?" > artifacts/emulator-fullflow/test-output-pull.exit-code
 mkdir -p artifacts/emulator-fullflow/test-storage
 find app/build -type d \( \
   -name managed_device_android_test_additional_output -o \
-  -name additional_test_output \
+  -name additional_test_output -o \
+  -name additionalTestOutputDir \
 \) -print0 2>/dev/null | while IFS= read -r -d '' output_dir; do
   cp -R "$output_dir"/. artifacts/emulator-fullflow/test-storage/
 done
