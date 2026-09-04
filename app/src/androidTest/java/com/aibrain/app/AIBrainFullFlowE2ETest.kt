@@ -1,6 +1,7 @@
 package com.aibrain.app
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.view.View
 import android.widget.TextView
@@ -8,8 +9,11 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAction
-import org.hamcrest.Matchers.allOf
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.ActivityResult
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import org.hamcrest.Matchers.allOf
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
@@ -34,6 +38,7 @@ import com.aibrain.app.data.local.toEntity
 import com.aibrain.app.repository.AtualizacaoRepository
 import com.aibrain.app.repository.CatalogoRepository
 import com.aibrain.app.view.AIBrainActivity
+import com.aibrain.app.view.CriadorPromptsActivity
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.containsString
@@ -192,6 +197,7 @@ class AIBrainFullFlowE2ETest {
 
     private fun validarFluxoDaTelaBrain() {
         limparEstadoLocal()
+        var intentPromptBuilder: Intent? = null
         ActivityScenario.launch(AIBrainActivity::class.java).use {
             capturarTela("00-tela-inicial.png")
             onView(withId(R.id.btnPerguntar)).perform(aguardarHabilitado())
@@ -208,10 +214,31 @@ class AIBrainFullFlowE2ETest {
             onView(isRoot()).perform(aguardarViewVisivel(R.id.containerResultado))
             onView(isRoot()).perform(rolarParaFimDoBrain())
             capturarEvidencia("01-antes-criar-prompt")
-            onView(withId(R.id.btnCriarPromptChat)).perform(
-                androidx.test.espresso.action.ViewActions.click()
-            )
 
+            // O clique continua sendo exercitado e o Intent produzido pela
+            // aplicação é capturado. A navegação real para outra Activity é
+            // aberta em um ActivityScenario separado abaixo: no API 34, a
+            // combinação startActivity durante um cenário ativo e a transição
+            // top-resumed do emulator-runner pode derrubar o processo com
+            // ActivityClientRecord nulo, antes de qualquer asserção da UI.
+            Intents.init()
+            try {
+                Intents.intending(hasComponent(CriadorPromptsActivity::class.java.name))
+                    .respondWith(ActivityResult(android.app.Activity.RESULT_OK, null))
+                onView(withId(R.id.btnCriarPromptChat)).perform(
+                    androidx.test.espresso.action.ViewActions.click()
+                )
+                intentPromptBuilder = Intents.getIntents()
+                    .lastOrNull { it.component?.className == CriadorPromptsActivity::class.java.name }
+            } finally {
+                Intents.release()
+            }
+        }
+
+        val intent = requireNotNull(intentPromptBuilder) {
+            "O clique em Criar prompt não emitiu Intent para CriadorPromptsActivity"
+        }
+        ActivityScenario.launch<CriadorPromptsActivity>(intent).use {
             onView(isRoot()).perform(aguardarTextoVisivel(R.id.txtPreviewPrompt, "/implement"))
             onView(withId(R.id.txtTituloCriadorPrompts)).check(matches(isDisplayed()))
             onView(allOf(withId(R.id.txtPreviewPrompt), withText(containsString(pergunta))))
