@@ -38,8 +38,7 @@ done
 monitor_pid=$!
 
 ./gradlew connectedDebugAndroidTest --stacktrace \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest \
-  -Pandroid.testInstrumentationRunnerArguments.additionalTestOutputDir=/sdcard/Android/media/com.aibrain.app/additionalTestOutputDir
+  -Pandroid.testInstrumentationRunnerArguments.class=com.aibrain.app.AIBrainFullFlowE2ETest
 test_exit=$?
 
 kill "$monitor_pid" 2>/dev/null
@@ -50,11 +49,11 @@ wait "$logcat_pid" 2>/dev/null
 printf '%s\n' "$test_exit" > artifacts/emulator-fullflow/test-exit-code.txt
 
 mkdir -p artifacts/emulator-fullflow/evidence artifacts/emulator-fullflow/test-output
-timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additionalTestOutputDir/e2e-evidence \
+timeout 20s adb pull /sdcard/googletest/test_outputfiles/e2e-evidence \
   artifacts/emulator-fullflow/evidence \
   > artifacts/emulator-fullflow/evidence-pull.txt 2>&1
 printf '%s\n' "$?" > artifacts/emulator-fullflow/evidence-pull.exit-code
-timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additionalTestOutputDir \
+timeout 20s adb pull /sdcard/googletest/test_outputfiles \
   artifacts/emulator-fullflow/test-output \
   > artifacts/emulator-fullflow/test-output-pull.txt 2>&1
 printf '%s\n' "$?" > artifacts/emulator-fullflow/test-output-pull.exit-code
