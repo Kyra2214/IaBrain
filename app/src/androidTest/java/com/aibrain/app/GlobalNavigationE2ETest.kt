@@ -8,7 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.espresso.action.ViewAction
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.UiController
 import android.view.View
 import org.hamcrest.Matcher
