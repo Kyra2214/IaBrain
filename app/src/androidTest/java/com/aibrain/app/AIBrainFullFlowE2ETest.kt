@@ -3,7 +3,9 @@ package com.aibrain.app
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.app.Instrumentation.ActivityResult
+import android.util.Xml
 import android.view.View
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
@@ -53,6 +55,7 @@ import org.junit.runner.RunWith
 import java.net.URI
 import java.io.File
 import java.io.FileOutputStream
+import java.io.StringWriter
 
 /**
  * E2E funcional do fluxo interno do IaBrain, sem login, API ou site externo.
@@ -355,13 +358,54 @@ class AIBrainFullFlowE2ETest {
             bitmap.recycle()
         }
         runCatching {
-            val arquivoHierarchy = File(context.cacheDir, "$base.xml")
-            uiAutomation.dumpWindowHierarchy(arquivoHierarchy)
+            val hierarchy = serializarHierarchy(uiAutomation.rootInActiveWindow)
             escreverEvidencia("$base.xml") { output ->
-                arquivoHierarchy.inputStream().use { input -> input.copyTo(output) }
+                output.write(hierarchy.toByteArray(Charsets.UTF_8))
             }
-            arquivoHierarchy.delete()
         }
+    }
+
+    private fun serializarHierarchy(root: android.view.accessibility.AccessibilityNodeInfo?): String {
+        requireNotNull(root) { "UiAutomation não retornou a janela ativa" }
+        val writer = StringWriter()
+        val serializer = Xml.newSerializer()
+        serializer.setOutput(writer)
+        serializer.startDocument("UTF-8", true)
+        serializer.startTag(null, "hierarchy")
+        serializer.attribute(null, "rotation", "0")
+        serializarNo(serializer, root, 0)
+        serializer.endTag(null, "hierarchy")
+        serializer.endDocument()
+        root.recycle()
+        return writer.toString()
+    }
+
+    private fun serializarNo(
+        serializer: org.xmlpull.v1.XmlSerializer,
+        node: android.view.accessibility.AccessibilityNodeInfo,
+        index: Int
+    ) {
+        val bounds = Rect()
+        node.getBoundsInScreen(bounds)
+        serializer.startTag(null, "node")
+        serializer.attribute(null, "index", index.toString())
+        serializer.attribute(null, "text", node.text?.toString().orEmpty())
+        serializer.attribute(null, "resource-id", node.viewIdResourceName.orEmpty())
+        serializer.attribute(null, "class", node.className?.toString().orEmpty())
+        serializer.attribute(null, "package", node.packageName?.toString().orEmpty())
+        serializer.attribute(null, "content-desc", node.contentDescription?.toString().orEmpty())
+        serializer.attribute(null, "clickable", node.isClickable.toString())
+        serializer.attribute(null, "enabled", node.isEnabled.toString())
+        serializer.attribute(null, "focused", node.isFocused.toString())
+        serializer.attribute(null, "scrollable", node.isScrollable.toString())
+        serializer.attribute(null, "bounds", "[${bounds.left},${bounds.top}][${bounds.right},${bounds.bottom}]")
+        for (childIndex in 0 until node.childCount) {
+            node.getChild(childIndex)?.let { child ->
+                serializarNo(serializer, child, childIndex)
+                child.recycle()
+            }
+        }
+        serializer.endTag(null, "node")
     }
 
     private fun escreverEvidencia(nome: String, escrever: (java.io.OutputStream) -> Unit) {
