@@ -2,9 +2,11 @@ package com.aibrain.app.navigation
 
 import android.app.Activity
 import android.content.Intent
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.content.res.ColorStateList
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.aibrain.app.MainActivity
 import com.aibrain.app.R
@@ -13,8 +15,8 @@ import com.aibrain.app.view.AIBrainActivity
 import com.aibrain.app.view.PromptsComandosActivity
 import com.aibrain.app.view.ProjetosActivity
 import com.aibrain.app.view.PublicApisActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
+/** Shared six-area navigation; a custom bar avoids Material's five-item limit. */
 object GlobalNavigation {
     const val CHAT = 0
     const val NAVEGADOR = 1
@@ -23,34 +25,51 @@ object GlobalNavigation {
     const val PROJETOS = 4
     const val PUBLIC_APIS = 5
 
+    private data class Destination(val id: Int, val title: String, val icon: Int, val code: Int)
+
     fun attach(activity: Activity, container: ViewGroup, selected: Int) {
-        val navigation = BottomNavigationView(activity).apply {
+        val destinations = listOf(
+            Destination(R.id.nav_chat, "Chat", R.drawable.ic_assistente_ia, CHAT),
+            Destination(R.id.nav_navegador, "Navegador", R.drawable.ic_open_external, NAVEGADOR),
+            Destination(R.id.nav_brain, "Brain", R.drawable.ic_ai_brain, BRAIN),
+            Destination(R.id.nav_prompts, "Prompts", R.drawable.ic_criador_prompts, PROMPTS),
+            Destination(R.id.nav_projects, "Projetos", R.drawable.ic_projects, PROJETOS),
+            Destination(R.id.nav_public_apis, "Public APIs", R.drawable.ic_public_apis, PUBLIC_APIS)
+        )
+        val navigation = LinearLayout(activity).apply {
             id = R.id.globalNavigation
-            inflateMenu(R.menu.menu_navegacao_global)
-            labelVisibilityMode = BottomNavigationView.LABEL_VISIBILITY_LABELED
-            itemIconTintList = null
-            itemTextColor = activity.getColorStateList(R.color.nav_item_colors)
-            itemRippleColor = ColorStateList.valueOf(activity.getColor(R.color.secondary_container))
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            weightSum = destinations.size.toFloat()
             background = activity.getDrawable(R.drawable.bg_bottom_navigation)
-            backgroundTintList = null
             elevation = activity.resources.getDimension(R.dimen.space_sm)
             minimumHeight = activity.resources.getDimensionPixelSize(R.dimen.global_navigation_height)
-            itemPaddingTop = activity.resources.getDimensionPixelSize(R.dimen.space_sm)
-            itemPaddingBottom = activity.resources.getDimensionPixelSize(R.dimen.space_sm)
-            setOnItemSelectedListener { item ->
-                val destination = when (item.itemId) {
-                    R.id.nav_chat -> CHAT
-                    R.id.nav_navegador -> NAVEGADOR
-                    R.id.nav_brain -> BRAIN
-                    R.id.nav_prompts -> PROMPTS
-                    R.id.nav_projects -> PROJETOS
-                    R.id.nav_public_apis -> PUBLIC_APIS
-                    else -> selected
+            setPadding(0, activity.resources.getDimensionPixelSize(R.dimen.space_xs), 0, activity.resources.getDimensionPixelSize(R.dimen.space_xs))
+        }
+        destinations.forEach { destination ->
+            navigation.addView(TextView(activity).apply {
+                id = destination.id
+                text = destination.title
+                textSize = 10f
+                gravity = Gravity.CENTER
+                maxLines = 2
+                isClickable = true
+                isFocusable = true
+                isSelected = destination.code == selected
+                setTextColor(activity.getColorStateList(R.color.nav_item_colors))
+                setCompoundDrawablesWithIntrinsicBounds(0, destination.icon, 0, 0)
+                compoundDrawablePadding = activity.resources.getDimensionPixelSize(R.dimen.space_xs)
+                setPadding(
+                    activity.resources.getDimensionPixelSize(R.dimen.space_xs),
+                    activity.resources.getDimensionPixelSize(R.dimen.space_xs),
+                    activity.resources.getDimensionPixelSize(R.dimen.space_xs),
+                    activity.resources.getDimensionPixelSize(R.dimen.space_xs)
+                )
+                contentDescription = destination.title
+                setOnClickListener {
+                    if (destination.code != selected) open(activity, destination.code)
                 }
-                if (destination != selected) open(activity, destination)
-                true
-            }
-            menu.getItem(selected).isChecked = true
+            }, LinearLayout.LayoutParams(0, -1, 1f))
         }
         val params = when (container) {
             is ConstraintLayout -> ConstraintLayout.LayoutParams(-1, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
@@ -59,7 +78,7 @@ object GlobalNavigation {
                 endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
             }
             is FrameLayout -> FrameLayout.LayoutParams(-1, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                gravity = android.view.Gravity.BOTTOM
+                gravity = Gravity.BOTTOM
             }
             else -> ViewGroup.LayoutParams(-1, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
