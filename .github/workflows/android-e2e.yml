@@ -125,6 +125,8 @@ jobs:
           path: |
             artifacts/emulator-fullflow/**
             **/build/outputs/androidTest-results/**
+            **/build/outputs/managed_device_android_test_additional_output/**
+            **/build/outputs/additional_test_output/**
             **/build/reports/androidTests/**
             **/build/test-results/**
 

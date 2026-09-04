@@ -58,6 +58,16 @@ timeout 20s adb pull /sdcard/Android/media/com.aibrain.app/additional_test_outpu
   > artifacts/emulator-fullflow/test-output-pull.txt 2>&1
 printf '%s\n' "$?" > artifacts/emulator-fullflow/test-output-pull.exit-code
 
+# AGP/UTP may also materialize PlatformTestStorage output directly on the
+# host. Copy any such directory into the artifact before emulator teardown.
+mkdir -p artifacts/emulator-fullflow/test-storage
+find app/build -type d \( \
+  -name managed_device_android_test_additional_output -o \
+  -name additional_test_output \
+\) -print0 2>/dev/null | while IFS= read -r -d '' output_dir; do
+  cp -R "$output_dir"/. artifacts/emulator-fullflow/test-storage/
+done
+
 mkdir -p artifacts/emulator-fullflow/private-screenshots
 timeout 20s adb exec-out run-as com.aibrain.app tar -cf - -C app_e2e-screenshots . \
   > /tmp/fullflow-screenshots.tar \
@@ -71,20 +81,6 @@ else
   private_screenshots_tar_exit=$private_screenshots_adb_exit
 fi
 printf '%s\n' "$private_screenshots_tar_exit" > artifacts/emulator-fullflow/screenshots-export.exit-code
-
-mkdir -p artifacts/emulator-fullflow/private-diagnostics
-timeout 20s adb exec-out run-as com.aibrain.app tar -cf - -C app_e2e-diagnostics . \
-  > /tmp/fullflow-diagnostics.tar \
-  2> artifacts/emulator-fullflow/private-diagnostics-export.stderr
-private_diagnostics_adb_exit=$?
-if [ "$private_diagnostics_adb_exit" -eq 0 ]; then
-  tar -xf /tmp/fullflow-diagnostics.tar -C artifacts/emulator-fullflow/private-diagnostics \
-    2> artifacts/emulator-fullflow/private-diagnostics-export.tar.stderr
-  private_diagnostics_tar_exit=$?
-else
-  private_diagnostics_tar_exit=$private_diagnostics_adb_exit
-fi
-printf '%s\n' "$private_diagnostics_tar_exit" > artifacts/emulator-fullflow/timeout-diagnostics-export.exit-code
 
 # Estas capturas são deliberadamente feitas antes do retorno ao runner, que
 # então encerra o emulador e pode deixar o ADB offline.

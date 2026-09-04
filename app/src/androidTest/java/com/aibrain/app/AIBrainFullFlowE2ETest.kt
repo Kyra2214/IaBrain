@@ -16,6 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.io.PlatformTestStorageRegistry
 import com.aibrain.app.brain.BrowserOpenMode
 import com.aibrain.app.brain.ContextualPromptGenerator
 import com.aibrain.app.brain.IAOpenContract
@@ -312,46 +313,30 @@ class AIBrainFullFlowE2ETest {
     }
 
     /**
-     * Captura screenshot e UI hierarchy do mesmo frame crítico. Além do
-     * armazenamento privado, grava em Android/media/additional_test_output,
-     * diretório de saída preservado pelo AndroidX Test durante o uninstall.
+     * Captura o screenshot do mesmo frame crítico. O dump de UI hierarchy é
+     * feito pelo script do runner após a instrumentação terminar; executar
+     * `uiautomator dump` aqui abriria um segundo UiAutomation no Android 14 e
+     * concorreria com o UiAutomation usado pelo Espresso.
      */
     private fun capturarEvidencia(base: String) {
         val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
-        val diretorioExterno = context.getExternalMediaDirs().firstOrNull()
-            ?.resolve("additional_test_output/e2e-evidence")
-            ?.also { it.mkdirs() }
-        val diretoriosScreenshot = listOfNotNull(
-            context.getDir("e2e-screenshots", Context.MODE_PRIVATE),
-            diretorioExterno
-        )
         runCatching {
             val bitmap = instrumentation.uiAutomation.takeScreenshot()
-            diretoriosScreenshot.forEach { diretorio ->
-                FileOutputStream(File(diretorio, "$base.png")).use { output ->
+            val arquivoOutput = runCatching {
+                PlatformTestStorageRegistry.getInstance()
+                    .openOutputFile("e2e-evidence/$base.png")
+            }.getOrNull()
+            if (arquivoOutput != null) {
+                arquivoOutput.use { output ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                }
+            } else {
+                val diretorioPrivado = context.getDir("e2e-screenshots", Context.MODE_PRIVATE)
+                FileOutputStream(File(diretorioPrivado, "$base.png")).use { output ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
                 }
             }
             bitmap.recycle()
-        }
-        val hierarchyPrivada = File(context.getDir("e2e-diagnostics", Context.MODE_PRIVATE), "$base.xml")
-        runCatching {
-            val dump = instrumentation.uiAutomation.executeShellCommand(
-                "uiautomator dump /sdcard/iabrain-e2e-window.xml"
-            )
-            android.os.ParcelFileDescriptor.AutoCloseInputStream(dump).use { input ->
-                val buffer = ByteArray(1024)
-                while (input.read(buffer) >= 0) Unit
-            }
-            val cat = instrumentation.uiAutomation.executeShellCommand(
-                "cat /sdcard/iabrain-e2e-window.xml"
-            )
-            android.os.ParcelFileDescriptor.AutoCloseInputStream(cat).use { input ->
-                FileOutputStream(hierarchyPrivada).use { output -> input.copyTo(output) }
-            }
-            diretorioExterno?.let { diretorio ->
-                hierarchyPrivada.copyTo(File(diretorio, "$base.xml"), overwrite = true)
-            }
         }
     }
 }
