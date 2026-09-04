@@ -41,7 +41,11 @@ class AppDatabaseTest {
     }
 
     @Test fun fluxoRealPersisteProjetoFuncoesEIas() = runBlocking {
-        val ia = IA("ia1", "Editor", "", "https://example.com", "Editor", listOf(Categoria.CODIGO.chave), emptyList(), true)
+        val ia = IA(
+            "ia1", "Editor", "", "https://example.com", "Editor",
+            listOf(Categoria.CODIGO.chave), emptyList(), true,
+            notas = mapOf(Categoria.CODIGO.chave to 8)
+        )
         val recomendacao = RecomendadorProjeto.recomendar(listOf(ia), ProjetoIntentParser.parse("aplicativo de código gratuito"))
         val projetoId = SalvarProjetoCompletoUseCase(db)(recomendacao)
         assertTrue(db.projetoDao().buscar(projetoId) != null)

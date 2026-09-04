@@ -5,8 +5,14 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.action.ViewAction
+import androidx.test.espresso.UiController
+import android.view.View
+import org.hamcrest.Matcher
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,6 +54,12 @@ class GlobalNavigationE2ETest {
             onView(withId(R.id.recyclerAbasBrowser))
                 .check(matches(isDisplayed()))
 
+            onView(isRoot()).perform(aguardarAbasRenderizadas())
+
+            onView(withId(R.id.recyclerAbasBrowser))
+                .check(matches(isDisplayed()))
+                .check(matches(androidx.test.espresso.matcher.ViewMatchers.hasMinimumChildCount(1)))
+
             onView(withId(R.id.containerWebViewBrowser))
                 .check(matches(isDisplayed()))
 
@@ -85,4 +97,28 @@ class GlobalNavigationE2ETest {
                 .check(matches(isDisplayed()))
         }
     }
+
+    private fun aguardarAbasRenderizadas(timeoutMs: Long = 10_000): ViewAction =
+        object : ViewAction {
+            override fun getConstraints(): Matcher<View> = isRoot()
+            override fun getDescription(): String =
+                "aguardar adapter do Browser populado e child-count maior que zero"
+
+            override fun perform(uiController: UiController, view: View) {
+                val limite = android.os.SystemClock.uptimeMillis() + timeoutMs
+                fun populado(): Boolean {
+                    val recycler = view.findViewById<RecyclerView>(R.id.recyclerAbasBrowser)
+                    return recycler?.visibility == View.VISIBLE &&
+                        (recycler.adapter?.itemCount ?: 0) > 0 &&
+                        recycler.childCount > 0
+                }
+                while (!populado() && android.os.SystemClock.uptimeMillis() < limite) {
+                    uiController.loopMainThreadForAtLeast(50)
+                }
+                check(populado()) {
+                    val recycler = view.findViewById<RecyclerView>(R.id.recyclerAbasBrowser)
+                    "Browser adapter não populou: itemCount=${recycler?.adapter?.itemCount}, childCount=${recycler?.childCount}"
+                }
+            }
+        }
 }

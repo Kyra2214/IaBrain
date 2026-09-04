@@ -3,8 +3,6 @@
     <cloud-backup disableIfNoEncryptionCapabilities="true">
         <include domain="sharedpref" path="." requireFlags="clientSideEncryption" />
         <exclude domain="sharedpref" path="ai_brain_secure_prefs.xml" />
-        <exclude domain="database" path="." />
-        <exclude domain="file" path="." />
     </cloud-backup>
     <device-transfer>
         <exclude domain="sharedpref" path="ai_brain_secure_prefs.xml" />
